@@ -1,0 +1,35 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "hxml",
+			"file": "html5.hxml",
+			"problemMatcher": [
+				"$haxe"
+			]
+		},
+		{
+			"label": "html5 debug",
+			"command": "haxe",
+			"args": ["html5.hxml", "-debug"],
+			"problemMatcher": "$haxe",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Serve",
+			"type": "shell",
+			"command": "cd ./build/html5 && python3 -m http.server -b 127.0.0.1 8080",
+			"group": "none",
+			"presentation": {
+			    "reveal": "always",
+			    "panel": "new"
+			},
+			"problemMatcher": []
+		}
+	]
+}

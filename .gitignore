@@ -1,1 +1,2 @@
-build/*
+build/html5/*
+!build/html5/index.html

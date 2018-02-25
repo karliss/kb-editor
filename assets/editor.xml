@@ -3,7 +3,11 @@
         <button text="Import"/>
         <button text="Export"/>
     </hbox>
-
+	<style>
+		.selected {
+            background-color: #404040;
+		}
+	</style>
     <tabview width="100%" height="100%">
         <hbox id="pageMechanical" text="Mechanical" width="100%" height="100%">
             <KeyboardContainer id="cMechanical"/>

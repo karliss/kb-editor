@@ -7,6 +7,7 @@ class KeyButton extends haxe.ui.components.Button {
     public function new(key:Key=null) {
         super();
         this.key = key;
+        refresh();
     }
 
     public function refresh() {

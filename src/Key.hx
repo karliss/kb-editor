@@ -12,7 +12,5 @@ class Key {
 
     public function new (id:Int) {
         this.id = id;
-
-
     }
 }

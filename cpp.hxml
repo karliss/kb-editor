@@ -1,0 +1,8 @@
+-cp src
+-main EditorApp
+
+-lib haxeui-core
+-lib haxeui-hxwidgets
+-lib hscript
+
+-cpp build/cpp/Main

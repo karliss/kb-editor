@@ -14,8 +14,6 @@ class EditorApp extends HaxeUIApp {
     }
 
     private function onReady() {
-        var com:KeyboardContainer = new KeyboardContainer();
-
         var editor:Component = new Editor();
         addComponent(editor);
         editor.percentWidth = 100;

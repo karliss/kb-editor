@@ -11,12 +11,25 @@
     <tabview width="100%" height="100%">
         <hbox id="pageMechanical" text="Mechanical" width="100%" height="100%">
             <KeyboardContainer id="cMechanical"/>
-            <vbox><!--Toolbox-->
+            <!--gridView-->
+            <PropertyEditor width="150">
+                <PropertyTitle text="Group1"/>
+                    <PropertyText id="prop4" text="Ppasd2"/>
+                    <PropertyText id="prop4" text="Ppasd2"/>
+                <PropertyTitle text="Group2"/>
+                <PropertyItem id="prop1" text="Prop1">
+                    <TextField/>
+                </PropertyItem>
+                <PropertyText id="prop2" text="Pp2"/>
+            </PropertyEditor>
+            <!--Toolbox-->
+            <!--vbox>
                 <button id="bMAdd" text="Add"/>
                 <button id="bMRemove" text="Remove"/>
-            </vbox>
+            </vbox-->
         </hbox>
-        <box id="pageLayout" text="Layout">
-        </box>
+
+        <!--box id="pageLayout" text="Layout"/>
+        </box-->
     </tabview>
 </vbox>

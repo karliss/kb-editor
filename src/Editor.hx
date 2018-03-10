@@ -2,6 +2,7 @@ package ;
 
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
+import components.properties.PropertyEditor;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
 class Editor extends Component {
@@ -16,13 +17,7 @@ class Editor extends Component {
             key.x = 50 * i;
             key.y = 50 * i;
             key.name = "$i";
-            //var bt:KeyButton = new KeyButton(key);
-            //var bt:Button = new Button();
-            var a = cMechanical.addKey(key);
-            /*bt.moveComponent(i * 50, i * 50);
-            bt.width = 25;
-            bt.height = 25;*/
-            //cMechanical.addComponent(bt);
+            cMechanical.addKey(key);
         }
     }
 }

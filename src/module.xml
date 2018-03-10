@@ -1,5 +1,6 @@
 <module>
     <components>
-        <class package="components"/>
+        <class package="components" />
+        <class package="components.properties" />
     </components>
 </module>

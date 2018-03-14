@@ -7,6 +7,7 @@
 		{
 			"type": "chrome",
 			"request": "launch",
+			"runtimeExecutable": "/usr/bin/chromium",
 			"preLaunchTask": "html5 debug",
 			"name": "Launch Chrome against localhost",
 			"url": "http://localhost:8080",

@@ -2,10 +2,6 @@ package ;
 
 import haxe.ui.HaxeUIApp;
 import haxe.ui.core.Component;
-import haxe.ui.macros.ComponentMacros;
-import components.KeyboardContainer;
-
-import haxe.ui.components.Button;
 
 class EditorApp extends HaxeUIApp {
     public function new() {

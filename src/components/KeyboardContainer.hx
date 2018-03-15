@@ -12,6 +12,7 @@ class KeyboardContainer extends Box {
     private var buttons:List<KeyButton> = new List<KeyButton>();
 
     public var activeButton:KeyButton = null;
+    public var onActiveButtonChange:KeyButton->Void;
 
     public function new() {
         super();
@@ -46,5 +47,8 @@ class KeyboardContainer extends Box {
         }
         activeButton = cast e.target;
         activeButton.addClass("selected");
+        if (onActiveButtonChange != null) {
+            onActiveButtonChange(activeButton);
+        }
     }
 }

@@ -3,6 +3,8 @@ import haxe.ui.components.TextField;
 import haxe.ui.components.Button;
 import haxe.ui.core.InteractiveComponent;
 import haxe.ui.layouts.HorizontalLayout;
+import haxe.ui.util.Variant;
+import haxe.ui.core.UIEvent;
 
 class NumberEditor extends InteractiveComponent {
     var input:TextField;
@@ -34,16 +36,14 @@ class NumberEditor extends InteractiveComponent {
         addComponent(minus = new Button());
         minus.text = "-";
         minus.onClick = onMinus;
-        
-        //plus.percentWidth = 10;
-        //minus.percentWidth = 10;
+
         input.percentWidth = 100;
     }
 
     function fromText() {
         var num = Std.parseFloat(input.value);
         if (Math.isFinite(num) && num >= minimum && num <= maximum) {
-            _value = num;
+            number = num;
         }
     }
 
@@ -69,10 +69,23 @@ class NumberEditor extends InteractiveComponent {
     function onMinus(_) {
         number -= step;
     }
+
+    override function set_value(value:Variant):Variant {
+        switch(value) {
+            case Float(v): return number = v;
+            case Int(v): return number = v;
+            default: throw "Bad value type";
+        }
+    }
     
+    override function get_value():Variant {
+        return number;
+    }
+
     function set_number(v:Float):Float {
         _value = clamp(v);
         showVal();
+        dispatch(new UIEvent(UIEvent.CHANGE));
         return _value;
     }
     

@@ -11,7 +11,6 @@ class Editor extends Component {
         super();
         percentWidth = 100;
         percentHeight = 100;
-        var x = new KeyButton(new Key(3));
         for (i in 0...10) {
             var key:Key = new Key(i);
             key.x = 50 * i;
@@ -19,5 +18,17 @@ class Editor extends Component {
             key.name = "$i";
             cMechanical.addKey(key);
         }
+        cMechanical.onActiveButtonChange = onButtonChange;
+        propEditor.onChange = onPropertyChange;
+    }
+
+    function onPropertyChange(_) {
+        if (cMechanical.activeButton != null) {
+            cMechanical.activeButton.refresh();
+        }
+    }
+
+    function onButtonChange(btn:KeyButton) {
+        propEditor.source = btn.key;
     }
 }

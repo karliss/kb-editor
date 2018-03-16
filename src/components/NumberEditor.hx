@@ -1,21 +1,17 @@
 package components;
-import haxe.ui.components.TextField;
-import haxe.ui.components.Button;
-import haxe.ui.core.InteractiveComponent;
-import haxe.ui.layouts.HorizontalLayout;
-import haxe.ui.util.Variant;
-import haxe.ui.core.UIEvent;
 
-class NumberEditor extends InteractiveComponent {
+
+import haxe.ui.components.Button;
+import haxe.ui.components.TextField;
+import haxe.ui.layouts.HorizontalLayout;
+import haxe.ui.core.Component;
+
+
+class NumberEditor extends Component {
     var input:TextField;
     var plus:Button;
     var minus:Button;
 
-    var _value:Float = 0;
-    public var number(get, set):Float;
-    public var minimum:Float = 0; //TODO:clamp on change
-    public var maximum:Float = 100;
-    public var step:Float = 1;
 
     function new() {
         super();
@@ -41,55 +37,19 @@ class NumberEditor extends InteractiveComponent {
     }
 
     function fromText() {
-        var num = Std.parseFloat(input.value);
-        if (Math.isFinite(num) && num >= minimum && num <= maximum) {
-            number = num;
-        }
+        throw "Not implemented!";
     }
 
     function showVal() {
-        input.text = Std.string(number);
-    }
-
-    function clamp(v:Float):Float {
-        if (!Math.isFinite(v)) {
-            return minimum;
-        } else if (v < minimum) {
-            return minimum;
-        } else if (v > maximum) {
-            return maximum;
-        }
-        return v;
+        input.text = Std.string(value);
     }
 
     function onPlus(_) {
-        number += step;
+        throw "Not implemented!";
     }
 
     function onMinus(_) {
-        number -= step;
-    }
-
-    override function set_value(value:Variant):Variant {
-        switch(value) {
-            case Float(v): return number = v;
-            case Int(v): return number = v;
-            default: throw "Bad value type";
-        }
-    }
-    
-    override function get_value():Variant {
-        return number;
-    }
-
-    function set_number(v:Float):Float {
-        _value = clamp(v);
-        showVal();
-        dispatch(new UIEvent(UIEvent.CHANGE));
-        return _value;
-    }
-    
-    function get_number():Float {
-        return _value;
+        throw "Not implemented!";
     }
 }
+

@@ -13,25 +13,30 @@
             <KeyboardContainer id="cMechanical"/>
             <!--gridView-->
             <PropertyEditor id="propEditor" width="200">
+                <PropertyTitle text="General"/>
+                <PropertyItem id="p_id" text="Id">
+                        <IntegerEditor minimum="0" maximum="1000" />
+                </PropertyItem>
+                <PropertyText id="p_name" text="Name" />
                 <PropertyTitle text="Position"/>
                     <PropertyItem id="p_x" text="X">
-                        <NumberEditor maximum="1000" />
+                        <FloatEditor maximum="1000" />
                     </PropertyItem>
                     <PropertyItem id="p_y" text="Y">
-                        <NumberEditor maximum="1000" />
+                        <FloatEditor maximum="1000" />
                     </PropertyItem>
                     <PropertyItem id="p_width" text="width">
-                        <NumberEditor maximum="1000" step="0.25" />
+                        <FloatEditor minimum="0.5" maximum="1000" step="0.25" />
                     </PropertyItem>
                     <PropertyItem id="p_height" text="height">
-                        <NumberEditor maximum="1000"  step="0.25" />
+                        <FloatEditor minimum="0.5" maximum="1000"  step="0.25" />
                     </PropertyItem>
                 <PropertyTitle text="Electrical"/>
                 <PropertyItem id="p_row" text="row">
-                        <NumberEditor maximum="1000" />
+                        <IntegerEditor maximum="1000" />
                 </PropertyItem>
                 <PropertyItem id="p_column" text="column">
-                        <NumberEditor maximum="1000" />
+                        <IntegerEditor maximum="1000" />
                 </PropertyItem>
             </PropertyEditor>
             <!--Toolbox-->

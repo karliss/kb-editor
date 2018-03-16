@@ -7,7 +7,10 @@ class Key {
     public var width:Float = 1;
     public var height:Float = 1;
 
-    var id:Int = -1;
+    public var row:Int = 0;
+    public var column:Int = 0;
+
+    var id:Int = 0;
     public var name:String = "";
 
     public function new (id:Int) {

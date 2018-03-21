@@ -28,10 +28,14 @@ class NumberEditor extends Component {
         addComponent(plus = new Button());
         plus.text = "+";
         plus.onClick = onPlus;
+        plus.repeater = true;
+        plus.repeatInterval = 150;
 
         addComponent(minus = new Button());
         minus.text = "-";
         minus.onClick = onMinus;
+        minus.repeater = true;
+        minus.repeatInterval = 150;
 
         input.percentWidth = 100;
     }

@@ -15,6 +15,10 @@ class KeyBoard {
             return 1;
         }
         var used = new Vector<Int>(keys.length);
+        var i=0;
+        for (key in keys) {
+            used[i++] = key.id;
+        }
         used.sort(function(a, b):Int {
             if (a < b) return -1;
             else if (a > b) return 1;

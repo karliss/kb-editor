@@ -2,9 +2,10 @@
     <vbox>
         <button id="bAdd" text="Add"/>
         <button id="bRemove" text="Remove"/>
+        <button id="bMove" text="Move"/>
+        <button id="bSelect" text="Select"/> <!-- TODO: add icons -->
     </vbox>
     <KeyboardContainer id="cMechanical"/>
-    <!--gridView-->
 
     <PropertyEditor id="propEditor" width="200">
         <PropertyTitle text="General"/>
@@ -14,10 +15,10 @@
         <PropertyText id="p_name" text="Name" />
         <PropertyTitle text="Position"/>
             <PropertyItem id="p_x" text="X">
-                <FloatEditor maximum="1000" />
+                <FloatEditor maximum="1000" step="0.05"/>
             </PropertyItem>
             <PropertyItem id="p_y" text="Y">
-                <FloatEditor maximum="1000" />
+                <FloatEditor maximum="1000" step="0.05"/>
             </PropertyItem>
             <PropertyItem id="p_width" text="width">
                 <FloatEditor minimum="0.5" maximum="1000" step="0.25" />

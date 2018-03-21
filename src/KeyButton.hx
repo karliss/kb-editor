@@ -3,6 +3,7 @@ package;
 
 class KeyButton extends haxe.ui.components.Button {
     public var key(default, null):Key;
+    public var scale:Float = 32;
 
     public function new(key:Key=null) {
         super();
@@ -11,10 +12,10 @@ class KeyButton extends haxe.ui.components.Button {
     }
 
     public function refresh() {
-        top = key.y;
-        left = key.x;
+        top = key.y * scale;
+        left = key.x * scale;
         text = key.name;
-        width = key.width * 32;
-        height = key.height * 32;
+        width = key.width * scale;
+        height = key.height * scale;
     }
 }

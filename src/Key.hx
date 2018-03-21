@@ -10,7 +10,7 @@ class Key {
     public var row:Int = 0;
     public var column:Int = 0;
 
-    var id:Int = 0;
+    public var id(default, null):Int = 0;
     public var name:String = "";
 
     public function new (id:Int) {

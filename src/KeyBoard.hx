@@ -10,6 +10,10 @@ class KeyBoard {
         keys.add(key);
     }
 
+    public function removeKey(key:Key) {
+        keys.remove(key);
+    }
+
     public function getNextId():Int {
         if (keys.isEmpty()) {
             return 1;

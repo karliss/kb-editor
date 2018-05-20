@@ -32,11 +32,10 @@ class AddTool extends Tool {
         var key = btn.key;
         var field = page.cMechanical;
         var scale:Float = page.cMechanical.scale;
-        var x = (e.screenX - field.screenLeft) / scale;
-        var y = (e.screenY - field.screenTop) / scale; //TODO:correct offset
+        var p = field.screenToField(e.screenX, e.screenY);
         //TODO:stick to grid
-        key.x = x;
-        key.y = y;
+        key.x = p.x;
+        key.y = p.y;
         btn.refresh();
         page.propEditor.source = key;
     }
@@ -49,7 +48,17 @@ class AddTool extends Tool {
 }
 
 class RemoveTool extends Tool {
-    //TODO:implement
+    function buttonClicked(e:KeyButtonEvent) {
+        page.eraseButton(e.button);
+    }
+
+    override function activate() {
+        page.cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, buttonClicked);
+    }
+
+    override function deactivate() {
+        page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_CHANGED, buttonClicked);
+    }
 }
 
 class SelectTool extends Tool {
@@ -57,7 +66,42 @@ class SelectTool extends Tool {
 }
 
 class MoveTool extends Tool {
-    //TODO:implement
+    var movableButton:KeyButton;
+
+    function onMouseDown(e:KeyButtonEvent) {
+        page.cMechanical.activeButton = e.button;
+        movableButton = e.button;
+        trace("mouseDown");
+    }
+    function onMouseUp(e:MouseEvent) {
+        movableButton = null;
+        trace("mouseUP");
+    }
+    function onMouseMove(e:MouseEvent) {
+        trace("mouseMove");
+        if (movableButton == null ||
+            !e.buttonDown) {
+            return;
+        }
+        var p = page.cMechanical.screenToField(e.screenX, e.screenY);
+        movableButton.key.x = p.x;
+        movableButton.key.y = p.y;
+        movableButton.refresh();
+        page.cMechanical.updateLayout();
+    }
+
+    override function activate() {
+        page.cMechanical.registerEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
+        page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
+        //page.cMechanical.registerEvent(MouseEvent.MOUSE_OUT, onMouseUp);
+        page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
+    }
+    override function deactivate() {
+        page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
+        page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseUp);
+      //  page.cMechanical.unregisterEvent(MouseEvent.MOUSE_OUT, onMouseUp);
+        page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseMove);
+    }
 }
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/mechanical_page.xml"))
@@ -153,5 +197,13 @@ class MechanicalPage extends HBox {
         var button = cMechanical.addKey(key);
         cMechanical.activeButton = button;
         return button;
+    }
+
+    public function eraseButton(btn:KeyButton) {
+        if (btn == null) {
+            return;
+        }
+        keyboard.removeKey(btn.key);
+        cMechanical.removeKey(btn);
     }
 }

@@ -6,9 +6,13 @@ import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
 import haxe.ui.core.MouseEvent;
 import haxe.ui.core.UIEvent;
+import haxe.ui.constants.ScrollMode;
+
+typedef Point = { x : Float, y : Float }
 
 class KeyboardContainer extends Box {
     static public var BUTTON_CHANGED = "BUTTON_CHANGED";
+    static public var BUTTON_DOWN = "BUTTON_MOUSE_DOWN";
 
     private var scrollView:ScrollView = new ScrollView();
     private var canvas:Absolute = new Absolute();
@@ -31,11 +35,20 @@ class KeyboardContainer extends Box {
         scrollView.percentHeight = 100;
 
         scrollView.layout.autoSize();
+        scrollView.scrollMode = ScrollMode.NORMAL;
 
         percentWidth = 100;
         percentHeight = 100;
     }
-    
+
+    public function screenToField(x:Float, y:Float):Point {
+        var result:Point = {x:0, y:0};
+
+        result.x = (x - canvas.screenLeft) / scale;
+        result.y = (y - canvas.screenTop) / scale;
+        return result;
+    }
+
     override public function addComponent(child:Component):Component {
         var res:Component = canvas.addComponent(child);
         return res;
@@ -49,9 +62,15 @@ class KeyboardContainer extends Box {
         var button:KeyButton = new KeyButton(key);
         button.scale = scale;
         button.onClick = onKeyClick;
+        button.registerEvent(MouseEvent.MOUSE_DOWN, onMouseDown);
         addComponent(button);
         buttons.add(button);
         return button;
+    }
+
+    public function removeKey(key:KeyButton) {
+        buttons.remove(key);
+        removeComponent(key);
     }
 
     function set_scale(v:Int):Int {
@@ -76,6 +95,11 @@ class KeyboardContainer extends Box {
 
     private function onKeyClick(e:MouseEvent) {
         activeButton = cast e.target;
+    }
+
+    private function onMouseDown(e:MouseEvent) {
+        var target:KeyButton = cast e.target;
+        dispatch(new KeyButtonEvent(BUTTON_DOWN, target));
     }
 }
 

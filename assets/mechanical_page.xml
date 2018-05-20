@@ -4,6 +4,10 @@
         <onewaybutton id="bRemove" text="Remove"/>
         <onewaybutton id="bMove" text="Move"/>
         <onewaybutton id="bSelect" text="Select"/> <!-- TODO: add icons -->
+        <spacer/>
+        <button id="bAddRight" text="AddRight"/>
+        <button id="bAddDown" text="AddDown"/>
+        <button id="bAlign" text="Alignment" toggle="true"/>
     </vbox>
     <KeyboardContainer id="cMechanical"/>
 

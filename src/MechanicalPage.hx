@@ -6,7 +6,6 @@ import components.OneWayButton;
 import haxe.ui.core.MouseEvent;
 import components.KeyboardContainer;
 import components.KeyboardContainer.KeyButtonEvent;
-import haxe.ui.core.UIEvent;
 
 enum ToolType {
     Add;
@@ -28,10 +27,9 @@ class Tool {
 
 class AddTool extends Tool {
     function doAdd(e:MouseEvent) {
-        var btn = page.addNewButton(null);
+        var btn = page.addNewButton(true);
         var key = btn.key;
         var field = page.cMechanical;
-        var scale:Float = page.cMechanical.scale;
         var p = field.screenToField(e.screenX, e.screenY);
         //TODO:stick to grid
         key.x = p.x;
@@ -124,13 +122,11 @@ class MechanicalPage extends HBox {
         cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
         propEditor.onChange = onPropertyChange;
 
-        bAdd.onClick = function(_) {
-            tool = Add;
-            addNewButton(_);
-        };
-
         tools = createTools();
         bindToolButtons();
+
+        bAddRight.onClick = addRight;
+        bAddDown.onClick = addDown;
     }
 
     function createTools():Map<ToolType, Tool> {
@@ -190,12 +186,18 @@ class MechanicalPage extends HBox {
         propEditor.source = e.button.key;
     }
 
-    public function addNewButton(_):KeyButton {
+    function refreshProperties() {
+        propEditor.source = cMechanical.activeButton == null ? null : cMechanical.activeButton.key;
+    }
+
+    public function addNewButton(activate:Bool=true):KeyButton {
         var id = keyboard.getNextId();
         var key = new Key(id);
         keyboard.addKey(key);
         var button = cMechanical.addKey(key);
-        cMechanical.activeButton = button;
+        if (activate) {
+            cMechanical.activeButton = button;
+        }
         return button;
     }
 
@@ -205,5 +207,33 @@ class MechanicalPage extends HBox {
         }
         keyboard.removeKey(btn.key);
         cMechanical.removeKey(btn);
+    }
+
+    function addRight(_) {
+        if (cMechanical.activeButton == null) {
+            return;
+        }
+        var prevKey = cMechanical.activeButton.key;
+        var button = addNewButton();
+        var key = button.key;
+        key.y = prevKey.y;
+        key.x = prevKey.x + prevKey.width;
+        key.height = prevKey.height;
+        button.refresh();
+        refreshProperties();
+    }
+
+    function addDown(_) {
+        if (cMechanical.activeButton == null) {
+            return;
+        }
+        var prevKey = cMechanical.activeButton.key;
+        var button = addNewButton();
+        var key = button.key;
+        key.y = prevKey.y + prevKey.height;
+        key.x = prevKey.x;
+        key.width = prevKey.width;
+        button.refresh();
+        refreshProperties();
     }
 }

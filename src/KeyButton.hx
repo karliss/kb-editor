@@ -1,7 +1,8 @@
 package;
 
+import components.OneWayButton;
 
-class KeyButton extends haxe.ui.components.Button {
+class KeyButton extends OneWayButton {
     public var key(default, null):Key;
     public var scale:Float = 32;
 

@@ -35,6 +35,7 @@ class AddTool extends Tool {
         key.x = p.x;
         key.y = p.y;
         btn.refresh();
+        page.onKeyMove(btn);
         page.propEditor.source = key;
     }
     override function activate() {
@@ -84,6 +85,8 @@ class MoveTool extends Tool {
         var p = page.cMechanical.screenToField(e.screenX, e.screenY);
         movableButton.key.x = p.x;
         movableButton.key.y = p.y;
+
+        page.onKeyMove(movableButton);
         movableButton.refresh();
         page.cMechanical.updateLayout();
     }
@@ -198,6 +201,7 @@ class MechanicalPage extends HBox {
         if (activate) {
             cMechanical.activeButton = button;
         }
+        onKeyMove(button);
         return button;
     }
 
@@ -235,5 +239,18 @@ class MechanicalPage extends HBox {
         key.width = prevKey.width;
         button.refresh();
         refreshProperties();
+    }
+
+    public function onKeyMove(key: KeyButton) {
+        var rnd = function(val:Float, step:Float):Float {
+            return Math.fround(val / step) * step;
+        };
+        if (bAlign.selected) {
+            var st:Float = alignStep.number;
+            key.key.x = rnd(key.key.x, st); 
+            key.key.y = rnd(key.key.y, st);
+            key.refresh();
+            refreshProperties();
+        }
     }
 }

@@ -7,7 +7,8 @@
         <spacer/>
         <button id="bAddRight" text="AddRight"/>
         <button id="bAddDown" text="AddDown"/>
-        <button id="bAlign" text="Alignment" toggle="true"/>
+        <button id="bAlign" text="Alignment" toggle="true" selected="true"/>
+        <FloatEditor width="100%" id="alignStep" minimum="0.05" maximum="10" value="0.25" step="0.05"/>
     </vbox>
     <KeyboardContainer id="cMechanical"/>
 

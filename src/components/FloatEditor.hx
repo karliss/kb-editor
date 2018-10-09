@@ -8,6 +8,7 @@ class FloatEditor extends NumberEditor {
     public var minimum:Float = 0; //TODO:clamp on change
     public var maximum:Float = 100;
     public var step:Float = 1;
+    public var floatRound:Bool = false;
 
     override function fromText() {
         var num = Std.parseFloat(input.value);
@@ -37,6 +38,9 @@ class FloatEditor extends NumberEditor {
 
     function set_number(v:Float):Float {
         _value = clamp(v);
+        if (floatRound) {
+            _value = Math.fround(_value/step)*step;
+        }
         showVal();
         dispatch(new UIEvent(UIEvent.CHANGE));
         return _value;

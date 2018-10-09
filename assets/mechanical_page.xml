@@ -8,7 +8,7 @@
         <button id="bAddRight" text="AddRight"/>
         <button id="bAddDown" text="AddDown"/>
         <button id="bAlign" text="Alignment" toggle="true" selected="true"/>
-        <FloatEditor width="100%" id="alignStep" minimum="0.05" maximum="10" value="0.25" step="0.05"/>
+        <FloatEditor width="100%" id="alignStep" minimum="0.05" maximum="10" value="0.25" step="0.05" floatRound="true"/>
     </vbox>
     <KeyboardContainer id="cMechanical"/>
 
@@ -20,16 +20,16 @@
         <PropertyText id="p_name" text="Name" />
         <PropertyTitle text="Position"/>
             <PropertyItem id="p_x" text="X">
-                <FloatEditor maximum="1000" step="0.05"/>
+                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
             </PropertyItem>
             <PropertyItem id="p_y" text="Y">
-                <FloatEditor maximum="1000" step="0.05"/>
+                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
             </PropertyItem>
             <PropertyItem id="p_width" text="width">
-                <FloatEditor minimum="0.5" maximum="1000" step="0.25" />
+                <FloatEditor minimum="0.5" maximum="1000" step="0.25" floatRound="true"/>
             </PropertyItem>
             <PropertyItem id="p_height" text="height">
-                <FloatEditor minimum="0.5" maximum="1000"  step="0.25" />
+                <FloatEditor minimum="0.5" maximum="1000"  step="0.25" floatRound="true"/>
             </PropertyItem>
         <PropertyTitle text="Electrical"/>
         <PropertyItem id="p_row" text="row">

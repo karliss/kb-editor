@@ -1,24 +1,24 @@
-package ;
+package;
 
 import haxe.ui.HaxeUIApp;
 import haxe.ui.core.Component;
 
 class EditorApp extends HaxeUIApp {
-    public function new() {
-        super();
-        ready(onReady);
-    }
+	public function new() {
+		super();
+		ready(onReady);
+	}
 
-    private function onReady() {
-        var editor:Component = new Editor();
-        addComponent(editor);
-        editor.percentWidth = 100;
-        editor.percentHeight = 100;
-        
-        start();
-    }
+	private function onReady() {
+		var editor:Component = new Editor();
+		addComponent(editor);
+		editor.percentWidth = 100;
+		editor.percentHeight = 100;
 
-    public static function main() {
-        new EditorApp();
-    }
+		start();
+	}
+
+	public static function main() {
+		new EditorApp();
+	}
 }

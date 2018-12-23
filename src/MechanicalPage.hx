@@ -1,4 +1,4 @@
-package ;
+package;
 
 import components.properties.PropertyEditor;
 import haxe.ui.containers.HBox;
@@ -16,33 +16,45 @@ enum ToolType {
 
 class Tool {
     public var page:MechanicalPage;
+
     public function new(p:MechanicalPage) {
         page = p;
     }
-    public function activate() {
-    }
-    public function deactivate() {
-    }
+
+    public function activate() {}
+
+    public function deactivate() {}
 }
 
-class AddTool extends Tool {
+class AddTool extends MoveTool {
     function doAdd(e:MouseEvent) {
         var btn = page.addNewButton(true);
         var key = btn.key;
         var field = page.cMechanical;
         var p = field.screenToField(e.screenX, e.screenY);
-        //TODO:stick to grid
         key.x = p.x;
         key.y = p.y;
         btn.refresh();
         page.onKeyMove(btn);
         page.propEditor.source = key;
+        return btn;
     }
+
+    function onAdd(e:MouseEvent) {
+        var button = doAdd(e);
+        this.movableButton = button;
+    }
+
     override function activate() {
-        page.cMechanical.registerEvent(MouseEvent.CLICK, doAdd);
+        page.cMechanical.registerEvent(MouseEvent.MOUSE_DOWN, onAdd);
+        page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
+        page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
     }
+
     override function deactivate() {
-        page.cMechanical.unregisterEvent(MouseEvent.CLICK, doAdd);
+        page.cMechanical.unregisterEvent(MouseEvent.MOUSE_DOWN, onAdd);
+        page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseUp);
+        page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseMove);
     }
 }
 
@@ -61,7 +73,7 @@ class RemoveTool extends Tool {
 }
 
 class SelectTool extends Tool {
-    //TODO:implement
+    // TODO:implement
 }
 
 class MoveTool extends Tool {
@@ -70,16 +82,14 @@ class MoveTool extends Tool {
     function onMouseDown(e:KeyButtonEvent) {
         page.cMechanical.activeButton = e.button;
         movableButton = e.button;
-        trace("mouseDown");
     }
+
     function onMouseUp(e:MouseEvent) {
         movableButton = null;
-        trace("mouseUP");
     }
+
     function onMouseMove(e:MouseEvent) {
-        trace("mouseMove");
-        if (movableButton == null ||
-            !e.buttonDown) {
+        if (movableButton == null || !e.buttonDown) {
             return;
         }
         var p = page.cMechanical.screenToField(e.screenX, e.screenY);
@@ -94,13 +104,14 @@ class MoveTool extends Tool {
     override function activate() {
         page.cMechanical.registerEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
         page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
-        //page.cMechanical.registerEvent(MouseEvent.MOUSE_OUT, onMouseUp);
+        // page.cMechanical.registerEvent(MouseEvent.MOUSE_OUT, onMouseUp);
         page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
     }
+
     override function deactivate() {
         page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
         page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseUp);
-      //  page.cMechanical.unregisterEvent(MouseEvent.MOUSE_OUT, onMouseUp);
+        //  page.cMechanical.unregisterEvent(MouseEvent.MOUSE_OUT, onMouseUp);
         page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseMove);
     }
 }
@@ -109,10 +120,8 @@ class MoveTool extends Tool {
 class MechanicalPage extends HBox {
     var keyboard:KeyBoard;
     var tool:ToolType = Select;
-
     var tools:Map<ToolType, Tool>;
     var toolButtons:Map<ToolType, OneWayButton>;
-
     var currentTool:Tool = null;
     var currentToolBtn:OneWayButton = null;
 
@@ -160,12 +169,7 @@ class MechanicalPage extends HBox {
     }
 
     function bindToolButtons() {
-        toolButtons = [
-            Add => bAdd,
-            Remove => bRemove,
-            Move => bMove,
-            Select => bSelect
-        ];
+        toolButtons = [Add => bAdd, Remove => bRemove, Move => bMove, Select => bSelect];
         for (toolType in toolButtons.keys()) {
             var button = toolButtons.get(toolType);
             button.onClick = function(_) {
@@ -193,7 +197,7 @@ class MechanicalPage extends HBox {
         propEditor.source = cMechanical.activeButton == null ? null : cMechanical.activeButton.key;
     }
 
-    public function addNewButton(activate:Bool=true):KeyButton {
+    public function addNewButton(activate:Bool = true):KeyButton {
         var id = keyboard.getNextId();
         var key = new Key(id);
         keyboard.addKey(key);
@@ -241,13 +245,13 @@ class MechanicalPage extends HBox {
         refreshProperties();
     }
 
-    public function onKeyMove(key: KeyButton) {
+    public function onKeyMove(key:KeyButton) {
         var rnd = function(val:Float, step:Float):Float {
             return Math.fround(val / step) * step;
         };
         if (bAlign.selected) {
             var st:Float = alignStep.number;
-            key.key.x = rnd(key.key.x, st); 
+            key.key.x = rnd(key.key.x, st);
             key.key.y = rnd(key.key.y, st);
             key.refresh();
             refreshProperties();

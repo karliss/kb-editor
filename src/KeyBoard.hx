@@ -13,6 +13,12 @@ class KeyBoard {
 		keys.remove(key);
 	}
 
+	public function createKey():Key {
+		var key = new Key(getNextId());
+		addKey(key);
+		return key;
+	}
+
 	public function getNextId():Int {
 		if (keys.isEmpty()) {
 			return 1;

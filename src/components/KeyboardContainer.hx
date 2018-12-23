@@ -72,6 +72,13 @@ class KeyboardContainer extends Box {
 		removeComponent(key);
 	}
 
+	public function clear() {
+		activeButton = null;
+		for (button in buttons) {
+			removeKey(button);
+		}
+	}
+
 	function set_scale(v:Int):Int {
 		scale = v;
 		for (button in buttons) {

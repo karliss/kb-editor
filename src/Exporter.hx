@@ -8,7 +8,7 @@ interface Exporter {
 }
 
 interface Importer {
-	public function convert(bytes:Bytes):KeyBoard;
+	public function convert(bytes:Bytes, ?name:String):KeyBoard;
 }
 
 interface PartialImporter {

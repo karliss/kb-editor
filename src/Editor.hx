@@ -5,6 +5,7 @@ import haxe.ui.components.Button;
 import js.html.Blob;
 import js.html.FileSaver;
 import js.html.Uint8Array;
+import FileOpener;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
 class Editor extends Component {
@@ -21,6 +22,7 @@ class Editor extends Component {
 		tabList.addComponent(pageMechanical);
 
 		this.exportButton.onClick = onClickExport;
+		this.importButton.onClick = onClickImport;
 	}
 
 	function onClickExport(_):Void {
@@ -32,5 +34,14 @@ class Editor extends Component {
 			intArray.push(result.get(i));
 		}
 		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), null, false);
+	}
+
+	function onClickImport(_):Void {
+		var importer = new TestImporter();
+		FileOpener.tryToOpenFile(function(bytes, names) {
+			var result = importer.convert(bytes[0], names[0]);
+			this.keyboard = result;
+			pageMechanical.setKeyboard(keyboard);
+		});
 	}
 }

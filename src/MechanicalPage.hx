@@ -180,6 +180,10 @@ class MechanicalPage extends HBox {
 
 	public function setKeyboard(keyboard:KeyBoard) {
 		this.keyboard = keyboard;
+		cMechanical.clear();
+		for (key in keyboard.keys) {
+			addKeyFromKeyboard(key);
+		}
 	}
 
 	function onPropertyChange(_) {
@@ -190,7 +194,7 @@ class MechanicalPage extends HBox {
 	}
 
 	function onButtonChange(e:KeyButtonEvent) {
-		propEditor.source = e.button.key;
+		propEditor.source = e.button != null ? e.button.key : null;
 	}
 
 	function refreshProperties() {
@@ -200,13 +204,21 @@ class MechanicalPage extends HBox {
 	public function addNewButton(activate:Bool = true):KeyButton {
 		var id = keyboard.getNextId();
 		var key = new Key(id);
-		keyboard.addKey(key);
-		var button = cMechanical.addKey(key);
+		var button = addKey(key);
 		if (activate) {
 			cMechanical.activeButton = button;
 		}
 		onKeyMove(button);
 		return button;
+	}
+
+	function addKeyFromKeyboard(key:Key):KeyButton {
+		return cMechanical.addKey(key);
+	}
+
+	function addKey(key:Key):KeyButton {
+		keyboard.addKey(key);
+		return addKeyFromKeyboard(key);
 	}
 
 	public function eraseButton(btn:KeyButton) {

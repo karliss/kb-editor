@@ -1,3 +1,4 @@
 build/html5/*
 build/cpp/*
 !build/html5/index.html
+/Html5Build.hx.n

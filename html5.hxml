@@ -4,5 +4,10 @@
 -lib haxeui-core
 -lib haxeui-html5
 -lib hscript
+-lib FileSaver
 
 -js build/html5/Main.js
+
+--next
+
+-x Html5Build.hx

@@ -1,7 +1,7 @@
 <vbox style="padding: 5px;" height="100%" width="100%">
     <hbox>
-        <button text="Import"/>
-        <button text="Export"/>
+        <button text="Import" id="importButton"/>
+        <button text="Export" id="exportButton"/>
     </hbox>
 	<style>
 		.selected {

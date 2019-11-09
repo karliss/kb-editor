@@ -1,13 +1,13 @@
 package components.properties;
 
 import haxe.ui.containers.ListView;
-import haxe.ui.containers.ScrollView;
+import haxe.ui.containers.Accordion;
 import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.util.Variant;
 import haxe.ui.events.UIEvent;
 
-class PropertyEditor extends VBox {
+class PropertyEditor extends Accordion {
 	public var source(default, set):Dynamic; // TODO:better use haxeui datasource
 	public var autoSync:Bool = true; // TODO: haxeui sync?
 
@@ -15,30 +15,13 @@ class PropertyEditor extends VBox {
 
 	public function new() {
 		super();
+		addClass("accordion");
 	}
 
 	override function addComponent(child:Component):Component {
+		child.addClass("accordion-content");
 		var result = super.addComponent(child);
-		if (Std.is(child, PropertyTitle)) {
-			var title:PropertyTitle = cast child;
-			title.onExpand = function(expanded) {
-				groupExpand(title, expanded);
-			}
-		}
-		result.addClass(this._children.length % 2 == 0 ? "even" : "odd");
 		return result;
-	}
-
-	function groupExpand(title:PropertyTitle, expanded:Bool) {
-		var firstIndex = getComponentIndex(title); // contents.getComponentIndex(title);
-		var n = childComponents.length; // contents.childComponents.length;
-		for (i in (firstIndex + 1)...n) {
-			var component = getComponentAt(i); // contents.getComponentAt(i);
-			if (Std.is(component, PropertyTitle)) {
-				break;
-			}
-			component.hidden = !expanded;
-		}
 	}
 
 	function set_source(newValue):Dynamic {

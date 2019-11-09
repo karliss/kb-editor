@@ -2,3 +2,7 @@
     width: auto;
     height: auto;
 }
+
+.accordion-content {
+    width: 100%;
+}

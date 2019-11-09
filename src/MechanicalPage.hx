@@ -3,7 +3,8 @@ package;
 import components.properties.PropertyEditor;
 import haxe.ui.containers.HBox;
 import components.OneWayButton;
-import haxe.ui.core.MouseEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.components.Button;
 import components.KeyboardContainer;
 import components.KeyboardContainer.KeyButtonEvent;
 
@@ -121,9 +122,9 @@ class MechanicalPage extends HBox {
 	var keyboard:KeyBoard;
 	var tool:ToolType = Select;
 	var tools:Map<ToolType, Tool>;
-	var toolButtons:Map<ToolType, OneWayButton>;
+	var toolButtons:Map<ToolType, Button>;
 	var currentTool:Tool = null;
-	var currentToolBtn:OneWayButton = null;
+	var currentToolBtn:Button = null;
 
 	public function new() {
 		super();
@@ -169,7 +170,7 @@ class MechanicalPage extends HBox {
 	}
 
 	function bindToolButtons() {
-		toolButtons = [Add => bAdd, Remove => bRemove, Move => bMove, Select => bSelect];
+		toolButtons = [Add => cast(bAdd, Button), Remove => cast(bRemove, Button), Move => cast(bMove, Button), Select => bSelect];
 		for (toolType in toolButtons.keys()) {
 			var button = toolButtons.get(toolType);
 			button.onClick = function(_) {

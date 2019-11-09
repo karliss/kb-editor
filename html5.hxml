@@ -5,6 +5,7 @@
 -lib haxeui-html5
 -lib hscript
 -lib FileSaver
+-lib thx.csv
 
 -js build/html5/Main.js
 

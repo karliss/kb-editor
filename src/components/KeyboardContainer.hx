@@ -4,8 +4,8 @@ import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.Absolute;
 import haxe.ui.containers.Box;
 import haxe.ui.core.Component;
-import haxe.ui.core.MouseEvent;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.MouseEvent;
+import haxe.ui.events.UIEvent;
 import haxe.ui.constants.ScrollMode;
 
 typedef Point = {x:Float, y:Float}
@@ -33,7 +33,7 @@ class KeyboardContainer extends Box {
 		scrollView.percentWidth = 100;
 		scrollView.percentHeight = 100;
 
-		scrollView.layout.autoSize();
+		//scrollView.layout.autoSize(); //TODO: what happens
 		scrollView.scrollMode = ScrollMode.NORMAL;
 
 		percentWidth = 100;

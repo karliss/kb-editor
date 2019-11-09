@@ -10,7 +10,7 @@ class NumberEditor extends Component {
 	var plus:Button;
 	var minus:Button;
 
-	function new() {
+	public function new() {
 		super();
 		layout = new HorizontalLayout();
 		showVal();

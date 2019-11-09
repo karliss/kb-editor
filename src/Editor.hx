@@ -2,9 +2,12 @@ package;
 
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
+#if js
 import js.html.Blob;
 import js.html.FileSaver;
-import js.html.Uint8Array;
+import js.lib.Uint8Array;
+#end
+
 import FileOpener;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
@@ -33,15 +36,20 @@ class Editor extends Component {
 		for (i in 0...result.length) {
 			intArray.push(result.get(i));
 		}
+		#if js
 		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), null, false);
+		#end
 	}
 
 	function onClickImport(_):Void {
 		var importer = new TestImporter();
+		//TODO: remove if js
+		#if js
 		FileOpener.tryToOpenFile(function(bytes, names) {
 			var result = importer.convert(bytes[0], names[0]);
 			this.keyboard = result;
 			pageMechanical.setKeyboard(keyboard);
 		});
+		#end
 	}
 }

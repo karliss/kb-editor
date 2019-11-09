@@ -3,7 +3,7 @@ package components.properties;
 import haxe.ui.components.Label;
 import haxe.ui.containers.HBox;
 import haxe.ui.core.Component;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.UIEvent;
 import haxe.ui.util.Variant;
 
 class PropertyItem extends HBox {
@@ -38,11 +38,11 @@ class PropertyItem extends HBox {
 		return child;
 	}
 
-	override function set_value(v:Variant):Variant {
+	override function set_value(v:Dynamic):Dynamic {
 		return editor.value = v;
 	}
 
-	override function get_value():Variant {
+	override function get_value():Dynamic {
 		return editor.value;
 	}
 

@@ -14,6 +14,7 @@
 		{
 			"label": "html5 debug",
 			"command": "haxe",
+			"type": "shell",
 			"args": ["-debug", "html5.hxml"],
 			"problemMatcher": "$haxe",
 			"group": {

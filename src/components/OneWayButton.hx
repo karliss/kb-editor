@@ -1,18 +1,17 @@
 package components;
 
 import haxe.ui.components.Button;
-import haxe.ui.core.MouseEvent;
+import haxe.ui.events.MouseEvent;
 
 class OneWayButton extends Button {
-	function new() {
+	public function new() {
 		super();
-		toggle = true;
+		//this.native = true;
+		this.toggle = true;
+		this.registerEvent(MouseEvent.CLICK, onMouseClick);
 	}
 
-	override function _onMouseClick(event:MouseEvent) {
-		if (!selected) {
-			super._onMouseClick(event);
-		}
-		// do nothing if already selected
+	function onMouseClick(event:MouseEvent) {
+		this.selected = true;
 	}
 }

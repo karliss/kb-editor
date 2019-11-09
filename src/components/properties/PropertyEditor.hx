@@ -1,23 +1,26 @@
 package components.properties;
 
 import haxe.ui.containers.ListView;
+import haxe.ui.containers.ScrollView;
+import haxe.ui.containers.VBox;
 import haxe.ui.core.Component;
 import haxe.ui.util.Variant;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.UIEvent;
 
-class PropertyEditor extends ListView {
+class PropertyEditor extends VBox {
 	public var source(default, set):Dynamic; // TODO:better use haxeui datasource
 	public var autoSync:Bool = true; // TODO: haxeui sync?
 
 	var mapping:Map<String, PropertyItem> = new Map<String, PropertyItem>();
 
-	function new() {
+	public function new() {
 		super();
 	}
 
+
 	override function addComponent(child:Component):Component {
 		var result = super.addComponent(child);
-		if (Std.is(child, PropertyTitle)) {
+		if (Std.is(child, PropertyTitle)) { //TODO: rmeportart workaround
 			var title:PropertyTitle = cast child;
 			title.onExpand = function(expanded) {
 				groupExpand(title, expanded);
@@ -28,10 +31,10 @@ class PropertyEditor extends ListView {
 	}
 
 	function groupExpand(title:PropertyTitle, expanded:Bool) {
-		var firstIndex = contents.getComponentIndex(title);
-		var n = contents.childComponents.length;
+		var firstIndex = getComponentIndex(title);//contents.getComponentIndex(title);
+		var n = childComponents.length;//contents.childComponents.length;
 		for (i in (firstIndex + 1)...n) {
-			var component = contents.getComponentAt(i);
+			var component = getComponentAt(i);//contents.getComponentAt(i);
 			if (Std.is(component, PropertyTitle)) {
 				break;
 			}
@@ -63,7 +66,7 @@ class PropertyEditor extends ListView {
 		}
 	}
 
-	function onComponentChange(e:haxe.ui.core.UIEvent) {
+	function onComponentChange(e:haxe.ui.events.UIEvent) {
 		if (!autoSync || source == null) {
 			return;
 		}

@@ -1,7 +1,7 @@
 package components;
 
 import haxe.ui.util.Variant;
-import haxe.ui.core.UIEvent;
+import haxe.ui.events.UIEvent;
 
 class IntegerEditor extends NumberEditor {
 	var _value:Int = 0;
@@ -46,18 +46,19 @@ class IntegerEditor extends NumberEditor {
 		return _value;
 	}
 
-	override function set_value(value:Variant):Variant {
-		switch (value) {
+	override function set_value(value:Dynamic):Dynamic {
+		return number = value;
+		/*switch (value) { //TODO: make sure this works
 			case Float(v):
 				return number = Math.round(v);
 			case Int(v):
 				return number = v;
 			default:
 				throw "Bad value type";
-		}
+		}*/
 	}
 
-	override function get_value():Variant {
+	override function get_value():Dynamic {
 		return number;
 	}
 }

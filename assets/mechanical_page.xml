@@ -3,7 +3,8 @@
         <onewaybutton id="bAdd" text="Add"/>
         <onewaybutton id="bRemove" text="Remove"/>
         <onewaybutton id="bMove" text="Move"/>
-        <onewaybutton id="bSelect" text="Select"/> <!-- TODO: add icons -->
+        <onewaybutton id="bSelect" text="Select"/>
+        <!-- TODO: add icons -->
         <spacer/>
         <button id="bAddRight" text="AddRight"/>
         <button id="bAddDown" text="AddDown"/>
@@ -15,28 +16,28 @@
     <PropertyEditor id="propEditor" width="200">
         <PropertyTitle text="General"/>
         <PropertyItem id="p_id" text="Id">
-                <IntegerEditor minimum="0" maximum="1000" />
+            <IntegerEditor minimum="0" maximum="1000" />
         </PropertyItem>
         <PropertyText id="p_name" text="Name" />
         <PropertyTitle text="Position"/>
-            <PropertyItem id="p_x" text="X">
-                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
-            </PropertyItem>
-            <PropertyItem id="p_y" text="Y">
-                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
-            </PropertyItem>
-            <PropertyItem id="p_width" text="width">
-                <FloatEditor minimum="0.5" maximum="1000" step="0.25" floatRound="true"/>
-            </PropertyItem>
-            <PropertyItem id="p_height" text="height">
-                <FloatEditor minimum="0.5" maximum="1000"  step="0.25" floatRound="true"/>
-            </PropertyItem>
+        <PropertyItem id="p_x" text="X">
+            <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
+        </PropertyItem>
+        <PropertyItem id="p_y" text="Y">
+            <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
+        </PropertyItem>
+        <PropertyItem id="p_width" text="width">
+            <FloatEditor minimum="0.5" maximum="1000" step="0.25" floatRound="true"/>
+        </PropertyItem>
+        <PropertyItem id="p_height" text="height">
+            <FloatEditor minimum="0.5" maximum="1000" step="0.25" floatRound="true"/>
+        </PropertyItem>
         <PropertyTitle text="Electrical"/>
         <PropertyItem id="p_row" text="row">
-                <IntegerEditor maximum="1000" />
+            <IntegerEditor maximum="1000" />
         </PropertyItem>
         <PropertyItem id="p_column" text="column">
-                <IntegerEditor maximum="1000" />
+            <IntegerEditor maximum="1000" />
         </PropertyItem>
     </PropertyEditor>
     <!--Toolbox-->

@@ -7,7 +7,7 @@ import js.html.InputElement;
 import js.html.HTMLDocument;
 import js.html.File;
 import js.html.FileReader;
-import js.html.Uint8Array;
+import js.lib.Uint8Array;
 #end
 
 typedef FileCallback = Array<Bytes>->Array<String>->Void;

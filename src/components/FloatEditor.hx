@@ -64,7 +64,7 @@ class FloatEditor extends NumberEditor {
 		}*/
 	}
 
-	override function get_value():Variant {
+	override function get_value():Dynamic {
 		return number;
 	}
 }

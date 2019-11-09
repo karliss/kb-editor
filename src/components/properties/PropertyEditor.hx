@@ -17,10 +17,9 @@ class PropertyEditor extends VBox {
 		super();
 	}
 
-
 	override function addComponent(child:Component):Component {
 		var result = super.addComponent(child);
-		if (Std.is(child, PropertyTitle)) { //TODO: rmeportart workaround
+		if (Std.is(child, PropertyTitle)) {
 			var title:PropertyTitle = cast child;
 			title.onExpand = function(expanded) {
 				groupExpand(title, expanded);
@@ -31,10 +30,10 @@ class PropertyEditor extends VBox {
 	}
 
 	function groupExpand(title:PropertyTitle, expanded:Bool) {
-		var firstIndex = getComponentIndex(title);//contents.getComponentIndex(title);
-		var n = childComponents.length;//contents.childComponents.length;
+		var firstIndex = getComponentIndex(title); // contents.getComponentIndex(title);
+		var n = childComponents.length; // contents.childComponents.length;
 		for (i in (firstIndex + 1)...n) {
-			var component = getComponentAt(i);//contents.getComponentAt(i);
+			var component = getComponentAt(i); // contents.getComponentAt(i);
 			if (Std.is(component, PropertyTitle)) {
 				break;
 			}
@@ -70,12 +69,12 @@ class PropertyEditor extends VBox {
 		if (!autoSync || source == null) {
 			return;
 		}
-		var c = Std.instance(e.target, PropertyItem);
+		var c = Std.downcast(e.target, PropertyItem);
 		if (c == null) {
 			return;
 		}
 		var field = c.propertyId;
-		Reflect.setField(source, field, Variant.toDynamic(c.value));
+		Reflect.setField(source, field, c.value);
 		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
@@ -83,7 +82,7 @@ class PropertyEditor extends VBox {
 		for (f in mapping.keys()) {
 			var fName:String = f;
 			var c = mapping[fName];
-			c.value = Variant.fromDynamic(Reflect.field(source, fName));
+			c.value = Reflect.field(source, fName);
 		}
 	}
 }

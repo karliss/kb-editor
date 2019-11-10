@@ -1,0 +1,11 @@
+-cp src
+-main testHelper.TestMain
+
+-lib haxeui-core
+-lib hscript
+#-lib FileSaver
+-lib thx.csv
+
+-lib utest
+
+-x testHelper.TestMain

@@ -5,6 +5,16 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Launch firefox",
+			"type": "firefox",
+			"preLaunchTask": "html5 debug",
+			"firefoxExecutable": "/usr/bin/firefox",
+			"request": "launch",
+			"reAttach": true,
+			"url": "http://localhost/index.html",
+			"webRoot": "${workspaceFolder}/build/html5"
+		},
+		{
 			"type": "chrome",
 			"request": "launch",
 			"runtimeExecutable": "/usr/bin/chromium",
@@ -12,6 +22,14 @@
 			"name": "Launch Chrome against localhost",
 			"url": "http://localhost:8080",
 			"webRoot": "${workspaceFolder}/build/html5"
+		},
+		{
+			"name": "Debug test",
+			"type": "haxe-eval",
+			"request": "launch",
+			"args": [
+				"test.hxml",
+			]
 		}
 	]
 }

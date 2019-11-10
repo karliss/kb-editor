@@ -6,12 +6,35 @@ import thx.csv.Csv;
 import KeyBoard;
 import Exporter;
 
-/*
-	class CSVImporter implements Exporter.Importer {
-	public function convert(bytes:Bytes, ?name:String):KeyBoard {}
+class CSVImporter implements Exporter.Importer {
+	public function new() {}
+
+	public function convert(bytes:Bytes, ?name:String):KeyBoard {
+		var keyboard = new KeyBoard();
+		var csv = Csv.decodeObjects(bytes.toString());
+		var fields = ["name", "x", "y", "angle", "width", "height", "row", "column"];
+		for (line in csv) {
+			var id:Int = Std.parseInt(Reflect.field(line, "id"));
+			var key = new Key(id);
+			for (field in fields) {
+				var value = Reflect.field(line, field);
+				if (value != null) {
+					if (field == "name") {
+						Reflect.setField(key, field, value);
+					} else {
+						Reflect.setField(key, field, Std.parseFloat(value));
+					}
+				}
+			}
+			keyboard.addKey(key);
+		}
+		return keyboard;
 	}
- */
+}
+
 class CSVExporter implements Exporter {
+	public function new() {}
+
 	public function convert(keyboard:KeyBoard):Bytes {
 		var ans = new BytesBuffer();
 		var data:Array<Array<String>> = [];

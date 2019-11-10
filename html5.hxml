@@ -6,6 +6,7 @@
 -lib hscript
 -lib FileSaver
 -lib thx.csv
+-lib utest
 
 -js build/html5/Main.js
 

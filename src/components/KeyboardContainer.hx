@@ -33,7 +33,7 @@ class KeyboardContainer extends Box {
 		scrollView.percentWidth = 100;
 		scrollView.percentHeight = 100;
 
-		//scrollView.layout.autoSize(); //TODO: what happens
+		// scrollView.layout.autoSize(); //TODO: what happens
 		scrollView.scrollMode = ScrollMode.NORMAL;
 
 		percentWidth = 100;
@@ -105,7 +105,9 @@ class KeyboardContainer extends Box {
 
 	private function onMouseDown(e:MouseEvent) {
 		var target:KeyButton = cast e.target;
-		dispatch(new KeyButtonEvent(BUTTON_DOWN, target));
+		var result = new KeyButtonEvent(BUTTON_DOWN, target);
+		result.mouseEvent = e;
+		dispatch(result);
 	}
 }
 
@@ -116,6 +118,7 @@ class KeyButtonEvent extends UIEvent {
 	}
 
 	public var button(get, set):KeyButton;
+	public var mouseEvent:MouseEvent = null;
 
 	function get_button():KeyButton {
 		return data;
@@ -129,6 +132,7 @@ class KeyButtonEvent extends UIEvent {
 	override public function clone():UIEvent {
 		var c = new KeyButtonEvent(type, button);
 		c.target = target;
+		c.mouseEvent = mouseEvent;
 		postClone(c);
 		return c;
 	}

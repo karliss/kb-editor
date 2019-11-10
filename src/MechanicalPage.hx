@@ -44,6 +44,7 @@ class AddTool extends MoveTool {
 	function onAdd(e:MouseEvent) {
 		var button = doAdd(e);
 		this.movableButton = button;
+		this.offset = {x: 0, y: 0};
 	}
 
 	override function activate() {
@@ -79,10 +80,15 @@ class SelectTool extends Tool {
 
 class MoveTool extends Tool {
 	var movableButton:KeyButton;
+	var offset:Point;
 
 	function onMouseDown(e:KeyButtonEvent) {
 		page.cMechanical.activeButton = e.button;
 		movableButton = e.button;
+
+		var p = page.cMechanical.screenToField(e.mouseEvent.screenX, e.mouseEvent.screenY);
+		var p2 = new haxe.ui.geom.Point(movableButton.key.x, movableButton.key.y);
+		offset = {x: movableButton.key.x - p.x, y: movableButton.key.y - p.y};
 	}
 
 	function onMouseUp(e:MouseEvent) {
@@ -94,8 +100,8 @@ class MoveTool extends Tool {
 			return;
 		}
 		var p = page.cMechanical.screenToField(e.screenX, e.screenY);
-		movableButton.key.x = p.x;
-		movableButton.key.y = p.y;
+		movableButton.key.x = p.x + offset.x;
+		movableButton.key.y = p.y + offset.y;
 
 		page.onKeyMove(movableButton);
 		movableButton.refresh();
@@ -170,7 +176,12 @@ class MechanicalPage extends HBox {
 	}
 
 	function bindToolButtons() {
-		toolButtons = [Add => cast(bAdd, Button), Remove => cast(bRemove, Button), Move => cast(bMove, Button), Select => bSelect];
+		toolButtons = [
+			Add => cast(bAdd, Button),
+			Remove => cast(bRemove, Button),
+			Move => cast(bMove, Button),
+			Select => bSelect
+		];
 		for (toolType in toolButtons.keys()) {
 			var button = toolButtons.get(toolType);
 			button.onClick = function(_) {

@@ -1,5 +1,6 @@
 package components.properties;
 
+import haxe.ui.components.Button;
 import haxe.ui.containers.ListView;
 import haxe.ui.containers.Accordion;
 import haxe.ui.containers.VBox;
@@ -13,6 +14,8 @@ class PropertyEditor extends Accordion {
 
 	var mapping:Map<String, PropertyItem> = new Map<String, PropertyItem>();
 
+	var contentElements = new Array<Component>();
+
 	public function new() {
 		super();
 		addClass("accordion");
@@ -21,6 +24,9 @@ class PropertyEditor extends Accordion {
 	override function addComponent(child:Component):Component {
 		child.addClass("accordion-content");
 		var result = super.addComponent(child);
+		contentElements.push(child);
+		var button:Button = cast result;
+		// button.selected = true; doesn't work
 		return result;
 	}
 
@@ -36,9 +42,21 @@ class PropertyEditor extends Accordion {
 
 	function doBinding(source:Dynamic) {
 		for (f in Reflect.fields(source)) {
-			var c = findComponent(f, PropertyItem, true);
+			var findByid = function(object:Component, id:String):PropertyItem {
+				var tc = object.findComponent(id, PropertyItem, true);
+				if (tc == null) {
+					tc = object.findComponent("p_" + id, PropertyItem, true);
+				}
+				return tc;
+			};
+			var c = findByid(this, f);
 			if (c == null) {
-				c = findComponent("p_" + f, PropertyItem, true);
+				for (group in contentElements) {
+					c = findByid(group, f);
+					if (c != null) {
+						break;
+					}
+				}
 			}
 			if (c != null) {
 				c.propertyId = f;

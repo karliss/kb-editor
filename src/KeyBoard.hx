@@ -1,12 +1,12 @@
 import haxe.ds.Vector;
 
 class KeyBoard {
-	public var keys(default, null):List<Key> = new List<Key>();
+	public var keys(default, null):Array<Key> = new Array<Key>();
 
 	public function new() {}
 
 	public function addKey(key:Key) {
-		keys.add(key);
+		keys.push(key);
 	}
 
 	public function removeKey(key:Key) {
@@ -20,7 +20,7 @@ class KeyBoard {
 	}
 
 	public function getNextId():Int {
-		if (keys.isEmpty()) {
+		if (keys.length == 0) {
 			return 1;
 		}
 		var used = new Vector<Int>(keys.length);

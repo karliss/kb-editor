@@ -1,5 +1,7 @@
 package;
 
+typedef Point = {x:Float, y:Float}
+
 class Key {
 	public var x:Float = 0;
 	public var y:Float = 0;
@@ -13,5 +15,9 @@ class Key {
 
 	public function new(id:Int) {
 		this.id = id;
+	}
+
+	public function point():Point {
+		return {x: x, y: y};
 	}
 }

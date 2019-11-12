@@ -4,13 +4,6 @@ import utest.Assert;
 import CSVFormat;
 
 class CsvFormat extends utest.Test {
-	var field:String;
-
-	// synchronous setup
-	public function setup() {
-		field = "some";
-	}
-
 	function testEmpty() {
 		var keyboard = new KeyBoard();
 		var exporter = new CSVExporter();

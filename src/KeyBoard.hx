@@ -2,6 +2,7 @@ import haxe.ds.Vector;
 
 class KeyBoard {
 	public var keys(default, null):Array<Key> = new Array<Key>();
+	public var description = new Map<String, Dynamic>();
 
 	public function new() {}
 

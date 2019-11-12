@@ -58,4 +58,31 @@ class KBLEFormat extends utest.Test {
 		Assert.equals(1, keyboard.keys[4].width);
 		Assert.equals(1, keyboard.keys[4].height);
 	}
+
+	function testProperties() {
+		var importer = new KBLEImporter();
+		var keyboard = importer.convert(Bytes.ofString('
+[
+  {
+    "backcolor": "#d13232",
+    "name": "name value",
+    "author": "author here",
+    "notes": "adsf asdfnotes notes notes",
+    "background": {
+      "name": "Carbon fibre 5",
+      "style": "background-image: url(\'/bg/carbonfibre/carbon_texture1876.jpg\');"
+    },
+    "radii": "40px",
+    "switchMount": "alps",
+    "switchBrand": "alps",
+    "switchType": "SKBL/SKBM",
+    "pcb": true,
+    "plate": true
+  },
+  ["a", "b"]
+]'));
+		Assert.equals(2, keyboard.keys.length);
+		Assert.equals("name value", keyboard.description["name"]);
+		Assert.equals("author here", keyboard.description["author"]);
+	}
 }

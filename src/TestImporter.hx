@@ -4,6 +4,8 @@ import haxe.io.Bytes;
 import Exporter.Importer;
 
 class TestImporter implements Importer {
+	public var value(default, null):String = "Dummy importer";
+
 	public function new() {}
 
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {

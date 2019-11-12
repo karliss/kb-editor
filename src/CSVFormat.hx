@@ -7,6 +7,8 @@ import KeyBoard;
 import Exporter;
 
 class CSVImporter implements Exporter.Importer {
+	public var value(default, null):String = "CSV importer [WIP]";
+
 	public function new() {}
 
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {
@@ -33,6 +35,8 @@ class CSVImporter implements Exporter.Importer {
 }
 
 class CSVExporter implements Exporter {
+	public var value(default, null):String = "CSV exporter [WIP]";
+
 	public function new() {}
 
 	public function convert(keyboard:KeyBoard):Bytes {

@@ -10,6 +10,8 @@ import Exporter;
 // Importer exporter for Keyboard layout editor https://github.com/ijprest/keyboard-layout-editor
 // http://www.keyboard-layout-editor.com/
 class KBLEImporter implements Exporter.Importer {
+	public var value(default, null):String = "Keyboard layout editor .json importer";
+
 	public function new() {}
 
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {

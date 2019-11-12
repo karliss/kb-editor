@@ -1,5 +1,10 @@
 package;
 
+import haxe.ui.data.ArrayDataSource;
+import CSVFormat.CSVExporter;
+import KBLEFormat.KBLEImporter;
+import CSVFormat.CSVImporter;
+import Exporter.Importer;
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
 #if js
@@ -25,10 +30,26 @@ class Editor extends Component {
 
 		this.exportButton.onClick = onClickExport;
 		this.importButton.onClick = onClickImport;
+
+		fillFormats();
+	}
+
+	function fillFormats() {
+		var importers = [new CSVImporter(), new KBLEImporter()];
+		this.importFormat.dataSource = new ArrayDataSource();
+		for (importer in importers) {
+			importFormat.dataSource.add(importer);
+		}
+
+		var exporters = [new CSVExporter(), new TestExporter()];
+		exportFormat.dataSource = new ArrayDataSource();
+		for (exporter in exporters) {
+			exportFormat.dataSource.add(exporter);
+		}
 	}
 
 	function onClickExport(_):Void {
-		var exporter = new TestExporter();
+		var exporter = exportFormat.selectedItem;
 		var result = exporter.convert(keyboard);
 
 		#if js
@@ -41,7 +62,7 @@ class Editor extends Component {
 	}
 
 	function onClickImport(_):Void {
-		var importer = new TestImporter();
+		var importer = importFormat.selectedItem;
 		// TODO: remove if js
 		#if js
 		FileOpener.tryToOpenFile(function(bytes, names) {

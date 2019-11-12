@@ -15,7 +15,6 @@ class KeyButton extends OneWayButton {
 	public function refresh() {
 		top = key.y * scale;
 		left = key.x * scale;
-		text = key.name;
 		width = key.width * scale;
 		height = key.height * scale;
 	}

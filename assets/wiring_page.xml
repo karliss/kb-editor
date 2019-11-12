@@ -1,0 +1,18 @@
+<hbox id="pageWiring" text="Wiring" width="100%" height="100%">
+    <vbox>
+        <onewaybutton id="TODO" text="TODO"/>
+    </vbox>
+    <KeyboardContainer id="keyView"/>
+
+    <PropertyEditor id="propEditor" width="200">
+        <vbox text="Electrical">
+            <PropertyItem id="p_row" text="row">
+                <IntegerEditor maximum="1000" />
+            </PropertyItem>
+            <PropertyItem id="p_column" text="column">
+                <IntegerEditor maximum="1000" />
+            </PropertyItem>
+        </vbox>
+    </PropertyEditor>
+    <!--Toolbox-->
+</hbox>

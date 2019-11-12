@@ -192,10 +192,7 @@ class MechanicalPage extends HBox {
 
 	public function setKeyboard(keyboard:KeyBoard) {
 		this.keyboard = keyboard;
-		cMechanical.clear();
-		for (key in keyboard.keys) {
-			addKeyFromKeyboard(key);
-		}
+		cMechanical.loadFromList(keyboard.keys);
 	}
 
 	function onPropertyChange(_) {
@@ -251,6 +248,8 @@ class MechanicalPage extends HBox {
 		key.y = prevKey.y;
 		key.x = prevKey.x + prevKey.width;
 		key.height = prevKey.height;
+		key.row = prevKey.row;
+		key.column = prevKey.column + 1;
 		button.refresh();
 		refreshProperties();
 	}
@@ -265,6 +264,8 @@ class MechanicalPage extends HBox {
 		key.y = prevKey.y + prevKey.height;
 		key.x = prevKey.x;
 		key.width = prevKey.width;
+		key.row = prevKey.row + 1;
+		key.column = prevKey.column;
 		button.refresh();
 		refreshProperties();
 	}
@@ -280,5 +281,9 @@ class MechanicalPage extends HBox {
 			key.refresh();
 			refreshProperties();
 		}
+	}
+
+	public function reload() {
+		cMechanical.loadFromList(this.keyboard.keys);
 	}
 }

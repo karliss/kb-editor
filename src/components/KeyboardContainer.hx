@@ -20,6 +20,7 @@ class KeyboardContainer extends Box {
 
 	public var activeButton(default, set):KeyButton = null;
 	public var scale(default, set):Int = 32;
+	public var formatButton:(KeyButton) -> Void;
 
 	public function new() {
 		super();
@@ -38,6 +39,34 @@ class KeyboardContainer extends Box {
 
 		percentWidth = 100;
 		percentHeight = 100;
+
+		formatButton = defaultFormat;
+	}
+
+	public function refreshFormatting() {
+		for (button in buttons) {
+			formatButton(button);
+		}
+	}
+
+	public function loadFromList(keys:Array<Key>) {
+		var activeId = -1;
+		if (activeButton != null) {
+			activeId = activeButton.key.id;
+		}
+		clear();
+
+		for (key in keys) {
+			var button = addKey(key);
+			if (key.id == activeId) {
+				activeButton = button;
+			}
+		}
+		refreshFormatting();
+	}
+
+	public function defaultFormat(key:KeyButton) {
+		key.text = key.key.name;
 	}
 
 	public function screenToField(x:Float, y:Float):Point {

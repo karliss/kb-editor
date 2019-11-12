@@ -1,5 +1,6 @@
 package;
 
+import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import CSVFormat.CSVExporter;
 import KBLEFormat.KBLEImporter;
@@ -17,6 +18,7 @@ import FileOpener;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
 class Editor extends Component {
 	var pageMechanical:MechanicalPage;
+	var pageWiring = new WiringPage();
 	var keyboard = new KeyBoard();
 
 	public function new() {
@@ -27,9 +29,13 @@ class Editor extends Component {
 		pageMechanical = new MechanicalPage();
 		pageMechanical.setKeyboard(keyboard);
 		tabList.addComponent(pageMechanical);
+		pageWiring.setKeyboard(keyboard);
+		tabList.addComponent(pageWiring);
 
 		this.exportButton.onClick = onClickExport;
 		this.importButton.onClick = onClickImport;
+
+		tabList.onChange = onPageChange;
 
 		fillFormats();
 	}
@@ -50,7 +56,7 @@ class Editor extends Component {
 
 	function onClickExport(_):Void {
 		var exporter = exportFormat.selectedItem;
-		var result = exporter.convert(keyboard);
+		var result:Bytes = exporter.convert(keyboard);
 
 		#if js
 		var intArray = new Array<Int>();
@@ -69,7 +75,16 @@ class Editor extends Component {
 			var result = importer.convert(bytes[0], names[0]);
 			this.keyboard = result;
 			pageMechanical.setKeyboard(keyboard);
+			pageWiring.setKeyboard(keyboard);
 		});
 		#end
+	}
+
+	function onPageChange(_) {
+		if (tabList.selectedPage == pageMechanical) {
+			pageMechanical.reload();
+		} else if (tabList.selectedPage == pageWiring) {
+			pageWiring.reload();
+		}
 	}
 }

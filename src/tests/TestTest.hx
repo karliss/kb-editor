@@ -11,6 +11,7 @@ class TestTest extends utest.Test {
 	}
 
 	function testFieldIsSome() {
+		Assert.isTrue(false);
 		Assert.equals("some", field);
 	}
 

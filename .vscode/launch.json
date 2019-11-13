@@ -29,6 +29,8 @@
 			"request": "launch",
 			"args": [
 				"test.hxml",
+				"-lib",
+				"test-adapter"
 			]
 		}
 	]

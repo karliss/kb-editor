@@ -5,7 +5,6 @@
 -lib hscript
 #-lib FileSaver
 -lib thx.csv
--lib test-adapter
 -lib utest
 
 --interp

@@ -7,6 +7,8 @@ import KBLEFormat.KBLEImporter;
 import CSVFormat.CSVImporter;
 import Exporter.Importer;
 
+typedef Pos = {x:Int, y:Int};
+
 class Editor {
 	var keyboard:KeyBoard;
 
@@ -70,5 +72,27 @@ class Editor {
 		if (alignButtons) {
 			alignKey(key);
 		}
+	}
+
+	public function getConflictingWiring():List<Key> {
+		var badKeys = new List<Key>();
+
+		var posCount = new Map<Pos, Int>();
+		for (key in keyboard.keys) {
+			var pos = {x: key.row, y: key.column};
+			var count = posCount.get(pos);
+			if (count == null) {
+				posCount.set(pos, 1);
+			} else {
+				posCount.set(pos, count + 1);
+			}
+		}
+		for (key in keyboard.keys) {
+			var c = posCount.get({x: key.row, y: key.column});
+			if (c > 1) {
+				badKeys.push(key);
+			}
+		}
+		return badKeys;
 	}
 }

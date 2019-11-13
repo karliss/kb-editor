@@ -14,6 +14,10 @@ import components.KeyboardContainer.KeyButtonEvent;
 class WiringPage extends HBox implements EditorPage {
 	var keyboard:KeyBoard;
 	var editor:Editor;
+	var conflictingKeys = new Map<Int, Int>();
+
+	var rows = 0;
+	var columns = 0;
 
 	public function new() {
 		super();
@@ -44,10 +48,21 @@ class WiringPage extends HBox implements EditorPage {
 			} else if (column == key.column) {
 				button.backgroundColor = 0xe0e0fd;
 			}
+			if (conflictingKeys.exists(key.id)) {
+				button.backgroundColor = 0xffcc00;
+			}
+			if (key.row == row && column == key.column && button != keyView.activeButton) {
+				button.backgroundColor = 0xff6666;
+			}
 		}
 	}
 
 	function refreshFormatting() {
+		conflictingKeys.clear();
+		var badKeys = editor.getConflictingWiring();
+		for (key in badKeys) {
+			conflictingKeys.set(key.id, 0);
+		}
 		keyView.refreshFormatting();
 	}
 
@@ -64,8 +79,32 @@ class WiringPage extends HBox implements EditorPage {
 		propEditor.source = keyView.activeButton == null ? null : keyView.activeButton.key;
 	}
 
+	function resizeMatrix() {
+		var columnsNeed = 1;
+		var rowsNeed = 0;
+		for (key in keyboard.keys) {
+			if (key.column + 1 > columnsNeed) {
+				columnsNeed = key.column + 1;
+			}
+			if (key.row + 1 > rowsNeed) {
+				rowsNeed = key.row + 1;
+			}
+		}
+		if (columnsNeed == columns && rowsNeed == rows) {
+			return;
+		}
+		matrixGrid.columns = columnsNeed;
+		matrixGrid.removeAllComponents();
+		for (y in 0...rowsNeed) {
+			for (x in 0...columnsNeed) {
+				// TODOO
+			}
+		}
+	}
+
 	public function reload() {
 		keyboard = editor.getKeyboard();
 		keyView.loadFromList(keyboard.keys);
+		refreshFormatting();
 	}
 }

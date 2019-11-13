@@ -2,7 +2,10 @@
     <vbox>
         <onewaybutton id="TODO" text="TODO"/>
     </vbox>
-    <KeyboardContainer id="keyView"/>
+    <vbox>
+        <KeyboardContainer id="keyView"/>
+        <Grid id="matrixGrid"/>
+    </vbox>
 
     <PropertyEditor id="propEditor" width="200">
         <vbox text="Electrical">

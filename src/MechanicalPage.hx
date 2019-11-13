@@ -18,8 +18,11 @@ enum ToolType {
 class Tool {
 	public var page:MechanicalPage;
 
-	public function new(p:MechanicalPage) {
+	var editor:Editor;
+
+	public function new(p:MechanicalPage, editor:Editor) {
 		page = p;
+		this.editor = editor;
 	}
 
 	public function activate() {}
@@ -33,11 +36,8 @@ class AddTool extends MoveTool {
 		var key = btn.key;
 		var field = page.cMechanical;
 		var p = field.screenToField(e.screenX, e.screenY);
-		key.x = p.x;
-		key.y = p.y;
-		btn.refresh();
+		editor.moveKey(key, p.x, p.y);
 		page.onKeyMove(btn);
-		page.propEditor.source = key;
 		return btn;
 	}
 
@@ -100,11 +100,8 @@ class MoveTool extends Tool {
 			return;
 		}
 		var p = page.cMechanical.screenToField(e.screenX, e.screenY);
-		movableButton.key.x = p.x + offset.x;
-		movableButton.key.y = p.y + offset.y;
-
+		editor.moveKey(movableButton.key, p.x + offset.x, p.y + offset.y);
 		page.onKeyMove(movableButton);
-		movableButton.refresh();
 		page.cMechanical.updateLayout();
 	}
 
@@ -124,8 +121,8 @@ class MoveTool extends Tool {
 }
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/mechanical_page.xml"))
-class MechanicalPage extends HBox {
-	var keyboard:KeyBoard;
+class MechanicalPage extends HBox implements EditorPage {
+	var editor:Editor;
 	var tool:ToolType = Select;
 	var tools:Map<ToolType, Tool>;
 	var toolButtons:Map<ToolType, Button>;
@@ -141,19 +138,30 @@ class MechanicalPage extends HBox {
 		cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		propEditor.onChange = onPropertyChange;
 
-		tools = createTools();
-		bindToolButtons();
-
 		bAddRight.onClick = addRight;
 		bAddDown.onClick = addDown;
+
+		bAlign.onClick = function(_) {
+			editor.alignButtons = bAlign.selected;
+		};
+		alignStep.onChange = function(_) {
+			editor.alignment = alignStep.value;
+		};
+	}
+
+	public function init(editor:Editor) {
+		this.editor = editor;
+		tools = createTools();
+		bindToolButtons();
+		reload();
 	}
 
 	function createTools():Map<ToolType, Tool> {
 		var result:Map<ToolType, Tool> = [
-			Add => new AddTool(this),
-			Remove => new RemoveTool(this),
-			Move => new MoveTool(this),
-			Select => new SelectTool(this),
+			Add => new AddTool(this, editor),
+			Remove => new RemoveTool(this, editor),
+			Move => new MoveTool(this, editor),
+			Select => new SelectTool(this, editor),
 		];
 
 		return result;
@@ -190,16 +198,12 @@ class MechanicalPage extends HBox {
 		}
 	}
 
-	public function setKeyboard(keyboard:KeyBoard) {
-		this.keyboard = keyboard;
-		cMechanical.loadFromList(keyboard.keys);
-	}
-
 	function onPropertyChange(_) {
 		if (cMechanical.activeButton != null) {
-			cMechanical.activeButton.refresh();
+			cMechanical.refreshButtonFormatting(cMechanical.activeButton);
 		}
 		cMechanical.updateLayout();
+		// TODO: decide how to do this through editor
 	}
 
 	function onButtonChange(e:KeyButtonEvent) {
@@ -211,30 +215,27 @@ class MechanicalPage extends HBox {
 	}
 
 	public function addNewButton(activate:Bool = true):KeyButton {
-		var id = keyboard.getNextId();
-		var key = new Key(id);
-		var button = addKey(key);
-		if (activate) {
-			cMechanical.activeButton = button;
-		}
+		var key = editor.newKey();
+		var button = addKey(key, activate);
 		onKeyMove(button);
 		return button;
 	}
 
-	function addKeyFromKeyboard(key:Key):KeyButton {
-		return cMechanical.addKey(key);
-	}
-
-	function addKey(key:Key):KeyButton {
-		keyboard.addKey(key);
-		return addKeyFromKeyboard(key);
+	function addKey(key:Key, activate:Bool = true):KeyButton {
+		var button = cMechanical.addKey(key);
+		button.refresh();
+		if (activate) {
+			cMechanical.activeButton = button;
+			refreshProperties();
+		}
+		return button;
 	}
 
 	public function eraseButton(btn:KeyButton) {
 		if (btn == null) {
 			return;
 		}
-		keyboard.removeKey(btn.key);
+		editor.removeKey(btn.key);
 		cMechanical.removeKey(btn);
 	}
 
@@ -242,48 +243,24 @@ class MechanicalPage extends HBox {
 		if (cMechanical.activeButton == null) {
 			return;
 		}
-		var prevKey = cMechanical.activeButton.key;
-		var button = addNewButton();
-		var key = button.key;
-		key.y = prevKey.y;
-		key.x = prevKey.x + prevKey.width;
-		key.height = prevKey.height;
-		key.row = prevKey.row;
-		key.column = prevKey.column + 1;
-		button.refresh();
-		refreshProperties();
+		var key = editor.addRight(cMechanical.activeButton.key);
+		addKey(key);
 	}
 
 	function addDown(_) {
 		if (cMechanical.activeButton == null) {
 			return;
 		}
-		var prevKey = cMechanical.activeButton.key;
-		var button = addNewButton();
-		var key = button.key;
-		key.y = prevKey.y + prevKey.height;
-		key.x = prevKey.x;
-		key.width = prevKey.width;
-		key.row = prevKey.row + 1;
-		key.column = prevKey.column;
-		button.refresh();
-		refreshProperties();
+		var key = editor.addDown(cMechanical.activeButton.key);
+		var button = addKey(key);
 	}
 
 	public function onKeyMove(key:KeyButton) {
-		var rnd = function(val:Float, step:Float):Float {
-			return Math.fround(val / step) * step;
-		};
-		if (bAlign.selected) {
-			var st:Float = alignStep.number;
-			key.key.x = rnd(key.key.x, st);
-			key.key.y = rnd(key.key.y, st);
-			key.refresh();
-			refreshProperties();
-		}
+		key.refresh();
+		refreshProperties();
 	}
 
 	public function reload() {
-		cMechanical.loadFromList(this.keyboard.keys);
+		cMechanical.loadFromList(editor.getKeyboard().keys);
 	}
 }

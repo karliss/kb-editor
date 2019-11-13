@@ -45,6 +45,14 @@ class KeyboardContainer extends Box {
 
 	public function refreshFormatting() {
 		for (button in buttons) {
+			button.refresh();
+			formatButton(button);
+		}
+	}
+
+	public function refreshButtonFormatting(button:KeyButton) {
+		if (button != null) {
+			button.refresh();
 			formatButton(button);
 		}
 	}

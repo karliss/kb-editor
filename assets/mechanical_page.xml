@@ -22,10 +22,10 @@
         </vbox>
         <vbox text="Position">
             <PropertyItem id="p_x" text="X">
-                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
+                <FloatEditor maximum="1000" step="0.001" floatRound="true"/>
             </PropertyItem>
             <PropertyItem id="p_y" text="Y">
-                <FloatEditor maximum="1000" step="0.0625" floatRound="true"/>
+                <FloatEditor maximum="1000" step="0.001" floatRound="true"/>
             </PropertyItem>
             <PropertyItem id="p_width" text="width">
                 <FloatEditor minimum="0.5" maximum="1000" step="0.25" floatRound="true"/>

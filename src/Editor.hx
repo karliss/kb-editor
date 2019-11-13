@@ -6,85 +6,69 @@ import CSVFormat.CSVExporter;
 import KBLEFormat.KBLEImporter;
 import CSVFormat.CSVImporter;
 import Exporter.Importer;
-import haxe.ui.core.Component;
-import haxe.ui.components.Button;
-#if js
-import js.html.Blob;
-import js.html.FileSaver;
-import js.lib.Uint8Array;
-#end
-import FileOpener;
 
-@:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
-class Editor extends Component {
-	var pageMechanical:MechanicalPage;
-	var pageWiring = new WiringPage();
-	var keyboard = new KeyBoard();
+class Editor {
+	var keyboard:KeyBoard;
 
-	public function new() {
-		super();
-		percentWidth = 100;
-		percentHeight = 100;
+	public var alignment:Float = 0.25;
+	public var alignButtons:Bool = true;
 
-		pageMechanical = new MechanicalPage();
-		pageMechanical.setKeyboard(keyboard);
-		tabList.addComponent(pageMechanical);
-		pageWiring.setKeyboard(keyboard);
-		tabList.addComponent(pageWiring);
-
-		this.exportButton.onClick = onClickExport;
-		this.importButton.onClick = onClickImport;
-
-		tabList.onChange = onPageChange;
-
-		fillFormats();
+	public function new(keyboard:KeyBoard) {
+		this.keyboard = keyboard;
 	}
 
-	function fillFormats() {
-		var importers = [new CSVImporter(), new KBLEImporter()];
-		this.importFormat.dataSource = new ArrayDataSource();
-		for (importer in importers) {
-			importFormat.dataSource.add(importer);
+	public function setKeyboard(keyboard:KeyBoard) {
+		this.keyboard = keyboard;
+	}
+
+	public function getKeyboard():KeyBoard {
+		return keyboard;
+	}
+
+	public function newKey():Key {
+		return keyboard.createKey();
+	}
+
+	public function addDown(prevKey:Key):Key {
+		var key = newKey();
+		key.y = prevKey.y + prevKey.height;
+		key.x = prevKey.x;
+		key.width = prevKey.width;
+		key.row = prevKey.row + 1;
+		key.column = prevKey.column;
+		return key;
+	}
+
+	public function addRight(prevKey:Key):Key {
+		var key = newKey();
+		key.y = prevKey.y;
+		key.x = prevKey.x + prevKey.width;
+		key.height = prevKey.height;
+		key.row = prevKey.row;
+		key.column = prevKey.column + 1;
+		return key;
+	}
+
+	public function removeKey(key:Key) {
+		keyboard.removeKey(key);
+	}
+
+	public function alignKey(key:Key, force:Bool = false) {
+		var rnd = function(val:Float, step:Float):Float {
+			return Math.fround(val / step) * step;
+		};
+		if (alignButtons || force) {
+			var st:Float = alignment;
+			key.x = rnd(key.x, st);
+			key.y = rnd(key.y, st);
 		}
-
-		var exporters = [new CSVExporter(), new TestExporter()];
-		exportFormat.dataSource = new ArrayDataSource();
-		for (exporter in exporters) {
-			exportFormat.dataSource.add(exporter);
-		}
 	}
 
-	function onClickExport(_):Void {
-		var exporter = exportFormat.selectedItem;
-		var result:Bytes = exporter.convert(keyboard);
-
-		#if js
-		var intArray = new Array<Int>();
-		for (i in 0...result.length) {
-			intArray.push(result.get(i));
-		}
-		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), null, false);
-		#end
-	}
-
-	function onClickImport(_):Void {
-		var importer = importFormat.selectedItem;
-		// TODO: remove if js
-		#if js
-		FileOpener.tryToOpenFile(function(bytes, names) {
-			var result = importer.convert(bytes[0], names[0]);
-			this.keyboard = result;
-			pageMechanical.setKeyboard(keyboard);
-			pageWiring.setKeyboard(keyboard);
-		});
-		#end
-	}
-
-	function onPageChange(_) {
-		if (tabList.selectedPage == pageMechanical) {
-			pageMechanical.reload();
-		} else if (tabList.selectedPage == pageWiring) {
-			pageWiring.reload();
+	public function moveKey(key:Key, x:Float, y:Float) {
+		key.x = x;
+		key.y = y;
+		if (alignButtons) {
+			alignKey(key);
 		}
 	}
 }

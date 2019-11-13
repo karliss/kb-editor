@@ -11,8 +11,9 @@ import components.KeyboardContainer;
 import components.KeyboardContainer.KeyButtonEvent;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/wiring_page.xml"))
-class WiringPage extends HBox {
+class WiringPage extends HBox implements EditorPage {
 	var keyboard:KeyBoard;
+	var editor:Editor;
 
 	public function new() {
 		super();
@@ -23,6 +24,11 @@ class WiringPage extends HBox {
 		keyView.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		propEditor.onChange = onPropertyChange;
 		keyView.formatButton = formatButton;
+	}
+
+	public function init(editor:Editor) {
+		this.editor = editor;
+		reload();
 	}
 
 	function formatButton(button:KeyButton) {
@@ -39,11 +45,6 @@ class WiringPage extends HBox {
 				button.backgroundColor = 0xe0e0fd;
 			}
 		}
-	}
-
-	public function setKeyboard(keyboard:KeyBoard) {
-		this.keyboard = keyboard;
-		reload();
 	}
 
 	function refreshFormatting() {
@@ -64,6 +65,7 @@ class WiringPage extends HBox {
 	}
 
 	public function reload() {
+		keyboard = editor.getKeyboard();
 		keyView.loadFromList(keyboard.keys);
 	}
 }

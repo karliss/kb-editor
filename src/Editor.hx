@@ -1,11 +1,22 @@
 package;
 
+import thx.OrderedMap.EnumValueOrderedMap;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import CSVFormat.CSVExporter;
 import KBLEFormat.KBLEImporter;
 import CSVFormat.CSVImporter;
 import Exporter.Importer;
+
+class IPoint {
+	public var x:Int;
+	public var y:Int;
+
+	public function new(x:Int, y:Int) {
+		this.x = x;
+		this.y = y;
+	}
+}
 
 class Editor {
 	var keyboard:KeyBoard;
@@ -70,5 +81,34 @@ class Editor {
 		if (alignButtons) {
 			alignKey(key);
 		}
+	}
+
+	public function getConflictingWiring():Array<Key> {
+		var badKeys = new Array<Key>();
+
+		var cmp = function(a:IPoint, b:IPoint):Int {
+			if (a.x != b.x) {
+				return a.x - b.x;
+			}
+			return a.y - b.y;
+		};
+
+		var posCount = new OrderedMap<IPoint, Int>(cmp);
+		for (key in keyboard.keys) {
+			var pos = new IPoint(key.row, key.column);
+			var count = posCount.get(pos);
+			if (count == null) {
+				posCount.set(pos, 1);
+			} else {
+				posCount.set(pos, count + 1);
+			}
+		}
+		for (key in keyboard.keys) {
+			var c = posCount.get(new IPoint(key.row, key.column));
+			if (c > 1) {
+				badKeys.push(key);
+			}
+		}
+		return badKeys;
 	}
 }

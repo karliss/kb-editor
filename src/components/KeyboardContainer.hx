@@ -136,6 +136,15 @@ class KeyboardContainer extends Box {
 		return button;
 	}
 
+	public function getButton(key:Key) {
+		for (button in buttons) {
+			if (button.key == key) {
+				return button;
+			}
+		}
+		return null;
+	}
+
 	private function onKeyClick(e:MouseEvent) {
 		activeButton = cast e.target;
 	}

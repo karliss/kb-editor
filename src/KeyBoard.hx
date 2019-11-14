@@ -6,8 +6,9 @@ class KeyBoard {
 
 	public function new() {}
 
-	public function addKey(key:Key) {
+	public function addKey(key:Key):Key {
 		keys.push(key);
+		return key;
 	}
 
 	public function removeKey(key:Key) {
@@ -29,13 +30,22 @@ class KeyBoard {
 		for (key in keys) {
 			used[i++] = key.id;
 		}
-		used.sort(function(a, b):Int {
+		var compareInt = function(a, b):Int {
 			if (a < b)
 				return -1;
 			else if (a > b)
 				return 1;
 			return 0;
-		});
+		}
+		#if eval
+		{
+			var a = used.toArray();
+			a.sort(compareInt);
+			used = Vector.fromArrayCopy(a);
+		}
+		#else
+		used.sort(compareInt);
+		#end
 		var last = 0;
 		for (v in used) {
 			if (v > last + 1) {

@@ -1,5 +1,6 @@
 package;
 
+import thx.OrderedMap.EnumValueOrderedMap;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import CSVFormat.CSVExporter;
@@ -7,7 +8,15 @@ import KBLEFormat.KBLEImporter;
 import CSVFormat.CSVImporter;
 import Exporter.Importer;
 
-typedef Pos = {x:Int, y:Int};
+class IPoint {
+	public var x:Int;
+	public var y:Int;
+
+	public function new(x:Int, y:Int) {
+		this.x = x;
+		this.y = y;
+	}
+}
 
 class Editor {
 	var keyboard:KeyBoard;
@@ -74,12 +83,19 @@ class Editor {
 		}
 	}
 
-	public function getConflictingWiring():List<Key> {
-		var badKeys = new List<Key>();
+	public function getConflictingWiring():Array<Key> {
+		var badKeys = new Array<Key>();
 
-		var posCount = new Map<Pos, Int>();
+		var cmp = function(a:IPoint, b:IPoint):Int {
+			if (a.x != b.x) {
+				return a.x - b.x;
+			}
+			return a.y - b.y;
+		};
+
+		var posCount = new OrderedMap<IPoint, Int>(cmp);
 		for (key in keyboard.keys) {
-			var pos = {x: key.row, y: key.column};
+			var pos = new IPoint(key.row, key.column);
 			var count = posCount.get(pos);
 			if (count == null) {
 				posCount.set(pos, 1);
@@ -88,7 +104,7 @@ class Editor {
 			}
 		}
 		for (key in keyboard.keys) {
-			var c = posCount.get({x: key.row, y: key.column});
+			var c = posCount.get(new IPoint(key.row, key.column));
 			if (c > 1) {
 				badKeys.push(key);
 			}

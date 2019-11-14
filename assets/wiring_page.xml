@@ -2,9 +2,17 @@
     <vbox>
         <onewaybutton id="TODO" text="TODO"/>
     </vbox>
-    <vbox>
-        <KeyboardContainer id="keyView"/>
-        <Grid id="matrixGrid"/>
+    <vbox width="100%" height="100%">
+        <KeyboardContainer id="keyView" height="50%"/>
+        <hbox>
+            <label text="rows: "/>
+            <label text="" id="labelRows"/>
+            <label text="columns: "/>
+            <label text="" id="labelColumns"/>
+            <label text="conflicts: "/>
+            <label text="N" id="labelConflicts"/>
+        </hbox>
+        <Grid id="matrixGrid" height="50%" width="100%"/>
     </vbox>
 
     <PropertyEditor id="propEditor" width="200">

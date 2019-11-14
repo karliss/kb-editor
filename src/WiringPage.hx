@@ -58,6 +58,11 @@ class WiringPage extends HBox implements EditorPage {
 		}
 	}
 
+	inline function getMatrixButton(x:Int, y:Int):OneWayButton {
+		var component = matrixGrid.getComponentAt(x + y * columns);
+		return cast component;
+	}
+
 	function refreshFormatting() {
 		conflictingKeys.clear();
 		var badKeys = editor.getConflictingWiring();
@@ -65,12 +70,35 @@ class WiringPage extends HBox implements EditorPage {
 			conflictingKeys.set(key.id, 0);
 		}
 		keyView.refreshFormatting();
+		for (y in 0...rows) {
+			for (x in 0...columns) {
+				var button = getMatrixButton(x, y);
+				if (button != null) {
+					button.backgroundColor = 0xffffff;
+				};
+			}
+		}
+		for (key in keyboard.keys) {
+			var button = getMatrixButton(key.column, key.row);
+			if (button != null) {
+				button.backgroundColor = null;
+			}
+		}
+		for (key in badKeys) {
+			var button = getMatrixButton(key.column, key.row);
+			if (button != null) {
+				button.backgroundColor = 0xff6666;
+				if (button.selected) {
+					button.backgroundColor = 0xd05656;
+				}
+			}
+		}
 	}
 
 	function onPropertyChange(_) {
-		refreshFormatting();
 		resizeMatrix();
 		syncBottomSelection();
+		refreshFormatting();
 	}
 
 	function syncBottomSelection() {
@@ -135,13 +163,14 @@ class WiringPage extends HBox implements EditorPage {
 				var button = new OneWayButton();
 				button.width = 32;
 				button.height = 32;
-				button.onClick = function(_) {
+				button.registerEvent(MouseEvent.CLICK, function(_) {
 					if (bottomButton != null) {
 						bottomButton.selected = false;
 					}
 					selectTopButton(x, y);
 					bottomButton = button;
-				};
+					refreshFormatting();
+				});
 				matrixGrid.addComponent(button);
 			}
 		}

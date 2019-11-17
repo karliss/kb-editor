@@ -1,5 +1,6 @@
 package;
 
+import KeyBoard.KeyboardLayout;
 import thx.OrderedMap.EnumValueOrderedMap;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
@@ -110,5 +111,27 @@ class Editor {
 			}
 		}
 		return badKeys;
+	}
+
+	public function newLayout():KeyboardLayout {
+		var layout = new KeyboardLayout();
+		layout.name = 'Layout${keyboard.layouts.length}';
+		keyboard.layouts.push(layout);
+		return layout;
+	}
+
+	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
+		var layout = newLayout();
+		var newKeys = keys.map(key -> key.clone());
+		layout.keys = newKeys;
+		return layout;
+	}
+
+	public function renameLayout(layout:KeyboardLayout, name:String) {
+		layout.name = name;
+	}
+
+	public function removeLayout(layout:KeyboardLayout) {
+		keyboard.layouts.remove(layout);
 	}
 }

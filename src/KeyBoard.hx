@@ -1,8 +1,17 @@
 import haxe.ds.Vector;
 
+class KeyboardLayout {
+	public var name:String = "";
+	public var keys = new Array<Key>();
+	public var mapping = new Map<Int, Int>();
+
+	public function new() {}
+}
+
 class KeyBoard {
 	public var keys(default, null):Array<Key> = new Array<Key>();
 	public var description = new Map<String, Dynamic>();
+	public var layouts = new Array<KeyboardLayout>();
 
 	public function new() {}
 

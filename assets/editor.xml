@@ -1,17 +1,17 @@
 <vbox style="padding: 5px;" height="100%" width="100%">
-    <hbox>
-        <dropdown text="Import format" id="importFormat">
-        </dropdown>
-        <button text="Import" id="importButton"/>
-        <dropdown text="Export format" id="exportFormat">
-        </dropdown>
-        <button text="Export" id="exportButton"/>
-    </hbox>
-    <style>
+  <hbox>
+    <dropdown text="Import format" id="importFormat">
+    </dropdown>
+    <button text="Import" id="importButton"/>
+    <dropdown text="Export format" id="exportFormat">
+    </dropdown>
+    <button text="Export" id="exportButton"/>
+  </hbox>
+  <style>
 		.selected {
             background-color: #404040;
 		}
-    </style>
-    <tabview id="tabList" width="100%" height="100%">
-    </tabview>
+  </style>
+  <tabview id="tabList" width="100%" height="100%">
+  </tabview>
 </vbox>

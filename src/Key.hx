@@ -20,4 +20,17 @@ class Key {
 	public function point():Point {
 		return {x: x, y: y};
 	}
+
+	public function clone():Key {
+		var key = new Key(this.id);
+		key.x = x;
+		key.y = y;
+		key.angle = angle;
+		key.width = width;
+		key.height = height;
+		key.row = row;
+		key.column = column;
+		key.name = name;
+		return key;
+	}
 }

@@ -1,0 +1,29 @@
+<hbox id="layoutPage" width="100%" height="100%">
+    <vbox>
+        <onewaybutton id="tool1" text="Top to bottom"/>
+        <onewaybutton id="tool2" text="Bottom to top"/>
+        <button id="btnAuto" text="Auto connect"/>
+    </vbox>
+    <vbox width="100%" height="100%">
+        <hbox>
+            <dropdown text="Layout" id="layoutSelect">
+                <data></data>
+            </dropdown>
+            <textfield id="nameField"/>
+            <button id="layoutAdd" text="Add"/>
+            <button id="layoutRemove" text="Remove"/>
+            <button id="layoutFromThis" text="From this"/>
+            <button id="layoutImport" text="Import"/>
+            <dropdown text="Import format" id="importFormat">
+            </dropdown>
+            <label text="View: "/>
+        </hbox>
+        <KeyboardContainer id="layoutView" height="50%" width="100%"/>
+        <hbox>
+            <label text="View: "/>
+            <dropdown text="Import format" id="importFormat">
+            </dropdown>
+        </hbox>
+        <KeyboardContainer id="keyboardView" height="50%" width="100%"/>
+    </vbox>
+</hbox>

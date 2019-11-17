@@ -27,4 +27,25 @@ class EditorTest extends utest.Test {
 		Assert.equals(5, conflict.length);
 		Assert.same([2, 4, 5, 6, 7], Lambda.map(conflict, key -> key.id));
 	}
+
+	// TODO:add key manipulation tests
+
+	function testLayoutBasic() {
+		var keyboard = new KeyBoard();
+		var editor = new Editor(keyboard);
+		Assert.equals(0, keyboard.layouts.length);
+		var l0 = editor.newLayout();
+		Assert.equals(1, keyboard.layouts.length);
+		Assert.equals(l0, keyboard.layouts[0]);
+		var l1 = editor.newLayout();
+		Assert.equals(2, keyboard.layouts.length);
+
+		editor.renameLayout(l0, "Layout0");
+		Assert.equals("Layout0", keyboard.layouts[0].name);
+		Assert.notEquals("Layout0", l1.name);
+
+		editor.removeLayout(l0);
+		Assert.equals(1, keyboard.layouts.length);
+		Assert.equals(l1, keyboard.layouts[0]);
+	}
 }

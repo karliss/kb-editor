@@ -37,6 +37,10 @@ class EditorGui extends Component {
 		tabList.addComponent(pageWiring);
 		pages.push(pageWiring);
 
+		var layoutPage:LayoutPage = new LayoutPage();
+		tabList.addComponent(layoutPage);
+		pages.push(layoutPage);
+
 		for (page in pages) {
 			page.init(editor);
 		}
@@ -98,10 +102,7 @@ class EditorGui extends Component {
 	}
 
 	function onPageChange(_) {
-		if (tabList.selectedPage == pageMechanical) {
-			pageMechanical.reload();
-		} else if (tabList.selectedPage == pageWiring) {
-			pageWiring.reload();
-		}
+		var page:EditorPage = cast tabList.selectedPage;
+		page.reload();
 	}
 }

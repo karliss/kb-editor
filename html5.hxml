@@ -1,5 +1,5 @@
 -cp src
--main EditorApp
+-main kbe.EditorApp
 
 -lib haxeui-core
 -lib haxeui-html5
@@ -7,6 +7,7 @@
 -lib FileSaver
 -lib thx.csv
 -lib utest
+#--macro nullSafety("kbe", Strict)
 
 -js build/html5/Main.js
 

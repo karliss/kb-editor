@@ -1,0 +1,14 @@
+<module id="kb-editor">
+    <resources>
+        <resource path="/kbe/_module/styles" prefix="kb-editor/styles" />
+    </resources>
+    <components>
+        <class package="kbe.components" />
+        <class package="kbe.components.properties" />
+    </components>
+    <themes>
+        <global>
+            <style resource="kb-editor/styles/global.css" />
+        </global>
+    </themes>
+</module>

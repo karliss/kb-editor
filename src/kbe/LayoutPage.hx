@@ -18,8 +18,13 @@ class LayoutPage extends HBox implements EditorPage {
 	var editor:Editor;
 	var directionDown = true;
 
-	public function new() {
+	public function new(?editor:Editor) {
 		super();
+		if (editor == null) {
+			throw "bad call";
+		}
+
+		this.editor = editor;
 		text = "Layout";
 		percentWidth = 100;
 		percentHeight = 100;
@@ -54,7 +59,7 @@ class LayoutPage extends HBox implements EditorPage {
 		}*/
 	}
 
-	function selectedLayout():KeyboardLayout {
+	function selectedLayout():Null<KeyboardLayout> {
 		var item:Dynamic = layoutSelect.selectedItem;
 		if (item != null) {
 			return item.layout;
@@ -62,7 +67,7 @@ class LayoutPage extends HBox implements EditorPage {
 		return null;
 	}
 
-	function selectLayout(layout:KeyboardLayout) {
+	function selectLayout(layout:Null<KeyboardLayout>) {
 		var ds = layoutSelect.dataSource;
 		if (layoutSelect.dataSource.size == 0) {
 			return;
@@ -98,7 +103,7 @@ class LayoutPage extends HBox implements EditorPage {
 	}
 
 	@:bind(layoutSelect, UIEvent.CHANGE)
-	function onLayoutChanged(_) {
+	function onLayoutChanged(_:Null<Dynamic>) {
 		var layout = selectedLayout();
 
 		if (layout == null) {
@@ -128,8 +133,11 @@ class LayoutPage extends HBox implements EditorPage {
 
 	@:bind(layoutRemove, MouseEvent.CLICK)
 	function removeLayout(_) {
-		editor.removeLayout(selectedLayout());
-		reloadLayouts();
+		var layout = selectedLayout();
+		if (layout != null) {
+			editor.removeLayout(layout);
+			reloadLayouts();
+		}
 	}
 
 	function selectLastLayout() {

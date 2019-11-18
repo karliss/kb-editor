@@ -79,10 +79,13 @@ class SelectTool extends Tool {
 }
 
 class MoveTool extends Tool {
-	var movableButton:KeyButton;
-	var offset:Point;
+	var movableButton:Null<KeyButton>;
+	var offset:Point = {x: 0, y: 0};
 
 	function onMouseDown(e:KeyButtonEvent) {
+		if (e.mouseEvent == null) {
+			return;
+		}
 		page.cMechanical.activeButton = e.button;
 		movableButton = e.button;
 
@@ -124,16 +127,17 @@ class MoveTool extends Tool {
 class MechanicalPage extends HBox implements EditorPage {
 	var editor:Editor;
 	var tool:ToolType = Select;
-	var tools:Map<ToolType, Tool>;
-	var toolButtons:Map<ToolType, Button>;
-	var currentTool:Tool = null;
-	var currentToolBtn:Button = null;
+	var tools:Map<ToolType, Tool> = [];
+	var toolButtons:Map<ToolType, Button> = [];
+	var currentTool:Null<Tool> = null;
+	var currentToolBtn:Null<Button> = null;
 
-	public function new() {
+	public function new(?editor:Editor) {
 		super();
-		percentWidth = 100;
-		percentHeight = 100;
-		text = "Mechanical";
+		if (editor == null) {
+			throw "Bad call";
+		}
+		this.editor = editor;
 
 		cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		propEditor.onChange = onPropertyChange;
@@ -147,6 +151,10 @@ class MechanicalPage extends HBox implements EditorPage {
 		alignStep.onChange = function(_) {
 			editor.alignment = alignStep.value;
 		};
+
+		percentWidth = 100;
+		percentHeight = 100;
+		text = "Mechanical";
 	}
 
 	public function init(editor:Editor) {
@@ -170,10 +178,13 @@ class MechanicalPage extends HBox implements EditorPage {
 	function selectTool(type:ToolType) {
 		var tool = tools.get(type);
 		var btn = toolButtons.get(type);
+		if (tool == null || btn == null) {
+			throw "should not happen";
+		}
 		if (tool == currentTool) {
 			return;
 		}
-		if (currentTool != null) {
+		if (currentTool != null && currentToolBtn != null) {
 			currentTool.deactivate();
 			currentToolBtn.selected = false;
 		}
@@ -192,6 +203,9 @@ class MechanicalPage extends HBox implements EditorPage {
 		];
 		for (toolType in toolButtons.keys()) {
 			var button = toolButtons.get(toolType);
+			if (button == null) {
+				throw "Unexpected tool, should not happen";
+			}
 			button.onClick = function(_) {
 				selectTool(toolType);
 			};

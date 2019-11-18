@@ -38,8 +38,11 @@ class KBLEImporter implements Exporter.Importer {
 						w = 1;
 						h = 1;
 					} else {
-						var properties:DynamicAccess<Dynamic> = item;
+						var properties:DynamicAccess<Null<Dynamic>> = item;
 						for (key => value in properties.keyValueIterator()) {
+							if (value == null) {
+								continue;
+							}
 							switch (key) {
 								case "x":
 									x += value;
@@ -58,9 +61,9 @@ class KBLEImporter implements Exporter.Importer {
 				y += 1;
 				x = 0;
 			} else {
-				var description:DynamicAccess<Dynamic> = line;
+				var description:DynamicAccess<Null<Dynamic>> = line;
 				for (key => value in description) {
-					keyboard.description.set(key, value);
+					keyboard.description.set(key, value == null ? "" : value);
 				}
 			}
 		}

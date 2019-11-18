@@ -11,26 +11,28 @@ class NumberEditor extends Component {
 	var minus:Button;
 
 	public function new() {
+		input = new TextField();
+		plus = new Button();
+		minus = new Button();
 		super();
 		layout = new HorizontalLayout();
 		showVal();
 	}
 
 	override function createChildren() {
-		input = new TextField();
 		addComponent(input);
 		input.restrictChars = "-0-9.";
 		input.onChange = function(_) {
 			fromText();
 		};
 
-		addComponent(plus = new Button());
+		addComponent(plus);
 		plus.text = "+";
 		plus.onClick = onPlus;
 		plus.repeater = true;
 		plus.repeatInterval = 150;
 
-		addComponent(minus = new Button());
+		addComponent(minus);
 		minus.text = "-";
 		minus.onClick = onMinus;
 		minus.repeater = true;

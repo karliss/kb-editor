@@ -9,7 +9,7 @@ import haxe.ui.util.Variant;
 import haxe.ui.events.UIEvent;
 
 class PropertyEditor extends Accordion {
-	public var source(default, set):Dynamic; // TODO:better use haxeui datasource
+	public var source(default, set):Null<Dynamic>; // TODO:better use haxeui datasource
 	public var autoSync:Bool = true; // TODO: haxeui sync?
 
 	var mapping:Map<String, PropertyItem> = new Map<String, PropertyItem>();
@@ -30,7 +30,7 @@ class PropertyEditor extends Accordion {
 		return result;
 	}
 
-	function set_source(newValue):Dynamic {
+	function set_source(newValue:Dynamic):Dynamic {
 		if (source == null) {
 			doBinding(newValue);
 		}
@@ -42,7 +42,7 @@ class PropertyEditor extends Accordion {
 
 	function doBinding(source:Dynamic) {
 		for (f in Reflect.fields(source)) {
-			var findByid = function(object:Component, id:String):PropertyItem {
+			var findByid = function(object:Component, id:String):Null<PropertyItem> {
 				var tc = object.findComponent(id, PropertyItem, true);
 				if (tc == null) {
 					tc = object.findComponent("p_" + id, PropertyItem, true);
@@ -70,7 +70,7 @@ class PropertyEditor extends Accordion {
 		if (!autoSync || source == null) {
 			return;
 		}
-		var c = Std.downcast(e.target, PropertyItem);
+		var c:Null<PropertyItem> = Std.downcast(e.target, PropertyItem);
 		if (c == null) {
 			return;
 		}
@@ -80,9 +80,9 @@ class PropertyEditor extends Accordion {
 	}
 
 	function toUi(source:Dynamic) {
-		for (f in mapping.keys()) {
+		for (f => c in mapping) {
 			var fName:String = f;
-			var c = mapping[fName];
+			// var c = mapping[fName];
 			c.value = Reflect.field(source, fName);
 		}
 	}

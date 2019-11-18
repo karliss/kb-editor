@@ -16,7 +16,8 @@ class CSVImporter implements Exporter.Importer {
 		var csv = Csv.decodeObjects(bytes.toString());
 		var fields = ["name", "x", "y", "angle", "width", "height", "row", "column"];
 		for (line in csv) {
-			var id:Int = Std.parseInt(Reflect.field(line, "id"));
+			var idParsed = Std.parseInt(Reflect.field(line, "id"));
+			var id:Int = (idParsed != null ? idParsed : 1);
 			var key = new Key(id);
 			for (field in fields) {
 				var value = Reflect.field(line, field);

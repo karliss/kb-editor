@@ -8,6 +8,9 @@ class KeyButton extends OneWayButton {
 
 	public function new(key:Key = null) {
 		super();
+		if (key == null) {
+			throw "Bad call";
+		}
 		this.key = key;
 		refresh();
 	}

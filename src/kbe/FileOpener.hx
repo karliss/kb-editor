@@ -15,7 +15,7 @@ typedef FileCallback = Array<Bytes>->Array<String>->Void;
 #if js
 // TODO:[#1] make js part conditional
 class FileOpener {
-	private static var uploader:InputElement;
+	private static var uploader:Null<InputElement>;
 	private static var ID = "HiddenFileOpener";
 
 	var data = new Array<Bytes>();
@@ -58,12 +58,11 @@ class FileOpener {
 	}
 
 	function readNextFile() {
-		if (filesToProcess.length == 0) {
-			return;
-		}
 		var next = filesToProcess.pop();
-		names.push(next.name);
-		reader.readAsArrayBuffer(next);
+		if (next != null) {
+			names.push(next.name);
+			reader.readAsArrayBuffer(next);
+		}
 	}
 
 	function onLoad() {

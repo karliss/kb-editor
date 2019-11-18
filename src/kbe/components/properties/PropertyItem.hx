@@ -8,15 +8,15 @@ import haxe.ui.util.Variant;
 
 class PropertyItem extends HBox {
 	var label:Label;
-	var editor:haxe.ui.core.Component = null;
+	var editor:Null<haxe.ui.core.Component> = null;
 
-	public var propertyId:String;
+	public var propertyId:String = "";
 
 	public function new() {
 		super();
 		var label = new Label();
-		addComponent(label);
 		this.label = label;
+		addComponent(label);
 		label.percentWidth = 50;
 		this.percentWidth = 100;
 	}
@@ -39,10 +39,18 @@ class PropertyItem extends HBox {
 	}
 
 	override function set_value(v:Dynamic):Dynamic {
+		if (editor == null) {
+			// not initialized
+			return [];
+		}
 		return editor.value = v;
 	}
 
 	override function get_value():Dynamic {
+		if (editor == null) {
+			// not initialized
+			return [];
+		}
 		return editor.value;
 	}
 

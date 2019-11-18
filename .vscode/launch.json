@@ -32,6 +32,14 @@
 				"-lib",
 				"test-adapter"
 			]
+		},
+		{
+			"name": "Debug macro",
+			"type": "haxe-eval",
+			"request": "launch",
+			"args": [
+				"html5.hxml",
+			]
 		}
 	]
 }

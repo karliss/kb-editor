@@ -106,7 +106,7 @@ class Editor {
 		}
 		for (key in keyboard.keys) {
 			var c = posCount.get(new IPoint(key.row, key.column));
-			if (c > 1) {
+			if (c != null && c > 1) {
 				badKeys.push(key);
 			}
 		}

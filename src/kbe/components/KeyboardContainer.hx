@@ -18,7 +18,7 @@ class KeyboardContainer extends Box {
 	private var canvas:Absolute = new Absolute();
 	private var buttons:List<KeyButton> = new List<KeyButton>();
 
-	public var activeButton(default, set):KeyButton = null;
+	public var activeButton(default, set):Null<KeyButton> = null;
 	public var scale(default, set):Int = 32;
 	public var formatButton:(KeyButton) -> Void;
 
@@ -37,10 +37,9 @@ class KeyboardContainer extends Box {
 		// scrollView.layout.autoSize(); //TODO: what happens
 		scrollView.scrollMode = ScrollMode.NORMAL;
 
+		formatButton = defaultFormat;
 		percentWidth = 100;
 		percentHeight = 100;
-
-		formatButton = defaultFormat;
 	}
 
 	public function refreshFormatting() {
@@ -136,7 +135,7 @@ class KeyboardContainer extends Box {
 		return button;
 	}
 
-	public function getButton(key:Key) {
+	public function getButton(key:Key):Null<KeyButton> {
 		for (button in buttons) {
 			if (button.key == key) {
 				return button;
@@ -164,7 +163,7 @@ class KeyButtonEvent extends UIEvent {
 	}
 
 	public var button(get, set):KeyButton;
-	public var mouseEvent:MouseEvent = null;
+	public var mouseEvent:Null<MouseEvent> = null;
 
 	function get_button():KeyButton {
 		return data;

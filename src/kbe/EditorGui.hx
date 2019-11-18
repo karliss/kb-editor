@@ -25,25 +25,26 @@ class EditorGui extends Component {
 
 	public function new() {
 		super();
-		percentWidth = 100;
-		percentHeight = 100;
 
 		editor = new Editor(keyboard);
-		pageMechanical = new MechanicalPage();
+		pageMechanical = new MechanicalPage(editor);
 		tabList.addComponent(pageMechanical);
 		pages.push(pageMechanical);
 
-		pageWiring = new WiringPage();
+		pageWiring = new WiringPage(editor);
 		tabList.addComponent(pageWiring);
 		pages.push(pageWiring);
 
-		var layoutPage:LayoutPage = new LayoutPage();
+		var layoutPage:LayoutPage = new LayoutPage(editor);
 		tabList.addComponent(layoutPage);
 		pages.push(layoutPage);
 
 		for (page in pages) {
 			page.init(editor);
 		}
+
+		percentWidth = 100;
+		percentHeight = 100;
 
 		reloadPages();
 
@@ -84,7 +85,7 @@ class EditorGui extends Component {
 		for (i in 0...result.length) {
 			intArray.push(result.get(i));
 		}
-		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), null, false);
+		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), "TODO", false); // TODO PASS NAME
 		#end
 	}
 

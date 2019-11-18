@@ -13,7 +13,7 @@ class IntegerEditor extends NumberEditor {
 
 	override function fromText() {
 		var num = Std.parseInt(input.value);
-		if (num >= minimum && num <= maximum) {
+		if (num != null && num >= minimum && num <= maximum) {
 			number = num;
 		}
 	}

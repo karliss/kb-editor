@@ -1,7 +1,7 @@
 package kbe;
 
 import haxe.io.Bytes;
-import Exporter.Importer;
+import kbe.Exporter.Importer;
 
 class TestImporter implements Importer {
 	public var value(default, null):String = "Dummy importer";

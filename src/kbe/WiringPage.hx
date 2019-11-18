@@ -15,13 +15,19 @@ class WiringPage extends HBox implements EditorPage {
 	var keyboard:KeyBoard;
 	var editor:Editor;
 	var conflictingKeys = new Map<Int, Int>();
-	var bottomButton:OneWayButton = null;
+	var bottomButton:Null<OneWayButton> = null;
 
 	var rows = 0;
 	var columns = 0;
 
-	public function new() {
+	public function new(?editor:Editor) {
 		super();
+		if (editor == null) {
+			throw "can't call without editor";
+		}
+		this.editor = editor;
+		this.keyboard = editor.getKeyboard();
+
 		percentWidth = 100;
 		percentHeight = 100;
 		text = "Wiring";
@@ -133,7 +139,7 @@ class WiringPage extends HBox implements EditorPage {
 			bottomButton.selected = false;
 			bottomButton = null;
 		}
-		var button:OneWayButton = Std.downcast(matrixGrid.getComponentAt(x + y * columns), OneWayButton);
+		var button:OneWayButton = cast(matrixGrid.getComponentAt(x + y * columns), OneWayButton);
 		bottomButton = button;
 		button.selected = true;
 	}

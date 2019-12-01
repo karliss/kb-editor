@@ -60,4 +60,12 @@ class CSVExporter implements Exporter {
 		}
 		return Bytes.ofString(Csv.encode(data));
 	}
+
+	public function fileName():String {
+		return "keyboard.csv";
+	}
+
+	public function mimeType():String {
+		return "text/csv";
+	}
 }

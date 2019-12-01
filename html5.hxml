@@ -7,7 +7,6 @@
 -lib FileSaver
 -lib thx.csv
 -lib utest
--D dump=pretty
 #--macro nullSafety("kbe", Loose)
 
 -js build/html5/Main.js

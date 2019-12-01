@@ -13,4 +13,12 @@ class TestExporter implements Exporter {
 		result.addString("1234");
 		return result.getBytes();
 	}
+
+	public function fileName():String {
+		return "testKeyboard.txt";
+	}
+
+	public function mimeType():String {
+		return "text/plain";
+	}
 }

@@ -1,4 +1,8 @@
 {
     "editor.formatOnSave": true,
-    "haxeTestExplorer.launchConfiguration": "Debug test"
+    "haxeTestExplorer.launchConfiguration": "Debug test",
+    "[haxe]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false
+    }
 }

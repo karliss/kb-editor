@@ -12,7 +12,7 @@ class TestImporter implements Importer {
 		var result = new KeyBoard();
 		trace(bytes.length);
 		for (i in 0...bytes.length) {
-			result.createKey();
+			result.createAndAddKey();
 		}
 		return result;
 	}

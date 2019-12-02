@@ -85,7 +85,7 @@ class EditorGui extends Component {
 		for (i in 0...result.length) {
 			intArray.push(result.get(i));
 		}
-		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), exporter.fileName(), true); // TODO PASS NAME
+		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), exporter.fileName(), true);
 		#end
 	}
 

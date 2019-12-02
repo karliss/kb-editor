@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.UndoBuffer.Clonable;
 import haxe.ds.Vector;
 
 class KeyboardLayout {
@@ -8,6 +9,16 @@ class KeyboardLayout {
 	public var mapping = new Map<Int, Int>();
 
 	public function new() {}
+
+	public function clone():KeyboardLayout {
+		var result = new KeyboardLayout();
+		result.name = name;
+		for (key in keys) {
+			result.keys.push(key.clone());
+		}
+		result.mapping = mapping.copy();
+		return result;
+	}
 
 	public function mappingFromGrid(a:Int):Null<Int> {
 		return mapping.get(a);
@@ -24,12 +35,24 @@ class KeyboardLayout {
 	}
 }
 
-class KeyBoard {
+class KeyBoard implements Clonable<KeyBoard> {
 	public var keys(default, null):Array<Key> = new Array<Key>();
 	public var description = new Map<String, Dynamic>();
 	public var layouts = new Array<KeyboardLayout>();
 
 	public function new() {}
+
+	public function clone():KeyBoard {
+		var result = new KeyBoard();
+		result.description = description.copy();
+		for (key in keys) {
+			result.keys.push(key.clone());
+		}
+		for (layout in layouts) {
+			result.layouts.push(layout.clone());
+		}
+		return result;
+	}
 
 	public function addKey(key:Key):Key {
 		keys.push(key);
@@ -41,7 +64,11 @@ class KeyBoard {
 	}
 
 	public function createKey():Key {
-		var key = new Key(getNextId());
+		return new Key(getNextId());
+	}
+
+	public function createAndAddKey():Key {
+		var key = createKey();
 		addKey(key);
 		return key;
 	}

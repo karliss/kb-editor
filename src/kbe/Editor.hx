@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.UndoBuffer.UndoExecutor;
 import thx.OrderedMap.EnumValueOrderedMap;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
@@ -19,14 +20,23 @@ class IPoint {
 	}
 }
 
-class Editor {
+enum EditorAction {
+	AddKey(key:Key);
+}
+
+class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	var keyboard:KeyBoard;
+
+	public var undoBuffer(default, null):UndoBuffer<KeyBoard, EditorAction>;
+
+	public var state(get, set):KeyBoard;
 
 	public var alignment:Float = 0.25;
 	public var alignButtons:Bool = true;
 
 	public function new(keyboard:KeyBoard) {
 		this.keyboard = keyboard;
+		this.undoBuffer = new UndoBuffer<KeyBoard, EditorAction>(this);
 	}
 
 	public function setKeyboard(keyboard:KeyBoard) {
@@ -37,27 +47,55 @@ class Editor {
 		return keyboard;
 	}
 
-	public function newKey():Key {
+	function set_state(v:KeyBoard):KeyBoard {
+		setKeyboard(v);
+		return keyboard;
+	}
+
+	function get_state():KeyBoard {
+		return this.keyboard;
+	}
+
+	public function applyAction(a:EditorAction):Void {
+		switch (a) {
+			case AddKey(key):
+				{
+					keyboard.addKey(key);
+				}
+		}
+	}
+
+	public function runAction(a:EditorAction):Void {
+		undoBuffer.runAction(a);
+	}
+
+	function createKey():Key {
 		return keyboard.createKey();
 	}
 
+	public function addNewKey():Key {
+		return keyboard.createAndAddKey();
+	}
+
 	public function addDown(prevKey:Key):Key {
-		var key = newKey();
+		var key = createKey();
 		key.y = prevKey.y + prevKey.height;
 		key.x = prevKey.x;
 		key.width = prevKey.width;
 		key.row = prevKey.row + 1;
 		key.column = prevKey.column;
+		runAction(AddKey(key));
 		return key;
 	}
 
 	public function addRight(prevKey:Key):Key {
-		var key = newKey();
+		var key = createKey();
 		key.y = prevKey.y;
 		key.x = prevKey.x + prevKey.width;
 		key.height = prevKey.height;
 		key.row = prevKey.row;
 		key.column = prevKey.column + 1;
+		runAction(AddKey(key));
 		return key;
 	}
 
@@ -122,8 +160,8 @@ class Editor {
 
 	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
 		var layout = newLayout();
-		var newKeys = keys.map(key -> key.clone());
-		layout.keys = newKeys;
+		var addNewKeys = keys.map(key -> key.clone());
+		layout.keys = addNewKeys;
 		return layout;
 	}
 

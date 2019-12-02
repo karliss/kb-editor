@@ -229,7 +229,7 @@ class MechanicalPage extends HBox implements EditorPage {
 	}
 
 	public function addNewButton(activate:Bool = true):KeyButton {
-		var key = editor.newKey();
+		var key = editor.addNewKey();
 		var button = addKey(key, activate);
 		onKeyMove(button);
 		return button;

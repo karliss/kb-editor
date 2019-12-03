@@ -74,7 +74,9 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	}
 
 	public function addNewKey():Key {
-		return keyboard.createAndAddKey();
+		var key = createKey();
+		runAction(AddKey(key));
+		return key;
 	}
 
 	public function addDown(prevKey:Key):Key {
@@ -160,8 +162,8 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
 		var layout = newLayout();
-		var addNewKeys = keys.map(key -> key.clone());
-		layout.keys = addNewKeys;
+		var newKeys = keys.map(key -> key.clone());
+		layout.keys = newKeys;
 		return layout;
 	}
 

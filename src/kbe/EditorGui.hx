@@ -53,6 +53,15 @@ class EditorGui extends Component {
 
 		tabList.onChange = onPageChange;
 
+		this.undoButton.onClick = _ -> {
+			editor.undoBuffer.undo();
+			reloadPages();
+		};
+		this.redoButton.onClick = _ -> {
+			editor.undoBuffer.redo();
+			reloadPages();
+		};
+
 		fillFormats();
 	}
 
@@ -97,6 +106,7 @@ class EditorGui extends Component {
 			var result = importer.convert(bytes[0], names[0]);
 			this.keyboard = result;
 			editor.setKeyboard(keyboard);
+			editor.undoBuffer.clear();
 			reloadPages();
 		});
 		#end

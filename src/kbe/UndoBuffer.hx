@@ -69,4 +69,10 @@ class UndoBuffer<S:Clonable<S>, A> {
 		}
 		return false;
 	}
+
+	public function clear() {
+		redoActions = [];
+		actionList = [];
+		stateList = [];
+	}
 }

@@ -6,6 +6,9 @@
     <dropdown text="Export format" id="exportFormat">
     </dropdown>
     <button text="Export" id="exportButton"/>
+
+    <button text="Undo" id="undoButton"/>
+    <button text="Redo" id="redoButton"/>
   </hbox>
   <style>
 		.selected {

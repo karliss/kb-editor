@@ -18,5 +18,5 @@ install:
   # - haxelib run travix install
 
 hxml:
-  - html5.hxml
   - test.hxml
+  - html5.hxml

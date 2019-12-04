@@ -22,6 +22,7 @@ class IPoint {
 
 enum EditorAction {
 	AddKey(key:Key);
+	RemoveKey(id:Int);
 }
 
 class Editor implements UndoExecutor<KeyBoard, EditorAction> {
@@ -56,17 +57,22 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		return this.keyboard;
 	}
 
-	public function applyAction(a:EditorAction):Void {
+	public function applyAction(a:EditorAction):Dynamic {
 		switch (a) {
 			case AddKey(key):
 				{
-					keyboard.addKey(key);
+					var k = key.clone();
+					keyboard.addKey(k);
+					return k;
 				}
+			case RemoveKey(id):
+				keyboard.removeKey(keyboard.getKeyById(id));
 		}
+		return null;
 	}
 
-	public function runAction(a:EditorAction):Void {
-		undoBuffer.runAction(a);
+	public function runAction(a:EditorAction):Dynamic {
+		return undoBuffer.runAction(a);
 	}
 
 	function createKey():Key {
@@ -74,9 +80,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	}
 
 	public function addNewKey():Key {
-		var key = createKey();
-		runAction(AddKey(key));
-		return key;
+		return runAction(AddKey(createKey()));
 	}
 
 	public function addDown(prevKey:Key):Key {
@@ -86,8 +90,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		key.width = prevKey.width;
 		key.row = prevKey.row + 1;
 		key.column = prevKey.column;
-		runAction(AddKey(key));
-		return key;
+		return runAction(AddKey(key));
 	}
 
 	public function addRight(prevKey:Key):Key {
@@ -97,12 +100,11 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		key.height = prevKey.height;
 		key.row = prevKey.row;
 		key.column = prevKey.column + 1;
-		runAction(AddKey(key));
-		return key;
+		return runAction(AddKey(key));
 	}
 
 	public function removeKey(key:Key) {
-		keyboard.removeKey(key);
+		runAction(RemoveKey(key.id));
 	}
 
 	public function alignKey(key:Key, force:Bool = false) {

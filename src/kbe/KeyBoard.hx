@@ -107,4 +107,13 @@ class KeyBoard implements Clonable<KeyBoard> {
 		}
 		return last + 1;
 	}
+
+	public function getKeyById(id:Int) {
+		for (key in keys) {
+			if (key.id == id) {
+				return key;
+			}
+		}
+		return null;
+	}
 }

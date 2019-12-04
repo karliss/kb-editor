@@ -12,6 +12,7 @@ typedef Point = {x:Float, y:Float}
 
 class KeyboardContainer extends Box {
 	static public var BUTTON_CHANGED = "BUTTON_CHANGED";
+	static public var BUTTON_CLICKED = "BUTTON_CLICKED";
 	static public var BUTTON_DOWN = "BUTTON_MOUSE_DOWN";
 
 	private var scrollView:ScrollView = new ScrollView();
@@ -145,6 +146,7 @@ class KeyboardContainer extends Box {
 	}
 
 	private function onKeyClick(e:MouseEvent) {
+		dispatch(new KeyButtonEvent(BUTTON_CLICKED, cast e.target));
 		activeButton = cast e.target;
 	}
 

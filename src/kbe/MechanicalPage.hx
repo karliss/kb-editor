@@ -66,11 +66,11 @@ class RemoveTool extends Tool {
 	}
 
 	override function activate() {
-		page.cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, buttonClicked);
+		page.cMechanical.registerEvent(KeyboardContainer.BUTTON_CLICKED, buttonClicked);
 	}
 
 	override function deactivate() {
-		page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_CHANGED, buttonClicked);
+		page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_CLICKED, buttonClicked);
 	}
 }
 

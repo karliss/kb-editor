@@ -110,4 +110,25 @@ class EditorTest extends utest.Test {
 		editor.undoBuffer.redo();
 		Assert.equals(id1, editor.state.keys[1].id);
 	}
+
+	function testRemoveKey() {
+		var editor = new Editor(new KeyBoard());
+		var key0 = editor.addNewKey();
+		Assert.equals(1, editor.state.keys.length);
+		editor.removeKey(key0);
+		Assert.equals(0, editor.state.keys.length);
+
+		editor.undoBuffer.undo();
+		Assert.equals(1, editor.state.keys.length);
+		editor.undoBuffer.redo();
+		Assert.equals(0, editor.state.keys.length);
+		editor.undoBuffer.undo();
+		Assert.equals(1, editor.state.keys.length);
+		editor.undoBuffer.undo();
+		Assert.equals(0, editor.state.keys.length);
+		editor.undoBuffer.redo();
+		Assert.equals(1, editor.state.keys.length);
+		editor.undoBuffer.redo();
+		Assert.equals(0, editor.state.keys.length);
+	}
 }

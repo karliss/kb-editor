@@ -6,7 +6,7 @@ interface Clonable<T> {
 
 interface UndoExecutor<S:Clonable<S>, A> {
 	public var state(get, set):S;
-	function applyAction(a:A):Void;
+	function applyAction(a:A):Dynamic;
 }
 
 class UndoBuffer<S:Clonable<S>, A> {
@@ -39,17 +39,17 @@ class UndoBuffer<S:Clonable<S>, A> {
 		actionList.push(a);
 	}
 
-	function runActionInternal(a:A, redo = false) {
+	function runActionInternal(a:A, redo = false):Dynamic {
 		pushStateInternal(a, redo);
-		executor.applyAction(a);
+		return executor.applyAction(a);
 	}
 
 	public function pushState(a:A) {
 		pushStateInternal(a);
 	}
 
-	public function runAction(a:A) {
-		runActionInternal(a);
+	public function runAction(a:A):Dynamic {
+		return runActionInternal(a);
 	}
 
 	public function undo():Bool {

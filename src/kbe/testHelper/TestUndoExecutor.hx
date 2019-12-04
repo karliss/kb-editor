@@ -43,12 +43,13 @@ class TestUndoExecutor implements kbe.UndoBuffer.UndoExecutor<TestState, Action>
 		return state;
 	}
 
-	public function applyAction(action:Action) {
+	public function applyAction(action:Action):Dynamic {
 		switch (action) {
 			case Set(v):
 				this.state.v = v;
 			case Add(v):
 				this.state.v += v;
 		}
+		return null;
 	}
 }

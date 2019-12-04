@@ -1,5 +1,6 @@
 package kbe;
 
+import haxe.ui.events.KeyboardEvent;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import kbe.CSVFormat.CSVExporter;
@@ -9,6 +10,7 @@ import kbe.Exporter.Importer;
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
 #if js
+import js.Browser;
 import js.html.Blob;
 import js.html.FileSaver;
 import js.lib.Uint8Array;
@@ -25,7 +27,6 @@ class EditorGui extends Component {
 
 	public function new() {
 		super();
-
 		editor = new Editor(keyboard);
 		pageMechanical = new MechanicalPage(editor);
 		tabList.addComponent(pageMechanical);
@@ -53,17 +54,42 @@ class EditorGui extends Component {
 
 		tabList.onChange = onPageChange;
 
-		this.undoButton.onClick = _ -> {
-			editor.undoBuffer.undo();
-			reloadPages();
-		};
-		this.redoButton.onClick = _ -> {
-			editor.undoBuffer.redo();
-			reloadPages();
-		};
+		this.undoButton.onClick = _ -> undo();
+		this.redoButton.onClick = _ -> redo();
 
 		fillFormats();
+		#if js
+		bindJsKeyShortcuts();
+		#end
+		onKeyDown(null);
 	}
+
+	function undo() {
+		editor.undoBuffer.undo();
+		reloadPages();
+	}
+
+	function redo() {
+		editor.undoBuffer.redo();
+		reloadPages();
+	}
+
+	#if js
+	function bindJsKeyShortcuts() {
+		var document = Browser.document;
+		document.addEventListener("keydown", (event:js.html.KeyboardEvent) -> {
+			if (event.ctrlKey) {
+				switch (event.key) {
+					case "z":
+						undo();
+					case "y":
+						redo();
+					default:
+				}
+			}
+		});
+	}
+	#end
 
 	function reloadPages() {
 		for (page in pages) {

@@ -68,7 +68,6 @@ class UndoBufferTest extends utest.Test {
 	}
 
 	function testClear() {
-		Assert.isFalse(true);
 		var executor = new TestUndoExecutor();
 		var undo = new UndoBuffer<TestState, Action>(executor);
 		for (i in 0...5) {

@@ -61,7 +61,6 @@ class EditorGui extends Component {
 		#if js
 		bindJsKeyShortcuts();
 		#end
-		onKeyDown(null);
 	}
 
 	function undo() {

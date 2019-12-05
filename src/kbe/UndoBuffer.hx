@@ -7,6 +7,7 @@ interface Clonable<T> {
 interface UndoExecutor<S:Clonable<S>, A> {
 	public var state(get, set):S;
 	function applyAction(a:A):Dynamic;
+	function mergeActions(a:A, b:A):Null<A>;
 }
 
 class UndoBuffer<S:Clonable<S>, A> {
@@ -31,25 +32,32 @@ class UndoBuffer<S:Clonable<S>, A> {
 		return redoActions.length;
 	}
 
-	function pushStateInternal(a:A, redo = false) {
+	function pushStateInternal(a:A, redo = false, merge = false) {
 		if (!redo) {
 			redoActions = [];
+		}
+		if (merge && actionList.length > 0) {
+			var merged = executor.mergeActions(actionList[actionList.length - 1], a);
+			if (merged != null) {
+				actionList[actionList.length - 1] = merged;
+				return;
+			}
 		}
 		stateList.push(executor.state.clone());
 		actionList.push(a);
 	}
 
-	function runActionInternal(a:A, redo = false):Dynamic {
-		pushStateInternal(a, redo);
+	function runActionInternal(a:A, redo = false, merge = false):Dynamic {
+		pushStateInternal(a, redo, merge);
 		return executor.applyAction(a);
 	}
 
-	public function pushState(a:A) {
-		pushStateInternal(a);
+	public function pushState(a:A, tryMerge = false) {
+		pushStateInternal(a, false, tryMerge);
 	}
 
-	public function runAction(a:A):Dynamic {
-		return runActionInternal(a);
+	public function runAction(a:A, tryMerge = false):Dynamic {
+		return runActionInternal(a, false, tryMerge);
 	}
 
 	public function undo():Bool {

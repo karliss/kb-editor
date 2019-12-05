@@ -23,14 +23,20 @@ class Key {
 
 	public function clone():Key {
 		var key = new Key(this.id);
-		key.x = x;
-		key.y = y;
-		key.angle = angle;
-		key.width = width;
-		key.height = height;
-		key.row = row;
-		key.column = column;
-		key.name = name;
+		key.copyProperties(this);
+
 		return key;
+	}
+
+	public function copyProperties(key:Key) {
+		this.id = key.id;
+		x = key.x;
+		y = key.y;
+		angle = key.angle;
+		width = key.width;
+		height = key.height;
+		row = key.row;
+		column = key.column;
+		name = key.name;
 	}
 }

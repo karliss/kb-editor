@@ -19,4 +19,30 @@ class KeyBoardTest extends utest.Test {
 		Assert.equals(keyboard.keys[11], keyboard.getKeyById(101));
 		Assert.equals(null, keyboard.getKeyById(1000));
 	}
+
+	function testCopyProperties() {
+		var key = new Key(1);
+		var keyb = new Key(1);
+		var fields:Map<String, Null<Dynamic>> = [
+			"x" => 2.0,
+			"y" => 3.0,
+			"angle" => 0.5,
+			"width" => 1.5,
+			"height" => 2.5,
+			"row" => 7,
+			"column" => 10,
+			"name" => "nm",
+			"id" => null
+		];
+		for (field in Reflect.fields(keyb)) {
+			Assert.isTrue(fields.exists(field));
+			var value = fields.get(field);
+			if (field != null) {
+				Reflect.setField(keyb, field, value);
+			}
+		}
+		Assert.notEquals(key.x, keyb.x);
+		key.copyProperties(keyb);
+		Assert.same(keyb, key);
+	}
 }

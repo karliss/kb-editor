@@ -36,7 +36,7 @@ class AddTool extends MoveTool {
 		var key = btn.key;
 		var field = page.cMechanical;
 		var p = field.screenToField(e.screenX, e.screenY);
-		editor.moveKey(key, p.x, p.y);
+		editor.moveKey(key, p.x, p.y, true);
 		page.onKeyMove(btn);
 		return btn;
 	}
@@ -45,6 +45,7 @@ class AddTool extends MoveTool {
 		var button = doAdd(e);
 		this.movableButton = button;
 		this.offset = {x: 0, y: 0};
+		firstMove = false;
 	}
 
 	override function activate() {
@@ -81,6 +82,7 @@ class SelectTool extends Tool {
 class MoveTool extends Tool {
 	var movableButton:Null<KeyButton>;
 	var offset:Point = {x: 0, y: 0};
+	var firstMove = true;
 
 	function onMouseDown(e:KeyButtonEvent) {
 		if (e.mouseEvent == null) {
@@ -92,6 +94,7 @@ class MoveTool extends Tool {
 		var p = page.cMechanical.screenToField(e.mouseEvent.screenX, e.mouseEvent.screenY);
 		var p2 = new haxe.ui.geom.Point(movableButton.key.x, movableButton.key.y);
 		offset = {x: movableButton.key.x - p.x, y: movableButton.key.y - p.y};
+		firstMove = true;
 	}
 
 	function onMouseUp(e:MouseEvent) {
@@ -103,7 +106,8 @@ class MoveTool extends Tool {
 			return;
 		}
 		var p = page.cMechanical.screenToField(e.screenX, e.screenY);
-		editor.moveKey(movableButton.key, p.x + offset.x, p.y + offset.y);
+		editor.moveKey(movableButton.key, p.x + offset.x, p.y + offset.y, !firstMove);
+		firstMove = false;
 		page.onKeyMove(movableButton);
 		page.cMechanical.updateLayout();
 	}

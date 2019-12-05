@@ -23,6 +23,7 @@ class IPoint {
 enum EditorAction {
 	AddKey(key:Key);
 	RemoveKey(id:Int);
+	ModifyKey(id:Int, properties:Key);
 }
 
 class Editor implements UndoExecutor<KeyBoard, EditorAction> {
@@ -67,12 +68,26 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 				}
 			case RemoveKey(id):
 				keyboard.removeKey(keyboard.getKeyById(id));
+
+			case ModifyKey(id, prop):
+				keyboard.getKeyById(id).copyProperties(prop);
 		}
 		return null;
 	}
 
-	public function runAction(a:EditorAction):Dynamic {
-		return undoBuffer.runAction(a);
+	public function mergeActions(a:EditorAction, b:EditorAction):Null<EditorAction> {
+		switch [a, b] {
+			case [ModifyKey(id1, _), ModifyKey(id2, properties2)] if (id1 == id2):
+				return ModifyKey(id1, properties2);
+			case [AddKey(key), ModifyKey(id2, properties2)] if (key.id == id2):
+				return AddKey(properties2);
+			default:
+				return null;
+		}
+	}
+
+	public function runAction(a:EditorAction, merge = false):Dynamic {
+		return undoBuffer.runAction(a, merge);
 	}
 
 	function createKey():Key {
@@ -107,7 +122,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(RemoveKey(key.id));
 	}
 
-	public function alignKey(key:Key, force:Bool = false) {
+	function alignKey(key:Key, force:Bool = false) {
 		var rnd = function(val:Float, step:Float):Float {
 			return Math.fround(val / step) * step;
 		};
@@ -118,12 +133,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		}
 	}
 
-	public function moveKey(key:Key, x:Float, y:Float) {
-		key.x = x;
-		key.y = y;
+	public function moveKey(key:Key, x:Float, y:Float, merge = false) {
+		var key2 = key.clone();
+		key2.x = x;
+		key2.y = y;
 		if (alignButtons) {
-			alignKey(key);
+			alignKey(key2);
 		}
+		runAction(ModifyKey(key.id, key2), merge);
 	}
 
 	public function getConflictingWiring():Array<Key> {

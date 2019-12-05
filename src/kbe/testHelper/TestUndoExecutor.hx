@@ -52,4 +52,13 @@ class TestUndoExecutor implements kbe.UndoBuffer.UndoExecutor<TestState, Action>
 		}
 		return null;
 	}
+
+	public function mergeActions(a:Action, b:Action):Action {
+		switch [a, b] {
+			case [Add(v1), Add(v2)]:
+				return Add(v1 + v2);
+			default:
+				return null;
+		}
+	}
 }

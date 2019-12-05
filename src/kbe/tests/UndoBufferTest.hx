@@ -79,4 +79,29 @@ class UndoBufferTest extends utest.Test {
 		Assert.isFalse(undo.undo());
 		Assert.equals(15, executor.state.v);
 	}
+
+	function testMerge() {
+		var executor = new TestUndoExecutor();
+		var undo = new UndoBuffer<TestState, Action>(executor);
+		for (i in 0...3) {
+			undo.runAction(Action.Add(3));
+		}
+		Assert.equals(3, undo.undoCount);
+		Assert.equals(9, executor.state.v);
+		undo.runAction(Action.Add(5), true);
+		Assert.equals(3, undo.undoCount);
+		Assert.equals(14, executor.state.v);
+		undo.undo();
+		Assert.equals(2, undo.undoCount);
+		Assert.equals(6, executor.state.v);
+		undo.redo();
+		Assert.equals(3, undo.undoCount);
+		Assert.equals(14, executor.state.v);
+
+		// non-mergable
+		undo.runAction(Action.Set(1), true);
+		Assert.equals(4, undo.undoCount);
+		undo.runAction(Action.Add(1), true);
+		Assert.equals(5, undo.undoCount);
+	}
 }

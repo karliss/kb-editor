@@ -24,6 +24,11 @@ enum EditorAction {
 	AddKey(key:Key);
 	RemoveKey(id:Int);
 	ModifyKey(id:Int, properties:Key);
+	NewLayout(layout:KeyboardLayout);
+	RenameLayout(oldName:String, newName:String);
+	RemoveLayout(name:String);
+	AddLayoutMapping(layout:String, gridId:Int, layoutId:Int);
+	AddLayoutExclusiveMapping(layout:String, gridId:Int, layoutId:Int);
 }
 
 class Editor implements UndoExecutor<KeyBoard, EditorAction> {
@@ -71,6 +76,21 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 			case ModifyKey(id, prop):
 				keyboard.getKeyById(id).copyProperties(prop);
+
+			case NewLayout(layout):
+				{
+					var v = layout.clone();
+					keyboard.layouts.push(v);
+					return v;
+				}
+			case RenameLayout(oldName, newName):
+				keyboard.renameLayout(oldName, newName);
+			case RemoveLayout(name):
+				keyboard.removeLayout(name);
+			case AddLayoutMapping(layout, gridId, layoutId):
+				keyboard.getLayoutByName(layout).addMapping(gridId, layoutId);
+			case AddLayoutExclusiveMapping(layout, gridId, layoutId):
+				keyboard.getLayoutByName(layout).addExclusiveMapping(gridId, layoutId);
 		}
 		return null;
 	}
@@ -175,22 +195,30 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	public function newLayout():KeyboardLayout {
 		var layout = new KeyboardLayout();
 		layout.name = 'Layout${keyboard.layouts.length}';
-		keyboard.layouts.push(layout);
-		return layout;
+		return runAction(NewLayout(layout));
 	}
 
 	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
-		var layout = newLayout();
+		var layout = new KeyboardLayout();
+		layout.name = 'Layout${keyboard.layouts.length}';
 		var newKeys = keys.map(key -> key.clone());
 		layout.keys = newKeys;
-		return layout;
+		return runAction(NewLayout(layout));
 	}
 
 	public function renameLayout(layout:KeyboardLayout, name:String) {
-		layout.name = name;
+		runAction(RenameLayout(layout.name, name));
 	}
 
 	public function removeLayout(layout:KeyboardLayout) {
-		keyboard.layouts.remove(layout);
+		runAction(RemoveLayout(layout.name));
+	}
+
+	public function addLayoutMapping(layout:KeyboardLayout, gridId:Int, layoutId:Int) {
+		runAction(AddLayoutMapping(layout.name, gridId, layoutId));
+	}
+
+	public function addLayoutMappingFromLayoutExclusive(layout:KeyboardLayout, gridId:Int, layoutId:Int) {
+		runAction(AddLayoutExclusiveMapping(layout.name, gridId, layoutId));
 	}
 }

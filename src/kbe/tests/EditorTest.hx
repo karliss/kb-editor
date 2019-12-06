@@ -131,4 +131,41 @@ class EditorTest extends utest.Test {
 		editor.undoBuffer.redo();
 		Assert.equals(0, editor.state.keys.length);
 	}
+
+	function testAddLayoutMapping() {
+		var editor = new Editor(new KeyBoard());
+		for (i in 0...10) {
+			editor.addNewKey();
+		}
+		var keyboard = editor.getKeyboard();
+		var layout = editor.newLayoutFromKeys(editor.getKeyboard().keys);
+
+		Assert.equals(null, layout.mappingFromGrid(1));
+		Assert.equals(0, layout.mappingToGrid(1).length);
+
+		editor.addLayoutMapping(layout, 1, 2);
+
+		Assert.equals(2, layout.mappingFromGrid(1));
+		Assert.same([1], layout.mappingToGrid(2));
+
+		editor.addLayoutMapping(layout, 1, 3);
+
+		Assert.equals(3, layout.mappingFromGrid(1));
+		Assert.same([1], layout.mappingToGrid(3));
+		Assert.same([], layout.mappingToGrid(2));
+
+		editor.addLayoutMapping(layout, 4, 3);
+
+		Assert.equals(3, layout.mappingFromGrid(4));
+		Assert.equals(3, layout.mappingFromGrid(1));
+		Assert.same([4, 1], layout.mappingToGrid(3));
+		Assert.same([], layout.mappingToGrid(2));
+
+		editor.addLayoutMappingFromLayoutExclusive(layout, 7, 3);
+
+		Assert.same([7], layout.mappingToGrid(3));
+		Assert.equals(3, layout.mappingFromGrid(7));
+		Assert.equals(null, layout.mappingFromGrid(4));
+		Assert.equals(null, layout.mappingFromGrid(1));
+	}
 }

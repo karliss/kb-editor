@@ -20,18 +20,33 @@ class KeyboardLayout {
 		return result;
 	}
 
-	public function mappingFromGrid(a:Int):Null<Int> {
-		return mapping.get(a);
+	public function mappingFromGrid(gridId:Int):Null<Int> {
+		return mapping.get(gridId);
 	}
 
-	public function mappingToGrid(a:Int):Array<Int> {
+	public function mappingToGrid(layoutId:Int):Array<Int> {
 		var result = [];
 		for (key => value in mapping) {
-			if (value == a) {
+			if (value == layoutId) {
 				result.push(key);
 			}
 		}
 		return result;
+	}
+
+	public function addMapping(gridId:Int, layoutId:Int) {
+		if (layoutId < 0) {
+			mapping.remove(gridId);
+		}
+		mapping.set(gridId, layoutId);
+	}
+
+	public function addExclusiveMapping(gridId:Int, layoutId:Int) {
+		var existingMapping = mappingToGrid(layoutId);
+		for (id in existingMapping) {
+			mapping.remove(id);
+		}
+		mapping.set(gridId, layoutId);
 	}
 }
 
@@ -115,5 +130,26 @@ class KeyBoard implements Clonable<KeyBoard> {
 			}
 		}
 		return null;
+	}
+
+	public function getLayoutByName(name:String):Null<KeyboardLayout> {
+		for (layout in layouts) {
+			if (layout.name == name) {
+				return layout;
+			}
+		}
+		return null;
+	}
+
+	public function renameLayout(oldName:String, newName:String) {
+		var layout = getLayoutByName(oldName);
+		var conflict = getLayoutByName(newName);
+		if (layout != null && conflict == null) {
+			layout.name = newName;
+		}
+	}
+
+	public function removeLayout(name:String) {
+		layouts.remove(getLayoutByName(name));
 	}
 }

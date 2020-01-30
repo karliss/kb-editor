@@ -125,6 +125,9 @@ class EditorGui extends Component {
 
 	function onClickImport(_):Void {
 		var importer = importFormat.selectedItem;
+		if (importer == null) {
+			return;
+		}
 		// TODO: remove if js
 		#if js
 		FileOpener.tryToOpenFile(function(bytes, names) {

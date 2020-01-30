@@ -2,6 +2,7 @@ package kbe;
 
 import kbe.UndoBuffer.UndoExecutor;
 import thx.OrderedMap.EnumValueOrderedMap;
+import thx.Arrays;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import kbe.KeyBoard.KeyboardLayout;
@@ -9,6 +10,8 @@ import kbe.CSVFormat.CSVExporter;
 import kbe.KBLEFormat.KBLEImporter;
 import kbe.CSVFormat.CSVImporter;
 import kbe.Exporter.Importer;
+
+using thx.Arrays;
 
 class IPoint {
 	public var x:Int;
@@ -24,6 +27,7 @@ enum EditorAction {
 	AddKey(key:Key);
 	RemoveKey(id:Int);
 	ModifyKey(id:Int, properties:Key);
+	MoveKeys(id:Array<Int>, positions:Array<Key.Point>);
 	NewLayout(layout:KeyboardLayout);
 	RenameLayout(oldName:String, newName:String);
 	RemoveLayout(name:String);
@@ -77,6 +81,9 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			case ModifyKey(id, prop):
 				keyboard.getKeyById(id).copyProperties(prop);
 
+			case MoveKeys(ids, positions):
+				moveKeysImpl(ids, positions);
+
 			case NewLayout(layout):
 				{
 					var v = layout.clone();
@@ -95,12 +102,24 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		return null;
 	}
 
+	private function moveKeysImpl(ids:Array<Int>, positions:Array<Key.Point>) {
+		var index = 0;
+		for (id in ids) {
+			var key = keyboard.getKeyById(id);
+			key.x = positions[index].x;
+			key.y = positions[index].y;
+			index++;
+		}
+	}
+
 	public function mergeActions(a:EditorAction, b:EditorAction):Null<EditorAction> {
 		switch [a, b] {
 			case [ModifyKey(id1, _), ModifyKey(id2, properties2)] if (id1 == id2):
 				return ModifyKey(id1, properties2);
 			case [AddKey(key), ModifyKey(id2, properties2)] if (key.id == id2):
 				return AddKey(properties2);
+			case [MoveKeys(ids1, pos1), MoveKeys(ids2, pos2)] if (ids1.equals(ids2)):
+				return MoveKeys(ids1, pos2);
 			default:
 				return null;
 		}
@@ -142,15 +161,22 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(RemoveKey(key.id));
 	}
 
-	function alignKey(key:Key, force:Bool = false) {
+	function alignPoint(pos:Key.Point, force:Bool = false):Key.Point {
 		var rnd = function(val:Float, step:Float):Float {
 			return Math.fround(val / step) * step;
 		};
 		if (alignButtons || force) {
 			var st:Float = alignment;
-			key.x = rnd(key.x, st);
-			key.y = rnd(key.y, st);
+			pos.x = rnd(pos.x, st);
+			pos.y = rnd(pos.y, st);
 		}
+		return pos;
+	}
+
+	function alignKey(key:Key, force:Bool = false) {
+		var p = alignPoint({x: key.x, y: key.y});
+		key.x = p.x;
+		key.y = p.y;
 	}
 
 	public function moveKey(key:Key, x:Float, y:Float, merge = false) {
@@ -161,6 +187,11 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			alignKey(key2);
 		}
 		runAction(ModifyKey(key.id, key2), merge);
+	}
+
+	public function moveKeys(ids:Array<Int>, positions:Array<Key.Point>, merge = false) {
+		var alignedPositions = positions.map(position -> alignPoint({x: position.x, y: position.y}));
+		runAction(MoveKeys(ids.copy(), alignedPositions), merge);
 	}
 
 	public function getConflictingWiring():Array<Key> {

@@ -10,6 +10,20 @@ import haxe.ui.constants.ScrollMode;
 
 typedef Point = {x:Float, y:Float}
 
+enum SelectionCommand {
+	Set;
+	Add;
+	Toggle;
+	Remove;
+}
+
+enum SelectionMode {
+	SingleSet;
+	MultiSelect;
+	MultiSelectMove;
+	None; // possibly handled externally
+}
+
 class KeyboardContainer extends Box {
 	static public var BUTTON_CHANGED = "BUTTON_CHANGED";
 	static public var BUTTON_CLICKED = "BUTTON_CLICKED";
@@ -17,11 +31,13 @@ class KeyboardContainer extends Box {
 
 	private var scrollView:ScrollView = new ScrollView();
 	private var canvas:Absolute = new Absolute();
-	private var buttons:List<KeyButton> = new List<KeyButton>();
+	private var selectedButtons:Array<KeyButton> = [];
 
-	public var activeButton(default, set):Null<KeyButton> = null;
+	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
+	public var activeButton(get, set):Null<KeyButton>;
 	public var scale(default, set):Int = 32;
 	public var formatButton:(KeyButton) -> Void;
+	public var selectionMode(default, set):SelectionMode = SingleSet;
 
 	public function new() {
 		super();
@@ -57,17 +73,23 @@ class KeyboardContainer extends Box {
 		}
 	}
 
+	public function clearSelection() {
+		selectedButtons = [];
+	}
+
+	public function activeButtons():Array<KeyButton> {
+		return selectedButtons;
+	}
+
 	public function loadFromList(keys:Array<Key>) {
-		var activeId = -1;
-		if (activeButton != null) {
-			activeId = activeButton.key.id;
-		}
+		var activeId = selectedButtons.map(b -> b.key.id);
 		clear();
 
+		clearSelection();
 		for (key in keys) {
 			var button = addKey(key);
-			if (key.id == activeId) {
-				activeButton = button;
+			if (activeId.indexOf(key.id) >= 0) {
+				selectButton(button, Add);
 			}
 		}
 		refreshFormatting();
@@ -110,7 +132,7 @@ class KeyboardContainer extends Box {
 	}
 
 	public function clear() {
-		activeButton = null;
+		clearSelection();
 		for (button in buttons) {
 			removeKey(button);
 		}
@@ -124,16 +146,59 @@ class KeyboardContainer extends Box {
 		return v;
 	}
 
-	function set_activeButton(button:KeyButton):KeyButton {
-		if (activeButton != null) {
-			activeButton.selected = false;
+	function get_activeButton():Null<KeyButton> {
+		if (selectedButtons.length > 0) {
+			return selectedButtons[selectedButtons.length - 1];
+		} else {
+			return null;
 		}
-		activeButton = button;
-		if (activeButton != null) {
-			activeButton.selected = true;
+	}
+
+	function set_activeButton(button:Null<KeyButton>):Null<KeyButton> {
+		selectButton(button, Set);
+		return button;
+	}
+
+	public function selectButton(button:Null<KeyButton>, mode:SelectionCommand = Set) {
+		if (mode == Set) {
+			for (button in selectedButtons) {
+				button.selected = false;
+			}
+			selectedButtons = [];
+			if (button != null) {
+				selectedButtons.push(button);
+				button.selected = true;
+			}
+			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button));
+			return;
+		}
+		if (button == null) {
+			return;
+		}
+
+		if (mode == Add) {
+			var index = selectedButtons.indexOf(button);
+			if (index >= 0) {
+				selectedButtons[index] = selectedButtons[selectedButtons.length - 1];
+				selectedButtons[selectedButtons.length - 1] = button;
+				return;
+			}
+			selectedButtons.push(button);
+			button.selected = true;
+			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button));
+		} else if (mode == Toggle) {
+			if (selectedButtons.remove(button)) {
+				button.selected = false;
+			} else {
+				button.selected = true;
+				selectedButtons.push(button);
+			}
+		} else if (mode == Remove) {
+			if (selectedButtons.remove(button)) {
+				button.selected = false;
+			}
 		}
 		dispatch(new KeyButtonEvent(BUTTON_CHANGED, activeButton));
-		return button;
 	}
 
 	public function getButton(key:Key):Null<KeyButton> {
@@ -145,9 +210,29 @@ class KeyboardContainer extends Box {
 		return null;
 	}
 
+	function set_selectionMode(mode:SelectionMode):SelectionMode {
+		this.selectionMode = mode;
+		return mode;
+	}
+
 	private function onKeyClick(e:MouseEvent) {
 		dispatch(new KeyButtonEvent(BUTTON_CLICKED, cast e.target));
-		activeButton = cast e.target;
+		var button:KeyButton = cast e.target;
+		switch selectionMode {
+			case SingleSet:
+				selectButton(button, Set);
+			case MultiSelect:
+				selectButton(button, e.shiftKey ? Toggle : Set);
+			case MultiSelectMove:
+				if (e.shiftKey) {
+					selectButton(button, Toggle);
+				} else if (selectedButtons.indexOf(button) >= 0) {
+					selectButton(button, Add);
+				} else {
+					selectButton(button, Set);
+				}
+			case None:
+		}
 	}
 
 	private function onMouseDown(e:MouseEvent) {

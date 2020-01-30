@@ -43,12 +43,13 @@ class AddTool extends MoveTool {
 
 	function onAdd(e:MouseEvent) {
 		var button = doAdd(e);
-		this.movableButton = button;
-		this.offset = {x: 0, y: 0};
+		this.movableButtons = [button];
+		this.offsets = [{x: 0, y: 0}];
 		firstMove = false;
 	}
 
 	override function activate() {
+		page.cMechanical.selectionMode = SingleSet;
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_DOWN, onAdd);
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -67,6 +68,7 @@ class RemoveTool extends Tool {
 	}
 
 	override function activate() {
+		page.cMechanical.selectionMode = SingleSet;
 		page.cMechanical.registerEvent(KeyboardContainer.BUTTON_CLICKED, buttonClicked);
 	}
 
@@ -76,44 +78,79 @@ class RemoveTool extends Tool {
 }
 
 class SelectTool extends Tool {
-	// TODO:implement
+	override function activate() {
+		page.cMechanical.selectionMode = MultiSelect;
+	}
 }
 
 class MoveTool extends Tool {
-	var movableButton:Null<KeyButton>;
-	var offset:Point = {x: 0, y: 0};
+	var movableButtons:Array<KeyButton> = null;
+	var offsets:Array<Point> = [];
 	var firstMove = true;
+	var buttonToToggle:Null<KeyButton> = null;
 
 	function onMouseDown(e:KeyButtonEvent) {
+		buttonToToggle = null;
 		if (e.mouseEvent == null) {
 			return;
 		}
-		page.cMechanical.activeButton = e.button;
-		movableButton = e.button;
+		var container = page.cMechanical;
+		var button = e.button;
+		buttonToToggle = button;
+		if (e.mouseEvent.shiftKey) {
+			container.selectButton(button, Toggle);
+		} else if (container.activeButtons().indexOf(button) >= 0) {
+			container.selectButton(button, Add);
+		} else {
+			container.selectButton(button, Set);
+		}
+		movableButtons = page.cMechanical.activeButtons().copy();
 
 		var p = page.cMechanical.screenToField(e.mouseEvent.screenX, e.mouseEvent.screenY);
-		var p2 = new haxe.ui.geom.Point(movableButton.key.x, movableButton.key.y);
-		offset = {x: movableButton.key.x - p.x, y: movableButton.key.y - p.y};
+		offsets = movableButtons.map(movableButton -> {
+			var p2 = new haxe.ui.geom.Point(movableButton.key.x, movableButton.key.y);
+			return {x: movableButton.key.x - p.x, y: movableButton.key.y - p.y};
+		});
 		firstMove = true;
 	}
 
 	function onMouseUp(e:MouseEvent) {
-		movableButton = null;
+		movableButtons = null;
+	}
+
+	function onButtonClicked(e:MouseEvent) {
+		if (buttonToToggle != null && page.cMechanical.activeButtons().indexOf(buttonToToggle) < 0) {
+			// Deselect button when shift clicking
+			buttonToToggle.selected = false;
+			buttonToToggle = null;
+		}
 	}
 
 	function onMouseMove(e:MouseEvent) {
-		if (movableButton == null || !e.buttonDown) {
+		if (movableButtons == null || !e.buttonDown) {
 			return;
 		}
 		var p = page.cMechanical.screenToField(e.screenX, e.screenY);
-		editor.moveKey(movableButton.key, p.x + offset.x, p.y + offset.y, !firstMove);
+		var index = 0;
+		var ids = new Array<Int>();
+		var positions = new Array<Key.Point>();
+		for (movableButton in movableButtons) {
+			ids.push(movableButton.key.id);
+			positions.push({x: p.x + offsets[index].x, y: p.y + offsets[index].y});
+			index++;
+		}
+		editor.moveKeys(ids, positions, !firstMove);
 		firstMove = false;
-		page.onKeyMove(movableButton);
+		for (button in movableButtons) {
+			page.onKeyMove(button);
+		}
 		page.cMechanical.updateLayout();
 	}
 
 	override function activate() {
+		page.cMechanical.selectionMode = None;
 		page.cMechanical.registerEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
+		page.cMechanical.registerEvent(KeyboardContainer.BUTTON_CLICKED, onButtonClicked);
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
 		// page.cMechanical.registerEvent(MouseEvent.MOUSE_OUT, onMouseUp);
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
@@ -121,9 +158,10 @@ class MoveTool extends Tool {
 
 	override function deactivate() {
 		page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_DOWN, onMouseDown);
+		page.cMechanical.unregisterEvent(KeyboardContainer.BUTTON_CLICKED, onButtonClicked);
 		page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseUp);
 		//  page.cMechanical.unregisterEvent(MouseEvent.MOUSE_OUT, onMouseUp);
-		page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseMove);
+		page.cMechanical.unregisterEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
 	}
 }
 

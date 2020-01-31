@@ -37,8 +37,9 @@ class KeyboardLayout {
 	public function addMapping(gridId:Int, layoutId:Int) {
 		if (layoutId < 0) {
 			mapping.remove(gridId);
+		} else {
+			mapping.set(gridId, layoutId);
 		}
-		mapping.set(gridId, layoutId);
 	}
 
 	public function addExclusiveMapping(gridId:Int, layoutId:Int) {
@@ -46,7 +47,9 @@ class KeyboardLayout {
 		for (id in existingMapping) {
 			mapping.remove(id);
 		}
-		mapping.set(gridId, layoutId);
+		if (gridId > -1) {
+			mapping.set(gridId, layoutId);
+		}
 	}
 }
 

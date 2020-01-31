@@ -17,6 +17,8 @@ import kbe.components.OneWayButton;
 class LayoutPage extends HBox implements EditorPage {
 	var editor:Editor;
 	var directionDown = true;
+	// flag to prevent infinite recursion when changing selection from code
+	var disableRecursion:Bool = false;
 
 	public function new(?editor:Editor) {
 		super();
@@ -160,17 +162,101 @@ class LayoutPage extends HBox implements EditorPage {
 	function switchDown(_) {
 		directionDown = true;
 		btnUp.selected = false;
+		btnViewOnly.selected = false;
 	}
 
 	@:bind(btnUp, MouseEvent.CLICK)
 	function switchUp(_) {
 		directionDown = false;
 		btnDown.selected = false;
+		btnViewOnly.selected = false;
+	}
+
+	@:bind(btnViewOnly, MouseEvent.CLICK)
+	function switchViewMode(_) {
+		btnDown.selected = false;
+		btnUp.selected = false;
 	}
 
 	@:bind(layoutView, KeyboardContainer.BUTTON_CHANGED)
-	function clickUp(e:KeyButtonEvent) {}
+	function clickUp(e:KeyButtonEvent) {
+		if (disableRecursion) {
+			return;
+		}
+		var layout = selectedLayout();
+		if (layout == null) {
+			return;
+		}
+		if (btnViewOnly.selected || directionDown) {
+			disableRecursion = true;
+			var topButton = layoutView.activeButton;
+
+			keyboardView.activeButton = null;
+			if (topButton != null) {
+				var keyboardIds = layout.mappingToGrid(topButton.key.id);
+				for (key in keyboardView.buttons) {
+					if (keyboardIds.indexOf(key.key.id) > -1) {
+						keyboardView.selectButton(key, Add);
+					}
+				}
+			}
+			disableRecursion = false;
+		} else {
+			var layoutButton = layoutView.activeButton;
+			if (layoutButton == null) {
+				return;
+			}
+			if (btnExclusive.selected) {
+				var keyboardButton = keyboardView.activeButton;
+				if (keyboardButton != null) {
+					editor.addLayoutMappingFromLayoutExclusive(layout, keyboardButton.key.id, layoutButton.key.id);
+				} else {
+					editor.addLayoutMappingFromLayoutExclusive(layout, -1, layoutButton.key.id);
+				}
+			} else {
+				var keyboardButton = keyboardView.activeButton;
+				if (keyboardButton != null) {
+					editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
+				}
+			}
+		}
+	}
 
 	@:bind(keyboardView, KeyboardContainer.BUTTON_CHANGED)
-	function clickDown(e:KeyButtonEvent) {}
+	function clickDown(e:KeyButtonEvent) {
+		if (disableRecursion) {
+			return;
+		}
+		var layout = selectedLayout();
+		if (layout == null) {
+			return;
+		}
+		if (btnViewOnly.selected || !directionDown) {
+			disableRecursion = true;
+			var keyboardKey = keyboardView.activeButton;
+			layoutView.activeButton = null;
+			if (keyboardKey != null) {
+				var id = layout.mappingFromGrid(keyboardKey.key.id);
+				if (id != null) {
+					for (button in layoutView.buttons) {
+						if (button.key.id == id) {
+							layoutView.activeButton = button;
+						}
+					}
+				}
+			}
+			disableRecursion = false;
+		} else {
+			var keyboardButton = keyboardView.activeButton;
+			var layoutButton = layoutView.activeButton;
+			if (keyboardButton == null) {
+				return;
+			}
+			if (layoutButton != null) {
+				editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
+			} else {
+				editor.addLayoutMapping(layout, keyboardButton.key.id, -1);
+			}
+		}
+	}
 }

@@ -2,6 +2,9 @@
     <vbox>
         <onewaybutton id="btnDown" text="Top to bottom"/>
         <onewaybutton id="btnUp" text="Bottom to top"/>
+        <button id="btnExclusive" text="Exclusive mapping" toggle="true" selected="true"/>
+        <onewaybutton id="btnViewOnly" text="View only"/>
+        <spacer/>
         <button id="btnAuto" text="Auto connect"/>
     </vbox>
     <vbox width="100%" height="100%">

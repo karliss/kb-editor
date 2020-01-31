@@ -72,10 +72,12 @@ class WiringPage extends HBox implements EditorPage {
 	function refreshFormatting() {
 		conflictingKeys.clear();
 		var badKeys = editor.getConflictingWiring();
+		labelConflicts.text = '${badKeys.length}';
 		for (key in badKeys) {
 			conflictingKeys.set(key.id, 0);
 		}
 		keyView.refreshFormatting();
+		var uniqueUsed:Int = 0;
 		for (y in 0...rows) {
 			for (x in 0...columns) {
 				var button = getMatrixButton(x, y);
@@ -84,6 +86,12 @@ class WiringPage extends HBox implements EditorPage {
 				};
 			}
 		}
+		if (badKeys.length > 0) {
+			labelUnassigned.text = '';
+		} else {
+			labelUnassigned.text = 'unassigned: ${rows * columns - keyboard.keys.length}';
+		}
+
 		for (key in keyboard.keys) {
 			var button = getMatrixButton(key.column, key.row);
 			if (button != null) {

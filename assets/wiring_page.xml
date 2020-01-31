@@ -11,11 +11,12 @@
             <label text="" id="labelColumns"/>
             <label text="conflicts: "/>
             <label text="N" id="labelConflicts"/>
+            <label text="N" id="labelUnassigned"/>
         </hbox>
         <Grid id="matrixGrid" height="50%" width="100%"/>
     </vbox>
 
-    <PropertyEditor id="propEditor" width="200">
+    <PropertyEditor id="propEditor" width="200" height="100%">
         <vbox text="Electrical">
             <PropertyItem id="p_row" text="row">
                 <IntegerEditor maximum="1000" />

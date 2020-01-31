@@ -22,11 +22,10 @@ class PropertyEditor extends Accordion {
 	}
 
 	override function addComponent(child:Component):Component {
-		child.addClass("accordion-content");
 		var result = super.addComponent(child);
-		contentElements.push(child);
-		var button:Button = cast result;
-		// button.selected = true; doesn't work
+		if (!child.hasClass("accordion-button") && !child.hasClass("accordion-page")) {
+			contentElements.push(child);
+		}
 		return result;
 	}
 

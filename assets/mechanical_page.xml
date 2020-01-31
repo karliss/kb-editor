@@ -13,7 +13,7 @@
     </vbox>
     <KeyboardContainer id="cMechanical"/>
 
-    <PropertyEditor id="propEditor" width="200">
+    <PropertyEditor id="propEditor" width="200" height="100%">
         <vbox text="General">
             <PropertyItem id="p_id" text="Id">
                 <IntegerEditor minimum="0" maximum="1000" />

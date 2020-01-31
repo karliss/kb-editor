@@ -114,14 +114,24 @@ class WiringPage extends HBox implements EditorPage {
 
 	function onPropertyChange(_) {
 		var data = propEditor.source;
-		for (button in keyView.activeButtons()) {
+		var ids = [];
+		var properties = [];
+		var activeButtons = keyView.activeButtons();
+		if (activeButtons.length == 0 || (data.row == null && data.column == null)) {
+			return;
+		}
+		for (button in activeButtons) {
+			ids.push(button.key.id);
+			var buttonProp = new Map<String, Dynamic>();
 			if (data.row != null) {
-				button.key.row = data.row;
+				buttonProp.set("row", data.row);
 			}
 			if (data.column != null) {
-				button.key.column = data.column;
+				buttonProp.set("column", data.column);
 			}
+			properties.push(buttonProp);
 		}
+		editor.modifyKeys(ids, properties);
 		resizeMatrix();
 		syncBottomSelection();
 		refreshFormatting();

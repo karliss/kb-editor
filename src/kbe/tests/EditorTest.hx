@@ -132,6 +132,34 @@ class EditorTest extends utest.Test {
 		Assert.equals(0, editor.state.keys.length);
 	}
 
+	function testModifyKeys() {
+		var editor = new Editor(new KeyBoard());
+		var keys = [editor.addNewKey(), editor.addNewKey(), editor.addNewKey()];
+
+		var getRowColumn = id -> {
+			var key = editor.getKeyboard().getKeyById(id);
+			return [key.row, key.column];
+		};
+		Assert.equals(0, keys[0].row);
+		Assert.equals(0, keys[0].column);
+
+		editor.modifyKeys([], []);
+		Assert.equals(3, editor.getKeyboard().keys.length);
+		editor.modifyKeys([1, 3], [["row" => 1, "column" => 2], ["row" => 3, "column" => 4]]);
+		Assert.same([1, 2], [keys[0].row, keys[0].column]);
+		Assert.same([0, 0], [keys[1].row, keys[1].column]);
+		Assert.same([3, 4], [keys[2].row, keys[2].column]);
+		editor.undoBuffer.undo();
+		for (i in 1...4) {
+			var key = editor.getKeyboard().getKeyById(i);
+			Assert.same([0, 0], [key.row, key.column]);
+		}
+		editor.undoBuffer.redo();
+		Assert.same([1, 2], getRowColumn(1));
+		Assert.same([0, 0], getRowColumn(2));
+		Assert.same([3, 4], getRowColumn(3));
+	}
+
 	function testAddLayoutMapping() {
 		var editor = new Editor(new KeyBoard());
 		for (i in 0...10) {

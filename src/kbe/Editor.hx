@@ -27,6 +27,7 @@ enum EditorAction {
 	AddKey(key:Key);
 	RemoveKey(id:Int);
 	ModifyKey(id:Int, properties:Key);
+	ModifyKeys(id:Array<Int>, properties:Array<Map<String, Dynamic>>);
 	MoveKeys(id:Array<Int>, positions:Array<Key.Point>);
 	NewLayout(layout:KeyboardLayout);
 	RenameLayout(oldName:String, newName:String);
@@ -80,6 +81,8 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 			case ModifyKey(id, prop):
 				keyboard.getKeyById(id).copyProperties(prop);
+			case ModifyKeys(id, prop):
+				modifyKeysImpl(id, prop);
 
 			case MoveKeys(ids, positions):
 				moveKeysImpl(ids, positions);
@@ -100,6 +103,15 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 				keyboard.getLayoutByName(layout).addExclusiveMapping(gridId, layoutId);
 		}
 		return null;
+	}
+
+	private function modifyKeysImpl(ids:Array<Int>, prop:Array<Map<String, Dynamic>>) {
+		for (i in 0...ids.length) {
+			var key = keyboard.getKeyById(ids[i]);
+			for (name => value in prop[i]) {
+				Reflect.setField(key, name, value);
+			}
+		}
 	}
 
 	private function moveKeysImpl(ids:Array<Int>, positions:Array<Key.Point>) {
@@ -192,6 +204,10 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	public function moveKeys(ids:Array<Int>, positions:Array<Key.Point>, merge = false) {
 		var alignedPositions = positions.map(position -> alignPoint({x: position.x, y: position.y}));
 		runAction(MoveKeys(ids.copy(), alignedPositions), merge);
+	}
+
+	public function modifyKeys(ids:Array<Int>, properties:Array<Map<String, Dynamic>>) {
+		runAction(ModifyKeys(ids, properties));
 	}
 
 	public function getConflictingWiring():Array<Key> {

@@ -15,7 +15,7 @@ class WiringPage extends HBox implements EditorPage {
 	var keyboard:KeyBoard;
 	var editor:Editor;
 	var conflictingKeys = new Map<Int, Int>();
-	var bottomButton:Null<OneWayButton> = null;
+	var selectedBottomButtons:Array<OneWayButton> = [];
 
 	var rows = 0;
 	var columns = 0;
@@ -35,6 +35,7 @@ class WiringPage extends HBox implements EditorPage {
 		keyView.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		propEditor.onChange = onPropertyChange;
 		keyView.formatButton = formatButton;
+		keyView.selectionMode = MultiSelect;
 	}
 
 	public function init(editor:Editor) {
@@ -50,10 +51,12 @@ class WiringPage extends HBox implements EditorPage {
 		if (currentButton != null && currentButton != button) {
 			var row = currentButton.key.row;
 			var column = currentButton.key.column;
-			if (key.row == row) {
-				button.backgroundColor = 0xe0fde0;
-			} else if (column == key.column) {
-				button.backgroundColor = 0xe0e0fd;
+			if (!button.selected) {
+				if (key.row == row) {
+					button.backgroundColor = 0xe0fde0;
+				} else if (column == key.column) {
+					button.backgroundColor = 0xe0e0fd;
+				}
 			}
 			if (conflictingKeys.exists(key.id)) {
 				button.backgroundColor = 0xffcc00;
@@ -110,20 +113,56 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	function onPropertyChange(_) {
+		var data = propEditor.source;
+		for (button in keyView.activeButtons()) {
+			if (data.row != null) {
+				button.key.row = data.row;
+			}
+			if (data.column != null) {
+				button.key.column = data.column;
+			}
+		}
 		resizeMatrix();
 		syncBottomSelection();
 		refreshFormatting();
 	}
 
 	function syncBottomSelection() {
-		if (keyView.activeButton != null) {
-			var key = keyView.activeButton.key;
-			selectBottomButton(key.column, key.row);
+		for (button in selectedBottomButtons) {
+			button.selected = false;
+		}
+		selectedBottomButtons = [];
+		for (button in keyView.activeButtons()) {
+			var bottomButton = getMatrixButton(button.key.column, button.key.row);
+			if (bottomButton != null) {
+				selectedBottomButtons.push(bottomButton);
+				bottomButton.selected = true;
+			}
 		}
 	}
 
+	function getTopSelectionRowColumn():Dynamic {
+		var value = {row: null, column: null};
+		var activeButtons = keyView.activeButtons();
+		if (activeButtons.length == 0) {
+			return value;
+		}
+		value.row = activeButtons[0].key.row;
+		value.column = activeButtons[0].key.column;
+		for (button in activeButtons) {
+			var key = button.key;
+			if (key.row != value.row) {
+				value.row = null;
+			}
+			if (key.column != value.column) {
+				value.column = null;
+			}
+		}
+		return value;
+	}
+
 	function onButtonChange(e:KeyButtonEvent) {
-		propEditor.source = e.button != null ? e.button.key : null;
+		propEditor.source = getTopSelectionRowColumn();
 		syncBottomSelection();
 		refreshFormatting();
 	}
@@ -142,13 +181,11 @@ class WiringPage extends HBox implements EditorPage {
 		keyView.activeButton = null;
 	}
 
-	function selectBottomButton(x:Int, y:Int) {
-		if (bottomButton != null) {
-			bottomButton.selected = false;
-			bottomButton = null;
+	function selectBottomButton(button:OneWayButton) {
+		for (button in selectedBottomButtons) {
+			button.selected = false;
 		}
-		var button:OneWayButton = cast(matrixGrid.getComponentAt(x + y * columns), OneWayButton);
-		bottomButton = button;
+		selectedBottomButtons = [button];
 		button.selected = true;
 	}
 
@@ -178,11 +215,8 @@ class WiringPage extends HBox implements EditorPage {
 				button.width = 32;
 				button.height = 32;
 				button.registerEvent(MouseEvent.CLICK, function(_) {
-					if (bottomButton != null) {
-						bottomButton.selected = false;
-					}
+					selectBottomButton(button);
 					selectTopButton(x, y);
-					bottomButton = button;
 					refreshFormatting();
 				});
 				matrixGrid.addComponent(button);

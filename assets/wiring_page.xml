@@ -1,6 +1,8 @@
 <hbox id="pageWiring" text="Wiring" width="100%" height="100%">
     <vbox>
         <onewaybutton id="TODO" text="TODO"/>
+        <label text="View"/>
+        <dropdown text="Color" id="colorSelect"/>
     </vbox>
     <vbox width="100%" height="100%">
         <KeyboardContainer id="keyView" height="50%"/>

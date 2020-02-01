@@ -7,6 +7,7 @@
 -lib FileSaver
 -lib thx.csv
 -lib utest
+-lib thx.color
 #--macro nullSafety("kbe", Loose)
 
 -js build/html5/Main.js

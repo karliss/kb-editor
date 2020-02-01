@@ -1,7 +1,9 @@
 package kbe;
 
+import haxe.ui.data.ListDataSource;
 import haxe.ui.util.StringUtil;
 import haxe.ui.util.Color;
+import haxe.ui.events.UIEvent;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.components.Button;
@@ -10,12 +12,20 @@ import kbe.components.properties.PropertyEditor;
 import kbe.components.KeyboardContainer;
 import kbe.components.KeyboardContainer.KeyButtonEvent;
 
+private enum ColorMode {
+	None;
+	Conflicts;
+	RainbowRows;
+	RainbowColumns;
+}
+
 @:build(haxe.ui.macros.ComponentMacros.build("assets/wiring_page.xml"))
 class WiringPage extends HBox implements EditorPage {
 	var keyboard:KeyBoard;
 	var editor:Editor;
 	var conflictingKeys = new Map<Int, Int>();
 	var selectedBottomButtons:Array<OneWayButton> = [];
+	var colorMode:ColorMode = Conflicts;
 
 	var rows = 0;
 	var columns = 0;
@@ -36,6 +46,12 @@ class WiringPage extends HBox implements EditorPage {
 		propEditor.onChange = onPropertyChange;
 		keyView.formatButton = formatButton;
 		keyView.selectionMode = MultiSelect;
+
+		var ds = colorSelect.dataSource = new ListDataSource<Dynamic>();
+		ds.add({value: "conflicts", mode: ColorMode.Conflicts});
+		ds.add({value: "none", mode: ColorMode.None});
+		ds.add({value: "rows", mode: ColorMode.RainbowRows});
+		ds.add({value: "columns", mode: ColorMode.RainbowColumns});
 	}
 
 	public function init(editor:Editor) {
@@ -43,27 +59,45 @@ class WiringPage extends HBox implements EditorPage {
 		reload();
 	}
 
+	@:bind(colorSelect, UIEvent.CHANGE)
+	function onLayoutChanged(_:Null<Dynamic>) {
+		var modeData = colorSelect.selectedItem;
+		if (modeData != null) {
+			colorMode = modeData.mode;
+		} else {
+			colorMode = Conflicts;
+		}
+		refreshFormatting();
+	}
+
 	function formatButton(button:KeyButton) {
 		var key = button.key;
 		button.text = '${StringTools.hex(key.row)} ${StringTools.hex(key.column)}';
 		button.backgroundColor = null;
-		var currentButton = keyView.activeButton;
-		if (currentButton != null && currentButton != button) {
-			var row = currentButton.key.row;
-			var column = currentButton.key.column;
-			if (!button.selected) {
-				if (key.row == row) {
-					button.backgroundColor = 0xe0fde0;
-				} else if (column == key.column) {
-					button.backgroundColor = 0xe0e0fd;
+		if (colorMode == Conflicts) {
+			var currentButton = keyView.activeButton;
+			if (currentButton != null && currentButton != button) {
+				var row = currentButton.key.row;
+				var column = currentButton.key.column;
+
+				if (!button.selected) {
+					if (key.row == row) {
+						button.backgroundColor = 0xe0fde0;
+					} else if (column == key.column) {
+						button.backgroundColor = 0xe0e0fd;
+					}
+				}
+				if (conflictingKeys.exists(key.id)) {
+					button.backgroundColor = 0xffcc00;
+				}
+				if (key.row == row && column == key.column && button != keyView.activeButton) {
+					button.backgroundColor = 0xff6666;
 				}
 			}
-			if (conflictingKeys.exists(key.id)) {
-				button.backgroundColor = 0xffcc00;
-			}
-			if (key.row == row && column == key.column && button != keyView.activeButton) {
-				button.backgroundColor = 0xff6666;
-			}
+		} else if (colorMode == RainbowRows) {
+			button.backgroundColor = KeyVisualizer.getIndexedColor(button.key.row, button.selected);
+		} else if (colorMode == RainbowColumns) {
+			button.backgroundColor = KeyVisualizer.getIndexedColor(button.key.column, button.selected);
 		}
 	}
 

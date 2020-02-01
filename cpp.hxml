@@ -4,5 +4,6 @@
 -lib haxeui-core
 -lib haxeui-hxwidgets
 -lib hscript
+-lib thx.color
 
 -cpp build/cpp/Main

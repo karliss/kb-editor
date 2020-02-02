@@ -3,7 +3,6 @@
 
 -lib haxeui-core
 -lib haxeui-hxwidgets
--lib hscript
--lib thx.color
+common.hxml
 
 -cpp build/cpp/Main

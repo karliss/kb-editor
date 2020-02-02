@@ -1,9 +1,9 @@
 <vbox style="padding: 5px;" height="100%" width="100%">
   <hbox>
-    <dropdown text="Import format" id="importFormat">
+    <dropdown text="Import format" id="importFormat" width="250">
     </dropdown>
     <button text="Import" id="importButton"/>
-    <dropdown text="Export format" id="exportFormat">
+    <dropdown text="Export format" id="exportFormat" width="250">
     </dropdown>
     <button text="Export" id="exportButton"/>
 

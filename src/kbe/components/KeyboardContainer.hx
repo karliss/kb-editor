@@ -256,7 +256,6 @@ class KeyboardContainer extends Box {
 	}
 
 	private function onMouseDownArea(e:MouseEvent) {
-		trace('mouse down area ${e.target}');
 		if (rectangleSelection && !clickingOnButton) {
 			selectionStart = new haxe.ui.geom.Point(e.localX, e.localY);
 		}

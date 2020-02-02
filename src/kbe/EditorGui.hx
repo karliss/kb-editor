@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.KBLEFormat.KBLERawImporter;
 import haxe.ui.events.KeyboardEvent;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
@@ -97,7 +98,7 @@ class EditorGui extends Component {
 	}
 
 	function fillFormats() {
-		var importers = [new CSVImporter(), new KBLEImporter()];
+		var importers = [new CSVImporter(), new KBLEImporter(), new KBLERawImporter()];
 		this.importFormat.dataSource = new ArrayDataSource();
 		for (importer in importers) {
 			importFormat.dataSource.add(importer);

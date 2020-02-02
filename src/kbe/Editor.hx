@@ -6,10 +6,6 @@ import thx.Arrays;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import kbe.KeyBoard.KeyboardLayout;
-import kbe.CSVFormat.CSVExporter;
-import kbe.KBLEFormat.KBLEImporter;
-import kbe.CSVFormat.CSVImporter;
-import kbe.Exporter.Importer;
 
 using thx.Arrays;
 

@@ -2,10 +2,8 @@
 -main kbe.testHelper.TestMain
 
 -lib haxeui-core
--lib hscript
-#-lib FileSaver
--lib thx.csv
 -lib utest
+common.hxml
 
 --interp
 #-x testHelper.TestMain

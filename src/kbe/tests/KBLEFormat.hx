@@ -59,6 +59,19 @@ class KBLEFormat extends utest.Test {
 		Assert.equals(1, keyboard.keys[4].height);
 	}
 
+	function testTolerant() {
+		// many layout.json contain bad JSON without quotes and top level brackets
+		var importer = new KBLERawImporter();
+		var keyboard = importer.convert(Bytes.ofString('["a", "b"],[{y:1},"c"]'));
+		Assert.same(3, keyboard.keys.length);
+		Assert.same({x: 0, y: 0}, keyboard.keys[0].point());
+		Assert.equals("a", keyboard.keys[0].name);
+		Assert.same({x: 1, y: 0}, keyboard.keys[1].point());
+		Assert.equals("b", keyboard.keys[1].name);
+		Assert.same({x: 0, y: 2}, keyboard.keys[2].point());
+		Assert.equals("c", keyboard.keys[2].name);
+	}
+
 	function testProperties() {
 		var importer = new KBLEImporter();
 		var keyboard = importer.convert(Bytes.ofString('

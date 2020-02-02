@@ -3,11 +3,9 @@
 
 -lib haxeui-core
 -lib haxeui-html5
--lib hscript
--lib FileSaver
--lib thx.csv
 -lib utest
--lib thx.color
+-lib FileSaver
+common.hxml
 #--macro nullSafety("kbe", Loose)
 
 -js build/html5/Main.js

@@ -3,7 +3,7 @@ package kbe;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
-import haxe.Json;
+import tjson.TJSON;
 import kbe.KeyBoard;
 import kbe.Exporter;
 
@@ -16,7 +16,7 @@ class KBLEImporter implements Exporter.Importer {
 
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {
 		var keyboard = new KeyBoard();
-		var json:Array<Dynamic> = Json.parse(bytes.toString());
+		var json:Array<Dynamic> = TJSON.parse(bytes.toString());
 		var y:Float = 0;
 		var x:Float = 0;
 		var w:Float = 1;
@@ -68,5 +68,21 @@ class KBLEImporter implements Exporter.Importer {
 			}
 		}
 		return keyboard;
+	}
+}
+
+class KBLERawImporter extends KBLEImporter {
+	// public var value(default, null):String = "Keyboard layout editor .json importer";
+	public function new() {
+		super();
+		this.value = "Raw layout.json";
+	}
+
+	override public function convert(bytes:Bytes, ?name:String):KeyBoard {
+		var data = new BytesBuffer();
+		data.addString('[');
+		data.add(bytes);
+		data.addString(']');
+		return super.convert(data.getBytes(), name);
 	}
 }

@@ -46,6 +46,7 @@ class WiringPage extends HBox implements EditorPage {
 		propEditor.onChange = onPropertyChange;
 		keyView.formatButton = formatButton;
 		keyView.selectionMode = MultiSelect;
+		keyView.rectangleSelection = true;
 
 		var ds = colorSelect.dataSource = new ListDataSource<Dynamic>();
 		ds.add({value: "conflicts", mode: ColorMode.Conflicts});
@@ -76,9 +77,9 @@ class WiringPage extends HBox implements EditorPage {
 		button.backgroundColor = null;
 		if (colorMode == Conflicts) {
 			var currentButton = keyView.activeButton;
-			if (currentButton != null && currentButton != button) {
-				var row = currentButton.key.row;
-				var column = currentButton.key.column;
+			if (currentButton != button) {
+				var row = currentButton != null ? currentButton.key.row : -1;
+				var column = currentButton != null ? currentButton.key.column : -1;
 
 				if (!button.selected) {
 					if (key.row == row) {

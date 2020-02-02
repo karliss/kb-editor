@@ -1,5 +1,6 @@
 package kbe.components;
 
+import haxe.ui.geom.Rectangle;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.Absolute;
 import haxe.ui.containers.Box;
@@ -32,12 +33,16 @@ class KeyboardContainer extends Box {
 	private var scrollView:ScrollView = new ScrollView();
 	private var canvas:Absolute = new Absolute();
 	private var selectedButtons:Array<KeyButton> = [];
+	private var clickingOnButton:Bool = false;
+	private var selectionStart:Null<haxe.ui.geom.Point> = null;
 
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
+
 	public var activeButton(get, set):Null<KeyButton>;
 	public var scale(default, set):Int = 32;
 	public var formatButton:(KeyButton) -> Void;
 	public var selectionMode(default, set):SelectionMode = SingleSet;
+	public var rectangleSelection:Bool = false;
 
 	public function new() {
 		super();
@@ -57,6 +62,9 @@ class KeyboardContainer extends Box {
 		formatButton = defaultFormat;
 		percentWidth = 100;
 		percentHeight = 100;
+
+		this.registerEvent(MouseEvent.MOUSE_DOWN, onMouseDownArea);
+		this.registerEvent(MouseEvent.MOUSE_UP, onMouseUpArea);
 	}
 
 	public function refreshFormatting() {
@@ -74,7 +82,7 @@ class KeyboardContainer extends Box {
 	}
 
 	public function clearSelection() {
-		selectedButtons = [];
+		unselectButtons();
 	}
 
 	public function activeButtons():Array<KeyButton> {
@@ -159,12 +167,16 @@ class KeyboardContainer extends Box {
 		return button;
 	}
 
+	private function unselectButtons() {
+		for (button in selectedButtons) {
+			button.selected = false;
+		}
+		selectedButtons = [];
+	}
+
 	public function selectButton(button:Null<KeyButton>, mode:SelectionCommand = Set) {
 		if (mode == Set) {
-			for (button in selectedButtons) {
-				button.selected = false;
-			}
-			selectedButtons = [];
+			unselectButtons();
 			if (button != null) {
 				selectedButtons.push(button);
 				button.selected = true;
@@ -236,10 +248,43 @@ class KeyboardContainer extends Box {
 	}
 
 	private function onMouseDown(e:MouseEvent) {
+		clickingOnButton = true;
 		var target:KeyButton = cast e.target;
 		var result = new KeyButtonEvent(BUTTON_DOWN, target);
 		result.mouseEvent = e;
 		dispatch(result);
+	}
+
+	private function onMouseDownArea(e:MouseEvent) {
+		trace('mouse down area ${e.target}');
+		if (rectangleSelection && !clickingOnButton) {
+			selectionStart = new haxe.ui.geom.Point(e.localX, e.localY);
+		}
+	}
+
+	private function onMouseUpArea(e:MouseEvent) {
+		clickingOnButton = false;
+		if (selectionStart != null) {
+			var top = Math.min(selectionStart.y, e.localY);
+			var bottom = Math.max(selectionStart.y, e.localY);
+			var left = Math.min(selectionStart.x, e.localX);
+			var right = Math.max(selectionStart.x, e.localX);
+			if (!e.shiftKey) {
+				unselectButtons();
+			}
+			for (button in buttons) {
+				if (button.top >= top
+					&& button.left >= left
+					&& button.top + button.height <= bottom
+					&& button.width + button.left <= right
+					&& !button.selected) {
+					selectedButtons.push(button);
+					button.selected = true;
+				}
+			}
+			dispatch(new KeyButtonEvent(BUTTON_CHANGED, activeButton));
+		}
+		selectionStart = null;
 	}
 }
 

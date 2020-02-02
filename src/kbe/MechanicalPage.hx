@@ -80,6 +80,11 @@ class RemoveTool extends Tool {
 class SelectTool extends Tool {
 	override function activate() {
 		page.cMechanical.selectionMode = MultiSelect;
+		page.cMechanical.rectangleSelection = true;
+	}
+
+	override function deactivate() {
+		page.cMechanical.rectangleSelection = false;
 	}
 }
 
@@ -154,6 +159,7 @@ class MoveTool extends Tool {
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_UP, onMouseUp);
 		// page.cMechanical.registerEvent(MouseEvent.MOUSE_OUT, onMouseUp);
 		page.cMechanical.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
+		page.cMechanical.rectangleSelection = true;
 	}
 
 	override function deactivate() {
@@ -162,6 +168,7 @@ class MoveTool extends Tool {
 		page.cMechanical.unregisterEvent(MouseEvent.MOUSE_UP, onMouseUp);
 		//  page.cMechanical.unregisterEvent(MouseEvent.MOUSE_OUT, onMouseUp);
 		page.cMechanical.unregisterEvent(MouseEvent.MOUSE_MOVE, onMouseMove);
+		page.cMechanical.rectangleSelection = false;
 	}
 }
 

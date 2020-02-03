@@ -1,5 +1,7 @@
 package kbe.components;
 
+import haxe.ui.util.Color;
+import haxe.ui.components.Button;
 import haxe.ui.geom.Rectangle;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.Absolute;
@@ -35,6 +37,7 @@ class KeyboardContainer extends Box {
 	private var selectedButtons:Array<KeyButton> = [];
 	private var clickingOnButton:Bool = false;
 	private var selectionStart:Null<haxe.ui.geom.Point> = null;
+	private var selectionRect:Component = null;
 
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
 
@@ -63,8 +66,10 @@ class KeyboardContainer extends Box {
 		percentWidth = 100;
 		percentHeight = 100;
 
-		this.registerEvent(MouseEvent.MOUSE_DOWN, onMouseDownArea);
-		this.registerEvent(MouseEvent.MOUSE_UP, onMouseUpArea);
+		canvas.registerEvent(MouseEvent.MOUSE_DOWN, onMouseDownArea);
+		canvas.registerEvent(MouseEvent.MOUSE_UP, onMouseUpArea);
+		canvas.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMoveCanvas);
+		this.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMoveSelf);
 	}
 
 	public function refreshFormatting() {
@@ -121,6 +126,9 @@ class KeyboardContainer extends Box {
 	}
 
 	public function updateLayout() {
+		// canvas.autoHeight = canvas.autoWidth = true;
+		canvas.height = null;
+		canvas.width = null;
 		canvas.autoSize();
 	}
 
@@ -258,12 +266,44 @@ class KeyboardContainer extends Box {
 	private function onMouseDownArea(e:MouseEvent) {
 		if (rectangleSelection && !clickingOnButton) {
 			selectionStart = new haxe.ui.geom.Point(e.localX, e.localY);
+			if (selectionRect != null) {
+				canvas.removeComponent(selectionRect);
+			}
+			selectionRect = new Box();
+			canvas.addComponent(selectionRect);
+			selectionRect.top = selectionStart.y;
+			selectionRect.left = selectionStart.x;
+			selectionRect.borderColor = 0x00ff00;
+			selectionRect.borderSize = 5;
+			selectionRect.borderRadius = 5;
+			selectionRect.backgroundColor = 0xff0000;
+			selectionRect.opacity = 0.5;
+		}
+	}
+
+	private function onMouseMoveCanvas(e:MouseEvent) {
+		if (selectionRect != null) {
+			selectionRect.left = Math.min(e.localX, selectionStart.x);
+			selectionRect.top = Math.min(e.localY, selectionStart.y);
+			selectionRect.width = Math.abs(e.localX - selectionStart.x);
+			selectionRect.height = Math.abs(e.localY - selectionStart.y);
+			canvas.width = Math.max(canvas.width, e.localX + 32);
+			canvas.height = Math.max(canvas.height, e.localY + 32);
+		}
+	}
+
+	private function onMouseMoveSelf(e:MouseEvent) {
+		if (selectionRect != null) {
+			canvas.width = Math.max(canvas.width, e.localX + 32);
+			canvas.height = Math.max(canvas.height, e.localY + 32);
 		}
 	}
 
 	private function onMouseUpArea(e:MouseEvent) {
 		clickingOnButton = false;
 		if (selectionStart != null) {
+			canvas.removeComponent(selectionRect);
+			selectionRect = null;
 			var top = Math.min(selectionStart.y, e.localY);
 			var bottom = Math.max(selectionStart.y, e.localY);
 			var left = Math.min(selectionStart.x, e.localX);

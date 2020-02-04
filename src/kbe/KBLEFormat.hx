@@ -21,7 +21,7 @@ class KBLEImporter implements Exporter.Importer {
 		var x:Float = 0;
 		var w:Float = 1;
 		var h:Float = 1;
-		var id = 0;
+		var id = 1;
 		for (line in json) {
 			if (Std.is(line, Array)) {
 				var lineArray:Array<Dynamic> = line;

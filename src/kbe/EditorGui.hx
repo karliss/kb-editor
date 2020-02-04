@@ -7,6 +7,7 @@ import haxe.ui.data.ArrayDataSource;
 import kbe.CSVFormat.CSVExporter;
 import kbe.KBLEFormat.KBLEImporter;
 import kbe.CSVFormat.CSVImporter;
+import kbe.QMKInfoJson.QMKInfoJsonImporter;
 import kbe.Exporter.Importer;
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
@@ -98,7 +99,12 @@ class EditorGui extends Component {
 	}
 
 	function fillFormats() {
-		var importers = [new CSVImporter(), new KBLEImporter(), new KBLERawImporter()];
+		var importers = [
+			new CSVImporter(),
+			new KBLEImporter(),
+			new KBLERawImporter(),
+			new QMKInfoJsonImporter()
+		];
 		this.importFormat.dataSource = new ArrayDataSource();
 		for (importer in importers) {
 			importFormat.dataSource.add(importer);

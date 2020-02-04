@@ -183,13 +183,17 @@ class KeyboardContainer extends Box {
 	}
 
 	public function selectButton(button:Null<KeyButton>, mode:SelectionCommand = Set) {
+		selectButtonInternal(button, mode, true);
+	}
+
+	public function selectButtonInternal(button:Null<KeyButton>, mode:SelectionCommand = Set, software:Bool = false) {
 		if (mode == Set) {
 			unselectButtons();
 			if (button != null) {
 				selectedButtons.push(button);
 				button.selected = true;
 			}
-			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button));
+			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button, software));
 			return;
 		}
 		if (button == null) {
@@ -205,7 +209,7 @@ class KeyboardContainer extends Box {
 			}
 			selectedButtons.push(button);
 			button.selected = true;
-			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button));
+			dispatch(new KeyButtonEvent(BUTTON_CHANGED, button, software));
 		} else if (mode == Toggle) {
 			if (selectedButtons.remove(button)) {
 				button.selected = false;
@@ -218,7 +222,7 @@ class KeyboardContainer extends Box {
 				button.selected = false;
 			}
 		}
-		dispatch(new KeyButtonEvent(BUTTON_CHANGED, activeButton));
+		dispatch(new KeyButtonEvent(BUTTON_CHANGED, activeButton, software));
 	}
 
 	public function getButton(key:Key):Null<KeyButton> {
@@ -240,16 +244,16 @@ class KeyboardContainer extends Box {
 		var button:KeyButton = cast e.target;
 		switch selectionMode {
 			case SingleSet:
-				selectButton(button, Set);
+				selectButtonInternal(button, Set);
 			case MultiSelect:
-				selectButton(button, e.shiftKey ? Toggle : Set);
+				selectButtonInternal(button, e.shiftKey ? Toggle : Set);
 			case MultiSelectMove:
 				if (e.shiftKey) {
-					selectButton(button, Toggle);
+					selectButtonInternal(button, Toggle);
 				} else if (selectedButtons.indexOf(button) >= 0) {
-					selectButton(button, Add);
+					selectButtonInternal(button, Add);
 				} else {
-					selectButton(button, Set);
+					selectButtonInternal(button, Set);
 				}
 			case None:
 		}
@@ -328,13 +332,15 @@ class KeyboardContainer extends Box {
 }
 
 class KeyButtonEvent extends UIEvent {
-	public function new(type:String, target:KeyButton) {
+	public function new(type:String, target:KeyButton, software:Bool = false) {
 		super(type);
 		data = target;
+		this.software = software;
 	}
 
 	public var button(get, set):KeyButton;
 	public var mouseEvent:Null<MouseEvent> = null;
+	public var software:Bool = false;
 
 	function get_button():KeyButton {
 		return data;
@@ -349,6 +355,7 @@ class KeyButtonEvent extends UIEvent {
 		var c = new KeyButtonEvent(type, button);
 		c.target = target;
 		c.mouseEvent = mouseEvent;
+		c.software = software;
 		postClone(c);
 		return c;
 	}

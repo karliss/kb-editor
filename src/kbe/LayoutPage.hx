@@ -19,7 +19,6 @@ class LayoutPage extends HBox implements EditorPage {
 	var directionDown = true;
 	// flag to prevent infinite recursion when changing selection from code
 	var disableRecursion:Bool = false;
-	var unnasignedCache = new Map<Int, Bool>();
 
 	public function new(?editor:Editor) {
 		super();
@@ -43,27 +42,13 @@ class LayoutPage extends HBox implements EditorPage {
 		reload();
 	}
 
-	function updateLayoutToKbCache() {
-		unnasignedCache.clear();
-		var keyboard = editor.getKeyboard();
-		var layout = selectedLayout();
-		if (layout == null) {
-			return;
-		}
-		for (key in keyboard.keys) {
-			var layoutId = layout.mappingFromGrid(key.id);
-			if (layoutId != null) {
-				unnasignedCache.set(layoutId, true);
-			}
-		}
-	}
-
 	function formatLayoutButton(button:KeyButton) {
 		button.backgroundColor = null;
-		if (!unnasignedCache.exists(button.key.id)) {
+		var layout = selectedLayout();
+		if (layout != null && layout.mappingToGrid(button.key.id).length == 0) {
 			var color:thx.color.Rgb = 0xffffff;
 			if (button.selected) {
-				color = color.darker(0.05);
+				color = color.darker(0.20);
 			}
 			button.backgroundColor = color.toInt();
 		}
@@ -78,14 +63,13 @@ class LayoutPage extends HBox implements EditorPage {
 		if (layout.mappingFromGrid(button.key.id) == null) {
 			var color:thx.color.Rgb = 0xffffff;
 			if (button.selected) {
-				color = color.darker(0.05);
+				color = color.darker(0.20);
 			}
 			button.backgroundColor = color.toInt();
 		}
 	}
 
 	function refreshFormat() {
-		updateLayoutToKbCache();
 		layoutView.refreshFormatting();
 		keyboardView.refreshFormatting();
 	}
@@ -231,7 +215,7 @@ class LayoutPage extends HBox implements EditorPage {
 				}
 			}
 			disableRecursion = false;
-		} else {
+		} else if (!e.software) {
 			var layoutButton = layoutView.activeButton;
 			if (layoutButton == null) {
 				return;
@@ -277,7 +261,7 @@ class LayoutPage extends HBox implements EditorPage {
 				}
 			}
 			disableRecursion = false;
-		} else {
+		} else if (!e.software) {
 			var keyboardButton = keyboardView.activeButton;
 			var layoutButton = layoutView.activeButton;
 			if (keyboardButton == null) {

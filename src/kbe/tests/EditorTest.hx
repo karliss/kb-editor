@@ -186,11 +186,26 @@ class EditorTest extends utest.Test {
 
 		Assert.equals(3, layout.mappingFromGrid(4));
 		Assert.equals(3, layout.mappingFromGrid(1));
-		Assert.same([4, 1], layout.mappingToGrid(3));
+
+		var sorted = (d:Array<Int>) -> {
+			var result = d.copy();
+			result.sort((x, y) -> (x - y));
+			return result;
+		};
+		Assert.same([1, 4], sorted(layout.mappingToGrid(3)));
 		Assert.same([], layout.mappingToGrid(2));
 
 		editor.addLayoutMappingFromLayoutExclusive(layout, 7, 3);
 
+		Assert.same([7], layout.mappingToGrid(3));
+		Assert.equals(3, layout.mappingFromGrid(7));
+		Assert.equals(null, layout.mappingFromGrid(4));
+		Assert.equals(null, layout.mappingFromGrid(1));
+
+		editor.undoBuffer.undo();
+		editor.undoBuffer.redo();
+
+		layout = editor.getKeyboard().layouts[0];
 		Assert.same([7], layout.mappingToGrid(3));
 		Assert.equals(3, layout.mappingFromGrid(7));
 		Assert.equals(null, layout.mappingFromGrid(4));

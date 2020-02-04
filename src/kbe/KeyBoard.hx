@@ -6,7 +6,9 @@ import haxe.ds.Vector;
 class KeyboardLayout {
 	public var name:String = "";
 	public var keys = new Array<Key>();
-	public var mapping = new Map<Int, Int>();
+
+	private var mapping = new Map<Int, Int>();
+	private var reverseMapping = new Map<Int, Array<Int>>();
 
 	public function new() {}
 
@@ -17,6 +19,10 @@ class KeyboardLayout {
 			result.keys.push(key.clone());
 		}
 		result.mapping = mapping.copy();
+		result.reverseMapping = new Map<Int, Array<Int>>();
+		for (key => value in reverseMapping) {
+			result.reverseMapping.set(key, value.copy());
+		}
 		return result;
 	}
 
@@ -25,31 +31,51 @@ class KeyboardLayout {
 	}
 
 	public function mappingToGrid(layoutId:Int):Array<Int> {
-		var result = [];
-		for (key => value in mapping) {
-			if (value == layoutId) {
-				result.push(key);
-			}
+		var result = reverseMapping.get(layoutId);
+		if (result == null) {
+			return [];
 		}
-		return result;
+		return result.copy();
 	}
 
 	public function addMapping(gridId:Int, layoutId:Int) {
-		if (layoutId < 0) {
-			mapping.remove(gridId);
-		} else {
+		removeSingleMapping(gridId);
+		if (layoutId >= 0) {
 			mapping.set(gridId, layoutId);
+			var reverse = reverseMapping.get(layoutId);
+			if (reverse == null) {
+				reverseMapping.set(layoutId, [gridId]);
+			} else {
+				reverse.push(gridId);
+			}
 		}
 	}
 
+	private function removeAllMappingFromReverse(reverseId:Int) {
+		var reverse = reverseMapping.get(reverseId);
+		if (reverse != null) {
+			for (value in reverse) {
+				mapping.remove(value);
+			}
+			reverseMapping.remove(reverseId);
+		}
+	}
+
+	private function removeSingleMapping(gridId:Int) {
+		if (gridId < 0) {
+			return;
+		}
+		var current = mapping.get(gridId);
+		if (current != null) {
+			var reverse = reverseMapping.get(current);
+			reverse.remove(gridId);
+		}
+		mapping.remove(gridId);
+	}
+
 	public function addExclusiveMapping(gridId:Int, layoutId:Int) {
-		var existingMapping = mappingToGrid(layoutId);
-		for (id in existingMapping) {
-			mapping.remove(id);
-		}
-		if (gridId > -1) {
-			mapping.set(gridId, layoutId);
-		}
+		removeAllMappingFromReverse(layoutId);
+		addMapping(gridId, layoutId);
 	}
 
 	public function autoConnectPairs(keyboard:KeyBoard, comparator:(Key, Key) -> Float, maxDistance = 0.5) {

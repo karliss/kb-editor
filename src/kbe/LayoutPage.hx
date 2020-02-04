@@ -19,6 +19,7 @@ class LayoutPage extends HBox implements EditorPage {
 	var directionDown = true;
 	// flag to prevent infinite recursion when changing selection from code
 	var disableRecursion:Bool = false;
+	var unnasignedCache = new Map<Int, Bool>();
 
 	public function new(?editor:Editor) {
 		super();
@@ -32,6 +33,9 @@ class LayoutPage extends HBox implements EditorPage {
 		percentHeight = 100;
 		layoutSelect.dataSource = new ListDataSource<Dynamic>();
 		btnDown.selected = true;
+
+		layoutView.formatButton = formatLayoutButton;
+		keyboardView.formatButton = formatKeyboardButton;
 	}
 
 	public function init(editor:Editor) {
@@ -39,26 +43,51 @@ class LayoutPage extends HBox implements EditorPage {
 		reload();
 	}
 
-	function formatButton(button:KeyButton) {
-		/*var key = button.key;
-			button.text = '${StringTools.hex(key.row)} ${StringTools.hex(key.column)}';
-			button.backgroundColor = null;
-			var currentButton = keyView.activeButton;
-			if (currentButton != null && currentButton != button) {
-				var row = currentButton.key.row;
-				var column = currentButton.key.column;
-				if (key.row == row) {
-					button.backgroundColor = 0xe0fde0;
-				} else if (column == key.column) {
-					button.backgroundColor = 0xe0e0fd;
-				}
-				if (conflictingKeys.exists(key.id)) {
-					button.backgroundColor = 0xffcc00;
-				}
-				if (key.row == row && column == key.column && button != keyView.activeButton) {
-					button.backgroundColor = 0xff6666;
-				}
-		}*/
+	function updateLayoutToKbCache() {
+		unnasignedCache.clear();
+		var keyboard = editor.getKeyboard();
+		var layout = selectedLayout();
+		if (layout == null) {
+			return;
+		}
+		for (key in keyboard.keys) {
+			var layoutId = layout.mappingFromGrid(key.id);
+			if (layoutId != null) {
+				unnasignedCache.set(layoutId, true);
+			}
+		}
+	}
+
+	function formatLayoutButton(button:KeyButton) {
+		button.backgroundColor = null;
+		if (!unnasignedCache.exists(button.key.id)) {
+			var color:thx.color.Rgb = 0xffffff;
+			if (button.selected) {
+				color = color.darker(0.05);
+			}
+			button.backgroundColor = color.toInt();
+		}
+	}
+
+	function formatKeyboardButton(button:KeyButton) {
+		button.backgroundColor = null;
+		var layout = selectedLayout();
+		if (layout == null) {
+			return;
+		}
+		if (layout.mappingFromGrid(button.key.id) == null) {
+			var color:thx.color.Rgb = 0xffffff;
+			if (button.selected) {
+				color = color.darker(0.05);
+			}
+			button.backgroundColor = color.toInt();
+		}
+	}
+
+	function refreshFormat() {
+		updateLayoutToKbCache();
+		layoutView.refreshFormatting();
+		keyboardView.refreshFormatting();
 	}
 
 	function selectedLayout():Null<KeyboardLayout> {
@@ -114,6 +143,7 @@ class LayoutPage extends HBox implements EditorPage {
 			nameField.text = layout.name;
 			layoutView.loadFromList(layout.keys);
 		}
+		refreshFormat();
 	}
 
 	@:bind(nameField, UIEvent.CHANGE)
@@ -220,6 +250,7 @@ class LayoutPage extends HBox implements EditorPage {
 				}
 			}
 		}
+		refreshFormat();
 	}
 
 	@:bind(keyboardView, KeyboardContainer.BUTTON_CHANGED)
@@ -253,10 +284,15 @@ class LayoutPage extends HBox implements EditorPage {
 				return;
 			}
 			if (layoutButton != null) {
-				editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
+				if (btnExclusive.selected) {
+					editor.addLayoutMappingFromLayoutExclusive(layout, keyboardButton.key.id, layoutButton.key.id);
+				} else {
+					editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
+				}
 			} else {
 				editor.addLayoutMapping(layout, keyboardButton.key.id, -1);
 			}
 		}
+		refreshFormat();
 	}
 }

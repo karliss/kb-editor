@@ -17,6 +17,7 @@
             <label text="layout label"/>
             <dropdown id="keyboardLabelSelection" width="150"/>
         </hbox>
+
         <hbox>
             <dropdown text="Layout" id="layoutSelect" width="200"/>
             <textfield id="nameField"/>
@@ -29,6 +30,13 @@
             <label text="View: "/>
         </hbox>
         <KeyboardContainer id="layoutView" height="50%" width="100%"/>
+        <hbox>            <!-- statistics -->
+            <label text="Unassigned layout keys: "/>
+            <label id="unsassignedLayoutKeysLabel"/>
+
+            <label text="Unassigned keyboard keys: "/>
+            <label id="unsassignedKeyboardKeysLabel"/>
+        </hbox>
         <KeyboardContainer id="keyboardView" height="50%" width="100%"/>
     </vbox>
 </hbox>

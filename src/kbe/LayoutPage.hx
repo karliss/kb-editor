@@ -207,6 +207,28 @@ class LayoutPage extends HBox implements EditorPage {
 		keyboardView.loadFromList(editor.getKeyboard().keys);
 	}
 
+	function updateStatistics() {
+		var keyboard = editor.getKeyboard();
+		var currentLayout = selectedLayout();
+		if (currentLayout == null) {
+			return;
+		}
+		var unassignedKeyboard = 0;
+		for (key in keyboard.keys) {
+			if (currentLayout.mappingFromGrid(key.id) == null) {
+				unassignedKeyboard++;
+			}
+		}
+		var unassignedLayout = 0;
+		for (key in currentLayout.keys) {
+			if (currentLayout.mappingToGrid(key.id).length == 0) {
+				unassignedLayout++;
+			}
+		}
+		unsassignedKeyboardKeysLabel.text = '${unassignedKeyboard}';
+		unsassignedLayoutKeysLabel.text = '${unassignedLayout}';
+	}
+
 	@:bind(layoutSelect, UIEvent.CHANGE)
 	function onLayoutChanged(_:Null<Dynamic>) {
 		var layout = selectedLayout();
@@ -218,6 +240,7 @@ class LayoutPage extends HBox implements EditorPage {
 			layoutView.loadFromList(layout.keys);
 		}
 		refreshFormat();
+		updateStatistics();
 	}
 
 	@:bind(nameField, UIEvent.CHANGE)
@@ -323,6 +346,7 @@ class LayoutPage extends HBox implements EditorPage {
 					editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
 				}
 			}
+			updateStatistics();
 		}
 		refreshFormat();
 	}
@@ -366,6 +390,7 @@ class LayoutPage extends HBox implements EditorPage {
 			} else {
 				editor.addLayoutMapping(layout, keyboardButton.key.id, -1);
 			}
+			updateStatistics();
 		}
 		refreshFormat();
 	}

@@ -67,12 +67,12 @@ class EditorGui extends Component {
 
 	function undo() {
 		editor.undoBuffer.undo();
-		reloadPages();
+		reloadCurrentPage();
 	}
 
 	function redo() {
 		editor.undoBuffer.redo();
-		reloadPages();
+		reloadCurrentPage();
 	}
 
 	#if js
@@ -96,6 +96,11 @@ class EditorGui extends Component {
 		for (page in pages) {
 			page.reload();
 		}
+	}
+
+	function reloadCurrentPage() {
+		var page:EditorPage = cast tabList.selectedPage;
+		page.reload();
 	}
 
 	function fillFormats() {
@@ -148,7 +153,6 @@ class EditorGui extends Component {
 	}
 
 	function onPageChange(_) {
-		var page:EditorPage = cast tabList.selectedPage;
-		page.reload();
+		reloadCurrentPage();
 	}
 }

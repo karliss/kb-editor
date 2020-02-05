@@ -188,11 +188,7 @@ class LayoutPage extends HBox implements EditorPage {
 	}
 
 	function reloadLayouts() {
-		var previousLayout = selectedLayout();
-		var previousName = "";
-		if (previousLayout != null) {
-			previousName = previousLayout.name;
-		}
+		var previousIndex = layoutSelect.selectedIndex;
 		var ds = layoutSelect.dataSource;
 		// ds.allowCallbacks = false;
 		ds.clear();
@@ -201,7 +197,8 @@ class LayoutPage extends HBox implements EditorPage {
 		}
 		// ds.allowCallbacks = true;
 		layoutSelect.selectedIndex = -1;
-		selectLayoutByName(previousName);
+		layoutSelect.selectedIndex = previousIndex < 0 ? 0 : previousIndex;
+		onLayoutChanged(null);
 	}
 
 	public function reload() {

@@ -9,9 +9,16 @@
     </vbox>
     <vbox width="100%" height="100%">
         <hbox>
-            <dropdown text="Layout" id="layoutSelect">
-                <data></data>
-            </dropdown>
+            <label text="VIEW "/>
+            <label text="color"/>
+            <dropdown id="colorSelection"/>
+            <label text="layout label"/>
+            <dropdown id="layoutLabelSelection" width="150"/>
+            <label text="layout label"/>
+            <dropdown id="keyboardLabelSelection" width="150"/>
+        </hbox>
+        <hbox>
+            <dropdown text="Layout" id="layoutSelect" width="200"/>
             <textfield id="nameField"/>
             <button id="layoutAdd" text="Add"/>
             <button id="layoutRemove" text="Remove"/>
@@ -22,11 +29,6 @@
             <label text="View: "/>
         </hbox>
         <KeyboardContainer id="layoutView" height="50%" width="100%"/>
-        <hbox>
-            <label text="View: "/>
-            <dropdown text="Import format" id="importFormat">
-            </dropdown>
-        </hbox>
         <KeyboardContainer id="keyboardView" height="50%" width="100%"/>
     </vbox>
 </hbox>

@@ -12,6 +12,17 @@ import kbe.components.KeyboardContainer;
 import kbe.components.KeyboardContainer.KeyButtonEvent;
 import kbe.KeyBoard.KeyboardLayout;
 import kbe.components.OneWayButton;
+import kbe.KeyVisualizer;
+
+private enum ColorMode {
+	Unassigned;
+	MappingPairs;
+}
+
+private enum LabelMode {
+	Common(v:KeyLabelMode);
+	SameAsTop;
+}
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/layout_page.xml"))
 class LayoutPage extends HBox implements EditorPage {
@@ -19,6 +30,10 @@ class LayoutPage extends HBox implements EditorPage {
 	var directionDown = true;
 	// flag to prevent infinite recursion when changing selection from code
 	var disableRecursion:Bool = false;
+
+	var layoutLabelMode = Common(Name);
+	var keyboardLabelMode = SameAsTop;
+	var colorMode = ColorMode.Unassigned;
 
 	public function new(?editor:Editor) {
 		super();
@@ -35,6 +50,25 @@ class LayoutPage extends HBox implements EditorPage {
 
 		layoutView.formatButton = formatLayoutButton;
 		keyboardView.formatButton = formatKeyboardButton;
+
+		var labelModes = KeyVisualizer.COMMON_LABEL_MODES.map(data -> {
+			value: data.value,
+			mode: Common(data.mode)
+		});
+		keyboardLabelSelection.dataSource = new ListDataSource<Dynamic>();
+		layoutLabelSelection.dataSource = new ListDataSource<Dynamic>();
+		colorSelection.dataSource = new ListDataSource<Dynamic>();
+		keyboardLabelSelection.dataSource.add({value: "Same as layout", mode: SameAsTop});
+		for (mode in labelModes) {
+			layoutLabelSelection.dataSource.add(mode);
+			keyboardLabelSelection.dataSource.add(mode);
+		}
+		for (mode in [
+			{value: "Unassigned", mode: ColorMode.Unassigned},
+			{value: "Mapping", mode: ColorMode.MappingPairs}
+		]) {
+			colorSelection.dataSource.add(mode);
+		}
 	}
 
 	public function init(editor:Editor) {
@@ -43,35 +77,70 @@ class LayoutPage extends HBox implements EditorPage {
 	}
 
 	function formatLayoutButton(button:KeyButton) {
+		formatLabel(button, layoutLabelMode);
 		button.backgroundColor = null;
 		var layout = selectedLayout();
-		if (layout != null && layout.mappingToGrid(button.key.id).length == 0) {
-			var color:thx.color.Rgb = 0xffffff;
-			if (button.selected) {
-				color = color.darker(0.20);
+		if (layout != null) {
+			switch (colorMode) {
+				case Unassigned:
+					if (layout.mappingToGrid(button.key.id).length == 0) {
+						var color:thx.color.Rgb = 0xffffff;
+						if (button.selected) {
+							color = color.darker(0.20);
+						}
+						button.backgroundColor = color.toInt();
+					}
+				case MappingPairs:
+					if (layout.mappingToGrid(button.key.id).length != 0) {
+						button.backgroundColor = KeyVisualizer.getIndexedColor(button.key.id, button.selected);
+					}
 			}
-			button.backgroundColor = color.toInt();
 		}
 	}
 
 	function formatKeyboardButton(button:KeyButton) {
+		formatLabel(button, keyboardLabelMode);
 		button.backgroundColor = null;
 		var layout = selectedLayout();
 		if (layout == null) {
 			return;
 		}
-		if (layout.mappingFromGrid(button.key.id) == null) {
-			var color:thx.color.Rgb = 0xffffff;
-			if (button.selected) {
-				color = color.darker(0.20);
-			}
-			button.backgroundColor = color.toInt();
+		switch (colorMode) {
+			case Unassigned:
+				if (layout.mappingFromGrid(button.key.id) == null) {
+					var color:thx.color.Rgb = 0xffffff;
+					if (button.selected) {
+						color = color.darker(0.20);
+					}
+					button.backgroundColor = color.toInt();
+				}
+			case MappingPairs:
+				var mapping = layout.mappingFromGrid(button.key.id);
+				if (mapping != null) {
+					button.backgroundColor = KeyVisualizer.getIndexedColor(mapping, button.selected);
+				}
 		}
 	}
 
 	function refreshFormat() {
 		layoutView.refreshFormatting();
 		keyboardView.refreshFormatting();
+	}
+
+	function formatLabel(button:KeyButton, mode:LabelMode) {
+		switch mode {
+			case Common(v):
+				KeyVisualizer.updateButtonLabel(button, v);
+			case SameAsTop:
+				{
+					var mode = layoutLabelMode;
+					if (mode == SameAsTop) {
+						KeyVisualizer.updateButtonLabel(button, Name);
+					} else {
+						formatLabel(button, mode);
+					}
+				}
+		}
 	}
 
 	function selectedLayout():Null<KeyboardLayout> {
@@ -278,5 +347,36 @@ class LayoutPage extends HBox implements EditorPage {
 			}
 		}
 		refreshFormat();
+	}
+
+	@:bind(layoutLabelSelection, UIEvent.CHANGE)
+	function layoutLabelSelectionChanged(_) {
+		var modeData = layoutLabelSelection.selectedItem;
+		if (modeData != null) {
+			layoutLabelMode = modeData.mode;
+		}
+		layoutView.refreshFormatting();
+		if (keyboardLabelMode == SameAsTop) {
+			keyboardView.refreshFormatting();
+		}
+	}
+
+	@:bind(keyboardLabelSelection, UIEvent.CHANGE)
+	function keyboardLabelSelectionChanged(_) {
+		var modeData = keyboardLabelSelection.selectedItem;
+		if (modeData != null) {
+			keyboardLabelMode = modeData.mode;
+		}
+		keyboardView.refreshFormatting();
+	}
+
+	@:bind(colorSelection, UIEvent.CHANGE)
+	function colorModeChanged(_) {
+		var modeData = colorSelection.selectedItem;
+		if (modeData != null) {
+			colorMode = modeData.mode;
+		}
+		keyboardView.refreshFormatting();
+		layoutView.refreshFormatting();
 	}
 }

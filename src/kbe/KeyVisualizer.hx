@@ -5,6 +5,14 @@ import kbe.KeyBoard;
 import thx.color.Hsv;
 import haxe.ui.util.Color;
 
+enum KeyLabelMode {
+	Name;
+	RowColumn;
+	Row;
+	Column;
+	Id;
+}
+
 class KeyVisualizer {
 	public static function getIndexedColor(index:Int, selected:Bool):Int {
 		var angle = (129.0 * index) % 360.0;
@@ -14,4 +22,23 @@ class KeyVisualizer {
 		}
 		return color.toInt();
 	}
+
+	public static function updateButtonLabel(button:KeyButton, mode:KeyLabelMode) {
+		var key = button.key;
+		button.text = switch (mode) {
+			case Name: key.name;
+			case RowColumn: '${StringTools.hex(key.row)} ${StringTools.hex(key.column)}';
+			case Row: '${key.row}';
+			case Column: '${key.column}';
+			case Id: '${key.id}';
+		};
+	}
+
+	public static var COMMON_LABEL_MODES = [
+		{value: "Name", mode: KeyLabelMode.Name},
+		{value: "Row column", mode: KeyLabelMode.RowColumn},
+		{value: "Row", mode: KeyLabelMode.Row},
+		{value: "Column", mode: KeyLabelMode.Column},
+		{value: "Id", mode: KeyLabelMode.Id},
+	];
 }

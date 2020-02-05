@@ -168,8 +168,29 @@ class LayoutPage extends HBox implements EditorPage {
 		onLayoutChanged(null);
 	}
 
+	function selectLayoutByName(layout:String) {
+		var ds = layoutSelect.dataSource;
+		if (layoutSelect.dataSource.size == 0) {
+			return;
+		}
+		for (i in 0...ds.size) {
+			var item = ds.get(i);
+			if (item.layout.name == layout) {
+				layoutSelect.selectedIndex = i;
+				onLayoutChanged(null);
+				return;
+			}
+		}
+		layoutSelect.selectedIndex = 0;
+		onLayoutChanged(null);
+	}
+
 	function reloadLayouts() {
 		var previousLayout = selectedLayout();
+		var previousName = "";
+		if (previousLayout != null) {
+			previousName = previousLayout.name;
+		}
 		var ds = layoutSelect.dataSource;
 		// ds.allowCallbacks = false;
 		ds.clear();
@@ -178,7 +199,7 @@ class LayoutPage extends HBox implements EditorPage {
 		}
 		// ds.allowCallbacks = true;
 		layoutSelect.selectedIndex = -1;
-		selectLayout(previousLayout);
+		selectLayoutByName(previousName);
 	}
 
 	public function reload() {

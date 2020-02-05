@@ -46,6 +46,42 @@ class KeyBoardTest extends utest.Test {
 		Assert.same(keyb, key);
 	}
 
+	function testLayoutMapping() {
+		var layout = new KeyboardLayout();
+		layout.addMapping(-1, -1);
+		Assert.equals(null, layout.mappingFromGrid(-1));
+		Assert.same([], layout.mappingToGrid(-1));
+
+		layout.addMapping(1, 2);
+		Assert.equals(2, layout.mappingFromGrid(1));
+		layout.addMapping(1, -1);
+		Assert.equals(null, layout.mappingFromGrid(1));
+
+		layout.addMapping(2, 4);
+		layout.addMapping(3, 4);
+		layout.addMapping(4, 4);
+		Assert.equals(4, layout.mappingFromGrid(2));
+		Assert.equals(4, layout.mappingFromGrid(3));
+		Assert.equals(4, layout.mappingFromGrid(4));
+		Assert.same([2, 3, 4], layout.mappingToGrid(4));
+		layout.addMapping(-1, 4);
+		Assert.equals(4, layout.mappingFromGrid(2));
+		Assert.equals(4, layout.mappingFromGrid(3));
+		Assert.equals(4, layout.mappingFromGrid(4));
+		Assert.same([2, 3, 4], layout.mappingToGrid(4));
+		layout.addMapping(4, -1);
+		Assert.equals(4, layout.mappingFromGrid(2));
+		Assert.equals(4, layout.mappingFromGrid(3));
+		Assert.equals(null, layout.mappingFromGrid(4));
+		Assert.same([2, 3], layout.mappingToGrid(4));
+
+		layout.addExclusiveMapping(-1, 4);
+		Assert.equals(null, layout.mappingFromGrid(2));
+		Assert.equals(null, layout.mappingFromGrid(3));
+		Assert.equals(null, layout.mappingFromGrid(4));
+		Assert.same([], layout.mappingToGrid(4));
+	}
+
 	function testLayoutCopy() {
 		var layout1 = new KeyboardLayout();
 		layout1.name = "l1";

@@ -22,6 +22,7 @@ enum SelectionCommand {
 
 enum SelectionMode {
 	SingleSet;
+	SingleToggle;
 	MultiSelect;
 	MultiSelectMove;
 	None; // possibly handled externally
@@ -245,6 +246,12 @@ class KeyboardContainer extends Box {
 		switch selectionMode {
 			case SingleSet:
 				selectButtonInternal(button, Set);
+			case SingleToggle:
+				if (activeButton == button) {
+					selectButtonInternal(button, Toggle);
+				} else {
+					selectButtonInternal(button, Set);
+				}
 			case MultiSelect:
 				selectButtonInternal(button, e.shiftKey ? Toggle : Set);
 			case MultiSelectMove:

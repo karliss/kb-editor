@@ -50,6 +50,8 @@ class LayoutPage extends HBox implements EditorPage {
 
 		layoutView.formatButton = formatLayoutButton;
 		keyboardView.formatButton = formatKeyboardButton;
+		layoutView.selectionMode = SingleToggle;
+		keyboardView.selectionMode = SingleToggle;
 
 		var labelModes = KeyVisualizer.COMMON_LABEL_MODES.map(data -> {
 			value: data.value,
@@ -329,22 +331,20 @@ class LayoutPage extends HBox implements EditorPage {
 			}
 			disableRecursion = false;
 		} else if (!e.software) {
+			var keyboardButton = keyboardView.activeButton;
 			var layoutButton = layoutView.activeButton;
-			if (layoutButton == null) {
-				return;
+			var keyboardId = -1;
+			if (keyboardButton != null) {
+				keyboardId = keyboardButton.key.id;
+			}
+			var layoutId = -1;
+			if (layoutButton != null) {
+				layoutId = layoutButton.key.id;
 			}
 			if (btnExclusive.selected) {
-				var keyboardButton = keyboardView.activeButton;
-				if (keyboardButton != null) {
-					editor.addLayoutMappingFromLayoutExclusive(layout, keyboardButton.key.id, layoutButton.key.id);
-				} else {
-					editor.addLayoutMappingFromLayoutExclusive(layout, -1, layoutButton.key.id);
-				}
+				editor.addLayoutMappingFromLayoutExclusive(layout, keyboardId, layoutId);
 			} else {
-				var keyboardButton = keyboardView.activeButton;
-				if (keyboardButton != null) {
-					editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
-				}
+				editor.addLayoutMapping(layout, keyboardId, layoutId);
 			}
 			updateStatistics();
 		}
@@ -378,17 +378,18 @@ class LayoutPage extends HBox implements EditorPage {
 		} else if (!e.software) {
 			var keyboardButton = keyboardView.activeButton;
 			var layoutButton = layoutView.activeButton;
-			if (keyboardButton == null) {
-				return;
+			var keyboardId = -1;
+			if (keyboardButton != null) {
+				keyboardId = keyboardButton.key.id;
 			}
+			var layoutId = -1;
 			if (layoutButton != null) {
-				if (btnExclusive.selected) {
-					editor.addLayoutMappingFromLayoutExclusive(layout, keyboardButton.key.id, layoutButton.key.id);
-				} else {
-					editor.addLayoutMapping(layout, keyboardButton.key.id, layoutButton.key.id);
-				}
+				layoutId = layoutButton.key.id;
+			}
+			if (btnExclusive.selected) {
+				editor.addLayoutMappingFromLayoutExclusive(layout, keyboardId, layoutId);
 			} else {
-				editor.addLayoutMapping(layout, keyboardButton.key.id, -1);
+				editor.addLayoutMapping(layout, keyboardId, layoutId);
 			}
 			updateStatistics();
 		}

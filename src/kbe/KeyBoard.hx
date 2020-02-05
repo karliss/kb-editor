@@ -40,7 +40,7 @@ class KeyboardLayout {
 
 	public function addMapping(gridId:Int, layoutId:Int) {
 		removeSingleMapping(gridId);
-		if (layoutId >= 0) {
+		if (layoutId >= 0 && gridId >= 0) {
 			mapping.set(gridId, layoutId);
 			var reverse = reverseMapping.get(layoutId);
 			if (reverse == null) {
@@ -52,6 +52,9 @@ class KeyboardLayout {
 	}
 
 	private function removeAllMappingFromReverse(reverseId:Int) {
+		if (reverseId < 0) {
+			return;
+		}
 		var reverse = reverseMapping.get(reverseId);
 		if (reverse != null) {
 			for (value in reverse) {

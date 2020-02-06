@@ -1,5 +1,6 @@
 package kbe.tests;
 
+import kbe.KeyBoard.KeyboarLayoutAutoConnectMode;
 import kbe.KeyBoard.KeyboardLayout;
 import utest.Assert;
 
@@ -46,6 +47,17 @@ class KeyBoardTest extends utest.Test {
 		Assert.same(keyb, key);
 	}
 
+	function testUpdateLayout() {
+		var keyboard = new KeyBoard();
+		var layout = new KeyboardLayout();
+		layout.name = "foo";
+		keyboard.layouts.push(layout);
+		var layout2 = layout.clone();
+		layout2.name = "foobar";
+		keyboard.updateLayout("foo", layout2);
+		Assert.equals("foobar", keyboard.layouts[0].name);
+	}
+
 	function testLayoutMapping() {
 		var layout = new KeyboardLayout();
 		layout.addMapping(-1, -1);
@@ -80,6 +92,52 @@ class KeyBoardTest extends utest.Test {
 		Assert.equals(null, layout.mappingFromGrid(3));
 		Assert.equals(null, layout.mappingFromGrid(4));
 		Assert.same([], layout.mappingToGrid(4));
+	}
+
+	function testLayoutAutoconnect() {
+		{
+			var keyboard = new KeyBoard();
+			var key = keyboard.createAndAddKey();
+			key.name = 'k1';
+			var layout = new KeyboardLayout();
+			layout.name = "layout";
+			layout.keys = keyboard.keys.map(key -> key.clone());
+			keyboard.layouts.push(layout);
+
+			layout.autoConnectInMode(keyboard, KeyboarLayoutAutoConnectMode.NameOnly, true);
+			Assert.equals(1, layout.mappingFromGrid(1));
+			Assert.same([1], layout.mappingToGrid(1));
+		}
+	}
+
+	function testLayoutAutoconnectPos() {
+		var keyboard = new KeyBoard();
+		for (i in 1...10) {
+			var key = keyboard.createAndAddKey();
+			key.name = 'k$i';
+			key.x = i;
+			key.y = i;
+			if (i == 9) {
+				key.x += 0.25;
+			}
+		}
+		var layout = new KeyboardLayout();
+		layout.name = "layout";
+		for (i in 1...10) {
+			var key = new Key(10 + i);
+			key.name = 'LK$i';
+			key.x = i;
+			key.y = i;
+			layout.keys.push(key);
+		}
+		keyboard.layouts.push(layout);
+		layout.connectByPos(keyboard);
+		for (i in 1...9) {
+			Assert.equals(10 + i, layout.mappingFromGrid(i));
+			Assert.same([i], layout.mappingToGrid(10 + i));
+		}
+		Assert.equals(null, layout.mappingFromGrid(9));
+		Assert.same([], layout.mappingToGrid(10 + 9));
 	}
 
 	function testLayoutCopy() {

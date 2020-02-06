@@ -3,6 +3,12 @@ package kbe;
 import kbe.UndoBuffer.Clonable;
 import haxe.ds.Vector;
 
+enum KeyboarLayoutAutoConnectMode {
+	NamePos;
+	NameOnly;
+	Position;
+}
+
 class KeyboardLayout {
 	public var name:String = "";
 	public var keys = new Array<Key>();
@@ -38,6 +44,18 @@ class KeyboardLayout {
 		return result.copy();
 	}
 
+	public function hasLayoutMapping(layoutId:Int):Bool {
+		var result = reverseMapping.get(layoutId);
+		if (result == null) {
+			return false;
+		}
+		return result.length > 0;
+	}
+
+	public function hasKeyboardMapping(keyboardId:Int):Bool {
+		return mappingFromGrid(keyboardId) != null;
+	}
+
 	public function addMapping(gridId:Int, layoutId:Int) {
 		removeSingleMapping(gridId);
 		if (layoutId >= 0 && gridId >= 0) {
@@ -49,6 +67,11 @@ class KeyboardLayout {
 				reverse.push(gridId);
 			}
 		}
+	}
+
+	public function clearMapping() {
+		mapping.clear();
+		reverseMapping.clear();
 	}
 
 	private function removeAllMappingFromReverse(reverseId:Int) {
@@ -81,11 +104,17 @@ class KeyboardLayout {
 		addMapping(gridId, layoutId);
 	}
 
-	public function autoConnectPairs(keyboard:KeyBoard, comparator:(Key, Key) -> Float, maxDistance = 0.5) {
-		for (keyboardKey in keyboard.keys) {
+	public function autoConnectPairs(keyboard:KeyBoard, comparator:(Key, Key) -> Float, maxDistance = 0.5, unassigned:Bool = false) {
+		if (!unassigned) {
+			mapping.clear();
+			reverseMapping.clear();
+		}
+		var keyboardKeys = keyboard.keys.filter(key -> !hasKeyboardMapping(key.id));
+		var layoutKeys = keys.filter(key -> !hasLayoutMapping(key.id));
+		for (keyboardKey in keyboardKeys) {
 			var nearest:Key = null;
 			var nearestDistance = maxDistance + 1;
-			for (layoutKey in keys) {
+			for (layoutKey in layoutKeys) {
 				var d = comparator(keyboardKey, layoutKey);
 				if (d < nearestDistance) {
 					nearest = layoutKey;
@@ -99,7 +128,8 @@ class KeyboardLayout {
 	}
 
 	@:generic
-	public function autoConnect<T>(keyboard:KeyBoard, groupFunction:Null<Key->T>, comparator:(Key, Key) -> Float = null, maxDistance:Float = 0.5) {
+	public function autoConnect<T>(keyboard:KeyBoard, groupFunction:Null<Key->T>, comparator:(Key, Key) -> Float = null, maxDistance:Float = 0.5,
+			unassigned:Bool = false) {
 		var createGroups = (keys:Array<Key>) -> {
 			var result = new Map<T, Array<Key>>();
 			for (key in keys) {
@@ -120,10 +150,16 @@ class KeyboardLayout {
 			}
 			return result;
 		};
+		if (!unassigned) {
+			mapping.clear();
+			reverseMapping.clear();
+		}
 		if (groupFunction != null) {
-			var groupsLayout = createGroups(keys);
-			var groupsKeyboard = createGroups(keyboard.keys);
-			if (groupSize(groupsLayout) != 1 && groupSize(groupsKeyboard) != 1) {
+			var layoutKeys = keys.filter(key -> !hasLayoutMapping(key.id));
+			var groupsLayout = createGroups(layoutKeys);
+			var keyboardKeys = keyboard.keys.filter(key -> !mapping.exists(key.id));
+			var groupsKeyboard = createGroups(keyboardKeys);
+			if (!(groupSize(groupsLayout) == 1 && groupSize(groupsKeyboard) == 1 && keyboardKeys.length > 1)) {
 				for (groupId => group in groupsKeyboard) {
 					var layoutGroup = groupsLayout.get(groupId);
 					if (layoutGroup == null) {
@@ -150,22 +186,33 @@ class KeyboardLayout {
 				}
 				return;
 			}
-			if (comparator != null) {
-				autoConnectPairs(keyboard, comparator, maxDistance);
-			}
+		}
+		if (comparator != null) {
+			autoConnectPairs(keyboard, comparator, maxDistance, unassigned);
 		}
 	}
 
-	private static function keyDistance(a:Key, b:Key):Float {
+	public function autoConnectInMode(keyboard:KeyBoard, mode:KeyboarLayoutAutoConnectMode, unassigned:Bool, maxDistance:Float = 0.5) {
+		switch (mode) {
+			case NamePos:
+				autoConnect(keyboard, key -> key.name.toLowerCase(), keyDistance, maxDistance, unassigned);
+			case NameOnly:
+				autoConnect(keyboard, key -> key.name.toLowerCase(), null, maxDistance, unassigned);
+			case Position:
+				autoConnectPairs(keyboard, keyDistance, maxDistance, unassigned);
+		}
+	}
+
+	public static function keyDistance(a:Key, b:Key):Float {
 		return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 	}
 
 	public function connectByNameAndPos(keyboard:KeyBoard) {
-		autoConnect(keyboard, key -> key.name, keyDistance);
+		autoConnect(keyboard, key -> key.name.toLowerCase(), keyDistance);
 	}
 
 	public function connectByPos(keyboard:KeyBoard) {
-		autoConnectPairs(keyboard, keyDistance, 0.01);
+		autoConnectInMode(keyboard, KeyboarLayoutAutoConnectMode.Position, false, 0.01);
 	}
 }
 
@@ -270,5 +317,14 @@ class KeyBoard implements Clonable<KeyBoard> {
 
 	public function removeLayout(name:String) {
 		layouts.remove(getLayoutByName(name));
+	}
+
+	public function updateLayout(name:String, layout:KeyboardLayout) {
+		for (i in 0...layouts.length) {
+			if (layouts[i].name == name) {
+				layouts[i] = layout;
+				break;
+			}
+		}
 	}
 }

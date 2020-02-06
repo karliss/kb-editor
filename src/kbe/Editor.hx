@@ -28,6 +28,7 @@ enum EditorAction {
 	NewLayout(layout:KeyboardLayout);
 	RenameLayout(oldName:String, newName:String);
 	RemoveLayout(name:String);
+	UpdateLayout(name:String, layout:KeyboardLayout);
 	AddLayoutMapping(layout:String, gridId:Int, layoutId:Int);
 	AddLayoutExclusiveMapping(layout:String, gridId:Int, layoutId:Int);
 }
@@ -93,6 +94,8 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 				keyboard.renameLayout(oldName, newName);
 			case RemoveLayout(name):
 				keyboard.removeLayout(name);
+			case UpdateLayout(name, layout):
+				keyboard.updateLayout(name, layout.clone());
 			case AddLayoutMapping(layout, gridId, layoutId):
 				keyboard.getLayoutByName(layout).addMapping(gridId, layoutId);
 			case AddLayoutExclusiveMapping(layout, gridId, layoutId):
@@ -263,5 +266,9 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 	public function addLayoutMappingFromLayoutExclusive(layout:KeyboardLayout, gridId:Int, layoutId:Int) {
 		runAction(AddLayoutExclusiveMapping(layout.name, gridId, layoutId));
+	}
+
+	public function updateLayout(name:String, layout:KeyboardLayout) {
+		runAction(UpdateLayout(name, layout.clone()));
 	}
 }

@@ -211,4 +211,22 @@ class EditorTest extends utest.Test {
 		Assert.equals(null, layout.mappingFromGrid(4));
 		Assert.equals(null, layout.mappingFromGrid(1));
 	}
+
+	function testUpdateLayout() {
+		var editor = new Editor(new KeyBoard());
+		for (i in 0...10) {
+			var key = editor.addNewKey();
+		}
+		var keyboard = editor.getKeyboard();
+		var layout = editor.newLayoutFromKeys(keyboard.keys);
+		var name0 = layout.name;
+		var layout2 = layout.clone();
+		layout2.name = "foobar";
+		editor.updateLayout(layout.name, layout2);
+		Assert.equals("foobar", editor.getKeyboard().layouts[0].name);
+		editor.undoBuffer.undo();
+		Assert.equals(name0, editor.getKeyboard().layouts[0].name);
+		editor.undoBuffer.redo();
+		Assert.equals("foobar", editor.getKeyboard().layouts[0].name);
+	}
 }

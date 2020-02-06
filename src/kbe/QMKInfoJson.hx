@@ -88,7 +88,7 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 			if (layout == mainLayout) {
 				layout.connectByPos(keyboard);
 			} else {
-				layout.connectByNameAndPos(keyboard);
+				layout.autoConnectInMode(keyboard, KeyboarLayoutAutoConnectMode.NamePos, false, 3.0);
 			}
 		}
 		return keyboard;

@@ -1,11 +1,20 @@
 <hbox id="layoutPage" width="100%" height="100%">
     <vbox>
+        <label text="Tools" style="font-size: 20px; horizontal-align: center;"/>
+        <onewaybutton id="btnViewOnly" text="View only"/>
         <onewaybutton id="btnDown" text="Top to bottom"/>
         <onewaybutton id="btnUp" text="Bottom to top"/>
-        <button id="btnExclusive" text="Exclusive mapping" toggle="true" selected="true"/>
-        <onewaybutton id="btnViewOnly" text="View only"/>
+        <checkbox id="btnExclusive" text="Exclusive mapping" selected="true"/>
         <spacer/>
-        <button id="btnAuto" text="Auto connect"/>
+        <label text="Commands" style="font-size: 20px; horizontal-align: center;"/>
+        <vbox style="border: 1px solid #555; padding: 2px">
+            <button id="btnAuto" text="Auto connect" width="100%"/>
+            <label text="mode:"/>
+            <dropdown id="autoConnectMode" width="100%"/>
+            <checkbox id="autoConnectUnassigned" text="Unassigned only" selected="true"/>
+            <label text="max distance:"/>
+            <numberstepper min="0.01" max="100" pos="0.5" precision="2" id="autoConnectLimitStepper" width="100%"/>
+        </vbox>
     </vbox>
     <vbox width="100%" height="100%">
         <hbox>

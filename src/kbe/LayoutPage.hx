@@ -1,16 +1,14 @@
 package kbe;
 
 import haxe.ui.data.ListDataSource;
-import haxe.ui.data.DataSource;
 import haxe.ui.events.UIEvent;
-import haxe.ui.util.StringUtil;
-import haxe.ui.util.Color;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.components.Button;
 import kbe.components.KeyboardContainer;
 import kbe.components.KeyboardContainer.KeyButtonEvent;
 import kbe.KeyBoard.KeyboardLayout;
+import kbe.KeyBoard.KeyboarLayoutAutoConnectMode;
 import kbe.components.OneWayButton;
 import kbe.KeyVisualizer;
 
@@ -70,6 +68,15 @@ class LayoutPage extends HBox implements EditorPage {
 			{value: "Mapping", mode: ColorMode.MappingPairs}
 		]) {
 			colorSelection.dataSource.add(mode);
+		}
+
+		autoConnectMode.dataSource = new ListDataSource<Dynamic>();
+		for (mode in [
+			{value: "Name and position", mode: KeyboarLayoutAutoConnectMode.NamePos},
+			{value: "Name", mode: KeyboarLayoutAutoConnectMode.NameOnly},
+			{value: "Position", mode: KeyboarLayoutAutoConnectMode.Position}
+		]) {
+			autoConnectMode.dataSource.add(mode);
 		}
 	}
 
@@ -204,6 +211,7 @@ class LayoutPage extends HBox implements EditorPage {
 	public function reload() {
 		reloadLayouts();
 		keyboardView.loadFromList(editor.getKeyboard().keys);
+		refreshFormat();
 	}
 
 	function updateStatistics() {
@@ -422,5 +430,21 @@ class LayoutPage extends HBox implements EditorPage {
 		}
 		keyboardView.refreshFormatting();
 		layoutView.refreshFormatting();
+	}
+
+	@:bind(btnAuto, MouseEvent.CLICK)
+	function onAutoConnectClicked(_) {
+		var layout = {
+			var currentLayout = selectedLayout();
+			if (currentLayout == null) {
+				return;
+			}
+			currentLayout.clone();
+		};
+		var keyboard = editor.getKeyboard();
+		var mode = autoConnectMode.selectedItem.mode;
+		layout.autoConnectInMode(keyboard, mode, autoConnectUnassigned.selected, autoConnectLimitStepper.pos);
+		editor.updateLayout(layout.name, layout);
+		reload();
 	}
 }

@@ -194,5 +194,10 @@ class KeyBoardTest extends utest.Test {
 		Assert.same([1], layout2.mappingToGrid(11));
 		Assert.same([2], layout2.mappingToGrid(12));
 		Assert.same([3, 4], layout2.mappingToGrid(13));
+
+		Assert.equals(false, layout1.synchronised);
+		layout1.synchronised = true;
+		layout2 = layout1.clone();
+		Assert.equals(true, layout2.synchronised);
 	}
 }

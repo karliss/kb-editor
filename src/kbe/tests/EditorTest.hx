@@ -166,7 +166,7 @@ class EditorTest extends utest.Test {
 			editor.addNewKey();
 		}
 		var keyboard = editor.getKeyboard();
-		var layout = editor.newLayoutFromKeys(editor.getKeyboard().keys);
+		var layout = editor.newLayoutFromKeys(editor.getKeyboard().keys, false);
 		layout.clearMapping();
 		layout = editor.updateLayout(layout.name, layout);
 
@@ -228,7 +228,7 @@ class EditorTest extends utest.Test {
 			var key = editor.addNewKey();
 		}
 		var keyboard = editor.getKeyboard();
-		var layout = editor.newLayoutFromKeys(keyboard.keys);
+		var layout = editor.newLayoutFromKeys(keyboard.keys, true);
 		var name0 = layout.name;
 		var layout2 = layout.clone();
 		layout2.name = "foobar";

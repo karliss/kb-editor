@@ -30,6 +30,7 @@ class KeyboardLayout {
 		for (key => value in reverseMapping) {
 			result.reverseMapping.set(key, value.copy());
 		}
+		result.synchronised = synchronised;
 		return result;
 	}
 
@@ -105,11 +106,13 @@ class KeyboardLayout {
 		addMapping(gridId, layoutId);
 	}
 
-	public function setKeys(keys:Array<Key>) {
+	public function setKeys(keys:Array<Key>, identityMapping:Bool = true) {
 		clearMapping();
 		this.keys = keys.map(key -> key.clone());
-		for (key in keys) {
-			addMapping(key.id, key.id);
+		if (identityMapping) {
+			for (key in keys) {
+				addMapping(key.id, key.id);
+			}
 		}
 	}
 

@@ -244,10 +244,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		return runAction(NewLayout(layout));
 	}
 
-	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
+	public function newLayoutFromKeys(keys:Array<Key>, identityMapping:Bool):KeyboardLayout {
 		var layout = new KeyboardLayout();
 		layout.name = 'Layout';
-		layout.setKeys(keyboard.keys);
+		layout.setKeys(keyboard.keys, identityMapping);
+		return runAction(NewLayout(layout));
+	}
+
+	public function addLayout(layout:KeyboardLayout):KeyboardLayout {
 		return runAction(NewLayout(layout));
 	}
 

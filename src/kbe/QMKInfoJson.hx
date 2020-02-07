@@ -70,7 +70,7 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 								case "layout":
 									layout.keys = parseKeys(propertyValue);
 								case _:
-									trace(propertyName);
+									trace('layout property ${propertyName} ignored');
 							}
 						}
 						layoutResults.push(layout);

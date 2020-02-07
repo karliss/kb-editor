@@ -1,16 +1,12 @@
 package kbe;
 
-import kbe.KBLEFormat.KBLERawImporter;
 import haxe.ui.events.KeyboardEvent;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
-import kbe.CSVFormat.CSVExporter;
-import kbe.KBLEFormat.KBLEImporter;
-import kbe.CSVFormat.CSVImporter;
-import kbe.QMKInfoJson.QMKInfoJsonImporter;
 import kbe.Exporter.Importer;
 import haxe.ui.core.Component;
 import haxe.ui.components.Button;
+import kbe.FormatManager;
 #if js
 import js.Browser;
 import js.html.Blob;
@@ -104,18 +100,13 @@ class EditorGui extends Component {
 	}
 
 	function fillFormats() {
-		var importers = [
-			new CSVImporter(),
-			new KBLEImporter(),
-			new KBLERawImporter(),
-			new QMKInfoJsonImporter()
-		];
+		var importers = FormatManager.getImporters();
 		this.importFormat.dataSource = new ArrayDataSource();
 		for (importer in importers) {
 			importFormat.dataSource.add(importer);
 		}
 
-		var exporters = [new CSVExporter(), new TestExporter()];
+		var exporters = FormatManager.getExporters();
 		exportFormat.dataSource = new ArrayDataSource();
 		for (exporter in exporters) {
 			exportFormat.dataSource.add(exporter);

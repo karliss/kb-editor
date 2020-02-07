@@ -1,5 +1,8 @@
 package kbe;
 
+import haxe.io.Bytes;
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.Toolkit;
 import haxe.ui.data.ListDataSource;
 import haxe.ui.events.UIEvent;
 import haxe.ui.containers.HBox;
@@ -77,6 +80,11 @@ class LayoutPage extends HBox implements EditorPage {
 			{value: "Position", mode: KeyboarLayoutAutoConnectMode.Position}
 		]) {
 			autoConnectMode.dataSource.add(mode);
+		}
+
+		importFormat.dataSource = new ListDataSource<Exporter.Importer>();
+		for (importer in FormatManager.getImporters()) {
+			importFormat.dataSource.add(importer);
 		}
 	}
 
@@ -187,7 +195,7 @@ class LayoutPage extends HBox implements EditorPage {
 		}
 		// ds.allowCallbacks = true;
 		layoutSelect.selectedIndex = -1;
-		layoutSelect.selectedIndex = previousIndex < 0 ? 0 : previousIndex;
+		layoutSelect.selectedIndex = previousIndex < 0 || previousIndex >= layoutSelect.dataSource.size ? 0 : previousIndex;
 		onLayoutChanged(null);
 	}
 
@@ -228,6 +236,16 @@ class LayoutPage extends HBox implements EditorPage {
 		} else {
 			nameField.text = layout.name;
 			layoutView.loadFromList(layout.keys);
+			synchronizeLayout.selected = layout.synchronised;
+
+			btnAuto.disabled = layout.synchronised;
+			if (layout.synchronised) {
+				btnViewOnly.selected = true;
+				btnDown.selected = false;
+				btnUp.selected = false;
+			}
+			btnUp.disabled = layout.synchronised;
+			btnDown.disabled = layout.synchronised;
 		}
 		refreshFormat();
 		updateStatistics();
@@ -243,13 +261,6 @@ class LayoutPage extends HBox implements EditorPage {
 		reloadLayouts();
 	}
 
-	@:bind(layoutAdd, MouseEvent.CLICK)
-	function newLayout(_) {
-		var layout = editor.newLayout();
-		reloadLayouts();
-		selectLastLayout();
-	}
-
 	@:bind(layoutRemove, MouseEvent.CLICK)
 	function removeLayout(_) {
 		var layout = selectedLayout();
@@ -260,12 +271,16 @@ class LayoutPage extends HBox implements EditorPage {
 	}
 
 	function selectLastLayout() {
-		layoutSelect.selectedIndex = layoutSelect.dataSource.size;
+		var i = layoutSelect.dataSource.size - 1;
+		layoutSelect.selectedIndex = layoutSelect.dataSource.size - 1;
+		onLayoutChanged(null);
 	}
 
 	@:bind(layoutFromThis, MouseEvent.CLICK)
 	function creatLayoutFromThis(_) {
-		editor.newLayoutFromKeys(editor.getKeyboard().keys);
+		var layout = new KeyboardLayout();
+		layout.synchronised = true;
+		editor.addLayout(layout);
 		reloadLayouts();
 		selectLastLayout();
 	}
@@ -413,6 +428,20 @@ class LayoutPage extends HBox implements EditorPage {
 		layoutView.refreshFormatting();
 	}
 
+	@:bind(synchronizeLayout, MouseEvent.CLICK)
+	function onSynchronizeClicked(_) {
+		var layout = {
+			var currentLayout = selectedLayout();
+			if (currentLayout == null) {
+				return;
+			}
+			currentLayout.clone();
+		};
+		layout.synchronised = !layout.synchronised;
+		editor.updateLayout(layout.name, layout);
+		reload();
+	}
+
 	@:bind(btnAuto, MouseEvent.CLICK)
 	function onAutoConnectClicked(_) {
 		var layout = {
@@ -430,5 +459,52 @@ class LayoutPage extends HBox implements EditorPage {
 		layout.autoConnectInMode(keyboard, mode, autoConnectUnassigned.selected, autoConnectLimitStepper.pos);
 		editor.updateLayout(layout.name, layout);
 		reload();
+	}
+
+	function handleImportLayoutFile(bytes:Array<Bytes>, names:Array<String>) {
+		var importer = importFormat.selectedItem;
+		if (importer == null) {
+			Toolkit.messageBox("Format not selected", null, MessageBoxType.TYPE_WARNING);
+			return;
+		}
+		try {
+			var result:KeyBoard = importer.convert(bytes[0], names[0]);
+			var layouts = result.layouts;
+
+			var hasSynchronized = false;
+			var count = 0;
+			for (layout in layouts) {
+				if (layout.synchronised) {
+					hasSynchronized = true;
+				}
+				layout.synchronised = false;
+				layout.clearMapping();
+				editor.addLayout(layout);
+				count += 1;
+			}
+			if (!hasSynchronized) {
+				var layout = new KeyboardLayout();
+				layout.setKeys(result.keys, false);
+				editor.addLayout(layout);
+				count += 1;
+			}
+			if (count > 0) {
+				reloadLayouts();
+				selectLastLayout();
+			}
+			Toolkit.messageBox('Imported $count layouts', null, MessageBoxType.TYPE_INFO);
+		} catch (e:Dynamic) {
+			Toolkit.messageBox('Import error "$e"', null, MessageBoxType.TYPE_ERROR);
+		}
+	}
+
+	@:bind(layoutImport, MouseEvent.CLICK)
+	function onClickImport(_):Void {
+		// TODO: remove if js
+		#if js
+		FileOpener.tryToOpenFile(function(bytes, names) {
+			handleImportLayoutFile(bytes, names);
+		});
+		#end
 	}
 }

@@ -167,6 +167,8 @@ class EditorTest extends utest.Test {
 		}
 		var keyboard = editor.getKeyboard();
 		var layout = editor.newLayoutFromKeys(editor.getKeyboard().keys);
+		layout.clearMapping();
+		layout = editor.updateLayout(layout.name, layout);
 
 		Assert.equals(null, layout.mappingFromGrid(1));
 		Assert.equals(0, layout.mappingToGrid(1).length);
@@ -203,7 +205,15 @@ class EditorTest extends utest.Test {
 		Assert.equals(null, layout.mappingFromGrid(1));
 
 		editor.undoBuffer.undo();
+		layout = editor.getKeyboard().layouts[0];
+		Assert.same([1, 4], layout.mappingToGrid(3));
+		Assert.equals(null, layout.mappingFromGrid(7));
 		editor.undoBuffer.redo();
+		layout = editor.getKeyboard().layouts[0];
+		Assert.same([7], layout.mappingToGrid(3));
+		Assert.equals(3, layout.mappingFromGrid(7));
+		Assert.equals(null, layout.mappingFromGrid(4));
+		Assert.equals(null, layout.mappingFromGrid(1));
 
 		layout = editor.getKeyboard().layouts[0];
 		Assert.same([7], layout.mappingToGrid(3));

@@ -56,6 +56,7 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {
 		var keyboard = new KeyBoard();
 		var json:DynamicAccess<Null<Dynamic>> = Json.parse(bytes.toString());
+		var layoutResults = new Array<KeyboardLayout>();
 		for (key => value in json) {
 			switch (key) {
 				case "layouts":
@@ -72,24 +73,26 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 									trace(propertyName);
 							}
 						}
-						keyboard.layouts.push(layout);
+						layoutResults.push(layout);
 					}
 				case _:
 					keyboard.description.set(key, value == null ? "" : value);
 			}
 		}
-		var mainLayout = chooseMainLayout(keyboard.layouts);
+		var mainLayout = chooseMainLayout(layoutResults);
 		if (mainLayout != null) {
 			for (key in mainLayout.keys) {
 				keyboard.addKey(key.clone());
 			}
+			mainLayout.synchronised = true;
+			mainLayout.clearMapping();
+			mainLayout.keys = [];
 		}
-		for (layout in keyboard.layouts) {
-			if (layout == mainLayout) {
-				layout.connectByPos(keyboard);
-			} else {
+		for (layout in layoutResults) {
+			if (layout != mainLayout) {
 				layout.autoConnectInMode(keyboard, KeyboarLayoutAutoConnectMode.NamePos, false, 3.0);
 			}
+			keyboard.addLayout(layout);
 		}
 		return keyboard;
 	}

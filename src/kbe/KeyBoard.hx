@@ -10,8 +10,9 @@ enum KeyboarLayoutAutoConnectMode {
 }
 
 class KeyboardLayout {
-	public var name:String = "";
+	public var name:String = "Layout";
 	public var keys = new Array<Key>();
+	public var synchronised = false;
 
 	private var mapping = new Map<Int, Int>();
 	private var reverseMapping = new Map<Int, Array<Int>>();
@@ -102,6 +103,14 @@ class KeyboardLayout {
 	public function addExclusiveMapping(gridId:Int, layoutId:Int) {
 		removeAllMappingFromReverse(layoutId);
 		addMapping(gridId, layoutId);
+	}
+
+	public function setKeys(keys:Array<Key>) {
+		clearMapping();
+		this.keys = keys.map(key -> key.clone());
+		for (key in keys) {
+			addMapping(key.id, key.id);
+		}
 	}
 
 	public function autoConnectPairs(keyboard:KeyBoard, comparator:(Key, Key) -> Float, maxDistance = 0.5, unassigned:Bool = false) {
@@ -219,7 +228,9 @@ class KeyboardLayout {
 class KeyBoard implements Clonable<KeyBoard> {
 	public var keys(default, null):Array<Key> = new Array<Key>();
 	public var description = new Map<String, Dynamic>();
-	public var layouts = new Array<KeyboardLayout>();
+	public var layouts(get, never):Vector<KeyboardLayout>;
+
+	var _layouts = new Array<KeyboardLayout>();
 
 	public function new() {}
 
@@ -229,10 +240,27 @@ class KeyBoard implements Clonable<KeyBoard> {
 		for (key in keys) {
 			result.keys.push(key.clone());
 		}
-		for (layout in layouts) {
-			result.layouts.push(layout.clone());
+		for (layout in _layouts) {
+			result._layouts.push(layout.clone());
 		}
 		return result;
+	}
+
+	public function get_layouts():Vector<KeyboardLayout> {
+		return Vector.fromArrayCopy(_layouts.map(getResolvedLayout));
+	}
+
+	public function unresolved_layouts():Array<KeyboardLayout> {
+		return this._layouts;
+	}
+
+	public function getResolvedLayout(layout:KeyboardLayout):KeyboardLayout {
+		if (!layout.synchronised) {
+			return layout;
+		}
+		var resolvedlayout = layout.clone();
+		resolvedlayout.setKeys(keys);
+		return resolvedlayout;
 	}
 
 	public function addKey(key:Key):Key {
@@ -299,7 +327,7 @@ class KeyBoard implements Clonable<KeyBoard> {
 	}
 
 	public function getLayoutByName(name:String):Null<KeyboardLayout> {
-		for (layout in layouts) {
+		for (layout in _layouts) {
 			if (layout.name == name) {
 				return layout;
 			}
@@ -316,15 +344,41 @@ class KeyBoard implements Clonable<KeyBoard> {
 	}
 
 	public function removeLayout(name:String) {
-		layouts.remove(getLayoutByName(name));
+		_layouts.remove(getLayoutByName(name));
 	}
 
-	public function updateLayout(name:String, layout:KeyboardLayout) {
-		for (i in 0...layouts.length) {
-			if (layouts[i].name == name) {
-				layouts[i] = layout;
-				break;
+	public function updateLayout(name:String, layout:KeyboardLayout):KeyboardLayout {
+		for (i in 0..._layouts.length) {
+			if (_layouts[i].name == name) {
+				if (name != layout.name) {
+					layout.name = getUnusedLayoutName(layout.name);
+				}
+				return _layouts[i] = layout;
 			}
 		}
+		return null;
+	}
+
+	public function getUnusedLayoutName(name:String):String {
+		var conflict = getLayoutByName(name);
+		if (conflict == null) {
+			return name;
+		}
+		var i:Int = 2;
+		var MAX_LAYOUTS = 1000000;
+		while (i < MAX_LAYOUTS) { // You really shouldn't have this many layouts
+			var newName = name + '_$i';
+			if (getLayoutByName(newName) == null) {
+				return newName;
+			}
+			i += 1;
+		}
+		throw "Too many layouts";
+	}
+
+	public function addLayout(layout:KeyboardLayout):KeyboardLayout {
+		layout.name = getUnusedLayoutName(layout.name);
+		_layouts.push(layout);
+		return layout;
 	}
 }

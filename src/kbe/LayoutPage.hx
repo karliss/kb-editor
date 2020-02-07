@@ -160,23 +160,6 @@ class LayoutPage extends HBox implements EditorPage {
 		return null;
 	}
 
-	function selectLayout(layout:Null<KeyboardLayout>) {
-		var ds = layoutSelect.dataSource;
-		if (layoutSelect.dataSource.size == 0) {
-			return;
-		}
-		for (i in 0...ds.size) {
-			var item = ds.get(i);
-			if (item.layout == layout) {
-				layoutSelect.selectedIndex = i;
-				onLayoutChanged(null);
-				return;
-			}
-		}
-		layoutSelect.selectedIndex = 0;
-		onLayoutChanged(null);
-	}
-
 	function selectLayoutByName(layout:String) {
 		var ds = layoutSelect.dataSource;
 		if (layoutSelect.dataSource.size == 0) {
@@ -271,15 +254,13 @@ class LayoutPage extends HBox implements EditorPage {
 	function removeLayout(_) {
 		var layout = selectedLayout();
 		if (layout != null) {
-			editor.removeLayout(layout);
+			editor.removeLayout(editor.getKeyboard().getLayoutByName(layout.name));
 			reloadLayouts();
 		}
 	}
 
 	function selectLastLayout() {
-		var keyboard = editor.getKeyboard();
-		var lastLay = keyboard.layouts[keyboard.layouts.length - 1];
-		selectLayout(lastLay);
+		layoutSelect.selectedIndex = layoutSelect.dataSource.size;
 	}
 
 	@:bind(layoutFromThis, MouseEvent.CLICK)
@@ -335,7 +316,7 @@ class LayoutPage extends HBox implements EditorPage {
 				}
 			}
 			disableRecursion = false;
-		} else if (!e.software) {
+		} else if (!e.software && !layout.synchronised) {
 			var keyboardButton = keyboardView.activeButton;
 			var layoutButton = layoutView.activeButton;
 			var keyboardId = -1;
@@ -380,7 +361,7 @@ class LayoutPage extends HBox implements EditorPage {
 				}
 			}
 			disableRecursion = false;
-		} else if (!e.software) {
+		} else if (!e.software && !layout.synchronised) {
 			var keyboardButton = keyboardView.activeButton;
 			var layoutButton = layoutView.activeButton;
 			var keyboardId = -1;
@@ -441,6 +422,9 @@ class LayoutPage extends HBox implements EditorPage {
 			}
 			currentLayout.clone();
 		};
+		if (layout.synchronised) {
+			return;
+		}
 		var keyboard = editor.getKeyboard();
 		var mode = autoConnectMode.selectedItem.mode;
 		layout.autoConnectInMode(keyboard, mode, autoConnectUnassigned.selected, autoConnectLimitStepper.pos);

@@ -87,7 +87,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			case NewLayout(layout):
 				{
 					var v = layout.clone();
-					keyboard.layouts.push(v);
+					keyboard.addLayout(v);
 					return v;
 				}
 			case RenameLayout(oldName, newName):
@@ -95,7 +95,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			case RemoveLayout(name):
 				keyboard.removeLayout(name);
 			case UpdateLayout(name, layout):
-				keyboard.updateLayout(name, layout.clone());
+				return keyboard.updateLayout(name, layout.clone());
 			case AddLayoutMapping(layout, gridId, layoutId):
 				keyboard.getLayoutByName(layout).addMapping(gridId, layoutId);
 			case AddLayoutExclusiveMapping(layout, gridId, layoutId):
@@ -240,15 +240,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 	public function newLayout():KeyboardLayout {
 		var layout = new KeyboardLayout();
-		layout.name = 'Layout${keyboard.layouts.length}';
+		layout.name = "Layout";
 		return runAction(NewLayout(layout));
 	}
 
 	public function newLayoutFromKeys(keys:Array<Key>):KeyboardLayout {
 		var layout = new KeyboardLayout();
-		layout.name = 'Layout${keyboard.layouts.length}';
-		var newKeys = keys.map(key -> key.clone());
-		layout.keys = newKeys;
+		layout.name = 'Layout';
+		layout.setKeys(keyboard.keys);
 		return runAction(NewLayout(layout));
 	}
 
@@ -261,14 +260,20 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	}
 
 	public function addLayoutMapping(layout:KeyboardLayout, gridId:Int, layoutId:Int) {
+		if (layout.synchronised) {
+			return;
+		}
 		runAction(AddLayoutMapping(layout.name, gridId, layoutId));
 	}
 
 	public function addLayoutMappingFromLayoutExclusive(layout:KeyboardLayout, gridId:Int, layoutId:Int) {
+		if (layout.synchronised) {
+			return;
+		}
 		runAction(AddLayoutExclusiveMapping(layout.name, gridId, layoutId));
 	}
 
-	public function updateLayout(name:String, layout:KeyboardLayout) {
-		runAction(UpdateLayout(name, layout.clone()));
+	public function updateLayout(name:String, layout:KeyboardLayout):KeyboardLayout {
+		return runAction(UpdateLayout(name, layout.clone()));
 	}
 }

@@ -47,11 +47,37 @@ class KeyBoardTest extends utest.Test {
 		Assert.same(keyb, key);
 	}
 
+	function testCopyKeyboard() {
+		var keyboard = new KeyBoard();
+		var key = new Key(1);
+		key.name = "K1";
+		keyboard.addKey(key);
+		var layout = new KeyboardLayout();
+		layout.name = "l1";
+		keyboard.addLayout(layout);
+
+		var keyboard2 = keyboard.clone();
+		Assert.notEquals(keyboard.keys, keyboard2.keys);
+		Assert.same(keyboard.keys, keyboard2.keys);
+		Assert.same(keyboard.unresolved_layouts(), keyboard2.unresolved_layouts());
+	}
+
+	function testLayoutNameConflict() {
+		var keyboard = new KeyBoard();
+		var layout = new KeyboardLayout();
+		var l1 = keyboard.addLayout(layout.clone());
+		Assert.equals("Layout", l1.name);
+		var l2 = keyboard.addLayout(layout.clone());
+		Assert.equals("Layout_2", l2.name);
+		var l3 = keyboard.addLayout(layout.clone());
+		Assert.equals("Layout_3", l3.name);
+	}
+
 	function testUpdateLayout() {
 		var keyboard = new KeyBoard();
 		var layout = new KeyboardLayout();
 		layout.name = "foo";
-		keyboard.layouts.push(layout);
+		keyboard.addLayout(layout);
 		var layout2 = layout.clone();
 		layout2.name = "foobar";
 		keyboard.updateLayout("foo", layout2);
@@ -102,7 +128,7 @@ class KeyBoardTest extends utest.Test {
 			var layout = new KeyboardLayout();
 			layout.name = "layout";
 			layout.keys = keyboard.keys.map(key -> key.clone());
-			keyboard.layouts.push(layout);
+			keyboard.addLayout(layout);
 
 			layout.autoConnectInMode(keyboard, KeyboarLayoutAutoConnectMode.NameOnly, true);
 			Assert.equals(1, layout.mappingFromGrid(1));
@@ -130,7 +156,7 @@ class KeyBoardTest extends utest.Test {
 			key.y = i;
 			layout.keys.push(key);
 		}
-		keyboard.layouts.push(layout);
+		keyboard.addLayout(layout);
 		layout.connectByPos(keyboard);
 		for (i in 1...9) {
 			Assert.equals(10 + i, layout.mappingFromGrid(i));

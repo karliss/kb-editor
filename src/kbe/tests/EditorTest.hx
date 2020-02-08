@@ -160,6 +160,32 @@ class EditorTest extends utest.Test {
 		Assert.same([3, 4], getRowColumn(3));
 	}
 
+	function testAlignKeys() {
+		var editor = new Editor(new KeyBoard());
+		var keys = [editor.addNewKey(), editor.addNewKey(), editor.addNewKey()];
+		var otherKey = editor.addNewKey();
+		otherKey.x = 20;
+		otherKey.y = 20;
+		keys[0].x = 1;
+		keys[0].y = 2;
+		keys[1].x = 1.2;
+		keys[1].y = 25;
+		keys[2].x = 0.5;
+		keys[2].y = 1;
+		function getPoints() {
+			var k2 = editor.getKeyboard().keys;
+			return k2.map(key -> key.point());
+		};
+		editor.alignKeys(keys[0], keys, true);
+		Assert.same([{x: 1, y: 2}, {x: 1.2, y: 2}, {x: 0.5, y: 2}, {x: 20, y: 20}], getPoints());
+		editor.undoBuffer.undo();
+		Assert.same([{x: 1, y: 2}, {x: 1.2, y: 25}, {x: 0.5, y: 1}, {x: 20, y: 20}], getPoints());
+		editor.undoBuffer.redo();
+		Assert.same([{x: 1, y: 2}, {x: 1.2, y: 2}, {x: 0.5, y: 2}, {x: 20, y: 20}], getPoints());
+		editor.alignKeys(keys[1], keys, false);
+		Assert.same([{x: 1.2, y: 2}, {x: 1.2, y: 2}, {x: 1.2, y: 2}, {x: 20, y: 20}], getPoints());
+	}
+
 	function testAddLayoutMapping() {
 		var editor = new Editor(new KeyBoard());
 		for (i in 0...10) {

@@ -326,4 +326,22 @@ class MechanicalPage extends HBox implements EditorPage {
 	public function reload() {
 		cMechanical.loadFromList(editor.getKeyboard().keys);
 	}
+
+	@:bind(bAlignX, MouseEvent.CLICK)
+	function onAlignXClicked(_) {
+		var selection = cMechanical.activeButtons().map(button -> button.key);
+		if (selection.length > 1) {
+			editor.alignKeys(cMechanical.activeButton.key, selection, false);
+			reload();
+		}
+	}
+
+	@:bind(bAlignY, MouseEvent.CLICK)
+	function onAlignYClicked(_) {
+		var selection = cMechanical.activeButtons().map(button -> button.key);
+		if (selection.length > 1) {
+			editor.alignKeys(cMechanical.activeButton.key, selection, true);
+			reload();
+		}
+	}
 }

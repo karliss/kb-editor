@@ -205,6 +205,22 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(MoveKeys(ids.copy(), alignedPositions), merge);
 	}
 
+	public function alignKeys(mainKey:Key, keys:Array<Key>, y:Bool = true) {
+		var resultKeys = new Array<Int>();
+		var resultPos = new Array<Key.Point>();
+		for (key in keys) {
+			if (key != mainKey) {
+				resultKeys.push(key.id);
+				if (y) {
+					resultPos.push({x: key.x, y: mainKey.y});
+				} else {
+					resultPos.push({x: mainKey.x, y: key.y});
+				}
+			}
+		}
+		runAction(MoveKeys(resultKeys, resultPos), false);
+	}
+
 	public function modifyKeys(ids:Array<Int>, properties:Array<Map<String, Dynamic>>) {
 		runAction(ModifyKeys(ids, properties));
 	}

@@ -102,8 +102,13 @@ class KeyboardContainer extends Box {
 		clearSelection();
 		for (key in keys) {
 			var button = addKey(key);
-			if (activeId.indexOf(key.id) >= 0) {
-				selectButton(button, Add);
+		}
+		// Preserve order
+		for (id in activeId) {
+			for (button in buttons) {
+				if (button.key.id == id) {
+					selectButton(button, SelectionCommand.Add);
+				}
 			}
 		}
 		refreshFormatting();

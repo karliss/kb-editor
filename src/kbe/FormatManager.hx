@@ -8,11 +8,16 @@ class FormatManager {
 			new CSVFormat.CSVImporter(),
 			new KBLEFormat.KBLEImporter(),
 			new KBLEFormat.KBLERawImporter(),
-			new QMKInfoJson.QMKInfoJsonImporter()
+			new QMKInfoJson.QMKInfoJsonImporter(),
+			new TKBEditorFormat.TKBEImporter()
 		];
 	}
 
 	public static function getExporters():Array<Exporter> {
-		return [new CSVFormat.CSVExporter(), new TestExporter()];
+		return [
+			new CSVFormat.CSVExporter(),
+			new TKBEditorFormat.TKBEExporter(),
+			new TestExporter()
+		];
 	}
 }

@@ -34,6 +34,10 @@ class KeyboardLayout {
 		return result;
 	}
 
+	public function getMapping():Map<Int, Int> {
+		return mapping;
+	}
+
 	public function mappingFromGrid(gridId:Int):Null<Int> {
 		return mapping.get(gridId);
 	}

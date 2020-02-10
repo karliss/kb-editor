@@ -21,7 +21,7 @@ class IPoint {
 
 enum EditorAction {
 	AddKey(key:Key);
-	RemoveKey(id:Int);
+	RemoveKeys(id:Array<Int>);
 	ModifyKey(id:Int, properties:Key);
 	ModifyKeys(id:Array<Int>, properties:Array<Map<String, Dynamic>>);
 	MoveKeys(id:Array<Int>, positions:Array<Key.Point>);
@@ -73,8 +73,12 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 					keyboard.addKey(k);
 					return k;
 				}
-			case RemoveKey(id):
-				keyboard.removeKey(keyboard.getKeyById(id));
+			case RemoveKeys(ids):
+				{
+					for (id in ids) {
+						keyboard.removeKey(keyboard.getKeyById(id));
+					}
+				}
 
 			case ModifyKey(id, prop):
 				keyboard.getKeyById(id).copyProperties(prop);
@@ -169,7 +173,11 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	}
 
 	public function removeKey(key:Key) {
-		runAction(RemoveKey(key.id));
+		runAction(RemoveKeys([key.id]));
+	}
+
+	public function removeKeys(keys:Array<Key>) {
+		runAction(RemoveKeys(keys.map(key -> key.id)));
 	}
 
 	function alignPoint(pos:Key.Point, force:Bool = false):Key.Point {

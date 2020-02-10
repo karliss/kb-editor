@@ -1,5 +1,6 @@
 package kbe.components;
 
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.util.Color;
 import haxe.ui.components.Button;
 import haxe.ui.geom.Rectangle;
@@ -71,6 +72,10 @@ class KeyboardContainer extends Box {
 		canvas.registerEvent(MouseEvent.MOUSE_UP, onMouseUpArea);
 		canvas.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMoveCanvas);
 		this.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMoveSelf);
+
+		#if js
+		this.element.tabIndex = 1;
+		#end
 	}
 
 	public function refreshFormatting() {

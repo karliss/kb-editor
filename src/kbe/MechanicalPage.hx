@@ -2,6 +2,7 @@ package kbe;
 
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.components.Button;
 import kbe.components.properties.PropertyEditor;
 import kbe.components.OneWayButton;
@@ -341,6 +342,14 @@ class MechanicalPage extends HBox implements EditorPage {
 		var selection = cMechanical.activeButtons().map(button -> button.key);
 		if (selection.length > 1) {
 			editor.alignKeys(cMechanical.activeButton.key, selection, true);
+			reload();
+		}
+	}
+
+	@:bind(cMechanical, KeyboardEvent.KEY_DOWN)
+	function onKeyDown(e:KeyboardEvent) {
+		if (e.keyCode == 46) { // TODO constants
+			editor.removeKeys(cMechanical.activeButtons().map(button -> button.key));
 			reload();
 		}
 	}

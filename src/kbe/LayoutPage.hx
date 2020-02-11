@@ -471,18 +471,18 @@ class LayoutPage extends HBox implements EditorPage {
 			var result:KeyBoard = importer.convert(bytes[0], names[0]);
 			var layouts = result.layouts;
 
-			var hasSynchronized = false;
+			var hasSynchronised = false;
 			var count = 0;
 			for (layout in layouts) {
 				if (layout.synchronised) {
-					hasSynchronized = true;
+					hasSynchronised = true;
 				}
 				layout.synchronised = false;
 				layout.clearMapping();
 				editor.addLayout(layout);
 				count += 1;
 			}
-			if (!hasSynchronized) {
+			if (!hasSynchronised) {
 				var layout = new KeyboardLayout();
 				layout.setKeys(result.keys, false);
 				editor.addLayout(layout);

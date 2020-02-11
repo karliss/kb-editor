@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.Editor.IPoint;
 import kbe.UndoBuffer.Clonable;
 import haxe.ds.Vector;
 
@@ -7,6 +8,11 @@ enum KeyboarLayoutAutoConnectMode {
 	NamePos;
 	NameOnly;
 	Position;
+}
+
+typedef RowCol = {
+	row:Int,
+	col:Int
 }
 
 class KeyboardLayout {
@@ -387,5 +393,32 @@ class KeyBoard implements Clonable<KeyBoard> {
 		layout.name = getUnusedLayoutName(layout.name);
 		_layouts.push(layout);
 		return layout;
+	}
+
+	public function getMatrixRow(electricRow:Int):Int {
+		return electricRow; // TODO:
+	}
+
+	public function getMatrixCol(electricCol:Int):Int {
+		return electricCol; // TODO:
+	}
+
+	public function getMatrixPos(key:Key):RowCol {
+		return {row: getMatrixRow(key.row), col: getMatrixCol(key.column)};
+	}
+
+	public function getMatrixSize():RowCol {
+		var rows = 0;
+		var col = 0;
+		for (key in keys) {
+			var pos = getMatrixPos(key);
+			if (pos.row + 1 > rows) {
+				rows = pos.row + 1;
+			}
+			if (pos.col + 1 > col) {
+				col = pos.col + 1;
+			}
+		}
+		return {row: rows, col: col};
 	}
 }

@@ -1,11 +1,15 @@
 package kbe.components;
 
+import haxe.ui.focus.IFocusable;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextField;
 import haxe.ui.layouts.HorizontalLayout;
 import haxe.ui.core.Component;
 
-class NumberEditor extends Component {
+class NumberEditor extends Component implements IFocusable {
+	public var focus(get, set):Bool;
+	public var allowFocus(get, set):Bool;
+
 	var input:TextField;
 	var plus:Button;
 	var minus:Button;
@@ -55,5 +59,21 @@ class NumberEditor extends Component {
 
 	function onMinus(_) {
 		throw "Not implemented!";
+	}
+
+	function get_focus():Bool {
+		return input.focus;
+	}
+
+	function set_focus(value:Bool):Bool {
+		return input.focus = value;
+	}
+
+	function get_allowFocus():Bool {
+		return input.focus;
+	}
+
+	function set_allowFocus(value:Bool):Bool {
+		return input.focus = value;
 	}
 }

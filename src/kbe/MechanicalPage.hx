@@ -348,7 +348,7 @@ class MechanicalPage extends HBox implements EditorPage {
 
 	@:bind(cMechanical, KeyboardEvent.KEY_DOWN)
 	function onKeyDown(e:KeyboardEvent) {
-		if (e.keyCode == 46) { // TODO constants
+		if (e.keyCode == KC.DELETE) {
 			editor.removeKeys(cMechanical.activeButtons().map(button -> button.key));
 			reload();
 		}

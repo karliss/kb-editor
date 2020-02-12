@@ -1,12 +1,10 @@
 package kbe;
 
+import haxe.ui.events.KeyboardEvent;
 import haxe.ui.data.ListDataSource;
-import haxe.ui.util.StringUtil;
-import haxe.ui.util.Color;
 import haxe.ui.events.UIEvent;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
-import haxe.ui.components.Button;
 import kbe.components.OneWayButton;
 import kbe.components.properties.PropertyEditor;
 import kbe.components.KeyboardContainer;
@@ -274,5 +272,31 @@ class WiringPage extends HBox implements EditorPage {
 		keyView.loadFromList(keyboard.keys);
 		resizeMatrix();
 		refreshFormatting();
+	}
+
+	@:bind(keyView, KeyboardEvent.KEY_DOWN)
+	function onTopKeyDown(e:KeyboardEvent) {
+		if (e.keyCode == KC.R) {
+			quickSetMode.selectedIndex = 1;
+		} else if (e.keyCode == KC.C) {
+			quickSetMode.selectedIndex = 2;
+		}
+		var number = null;
+		if (e.keyCode >= KC.N0 && e.keyCode <= KC.N9) {
+			number = e.keyCode - KC.N0;
+		} else if (e.keyCode >= KC.NP_0 && e.keyCode <= KC.NP_9) {
+			number = e.keyCode - KC.NP_0;
+		}
+		var quickMode = quickSetMode.selectedItem.id;
+		if (number != null && (quickMode == "row" || quickMode == "column")) {
+			if (quickMode == "row") {
+				pRowEditor.focus = true;
+				pRowEditor.number = number;
+			}
+			if (quickMode == "column") {
+				pColumnEditor.focus = true;
+				pColumnEditor.number = number;
+			}
+		}
 	}
 }

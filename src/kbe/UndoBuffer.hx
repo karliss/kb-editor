@@ -32,6 +32,13 @@ class UndoBuffer<S:Clonable<S>, A> {
 		return redoActions.length;
 	}
 
+	public function lastAction():A {
+		if (actionList.length > 0) {
+			return actionList[actionList.length - 1];
+		}
+		return null;
+	}
+
 	function pushStateInternal(a:A, redo = false, merge = false) {
 		if (!redo) {
 			redoActions = [];

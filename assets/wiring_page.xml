@@ -3,6 +3,14 @@
         <onewaybutton id="TODO" text="TODO"/>
         <label text="View"/>
         <dropdown text="Color" id="colorSelect"/>
+        <label text="Quick set"/>
+        <dropdown id="quickSetMode">
+            <data>
+                <item value="none" id="none" />
+                <item value="row" id="row"/>
+                <item value="column" id="column"/>
+            </data>
+        </dropdown>
     </vbox>
     <vbox width="100%" height="100%">
         <KeyboardContainer id="keyView" height="50%"/>
@@ -21,10 +29,10 @@
     <PropertyEditor id="propEditor" width="200" height="100%">
         <vbox text="Electrical">
             <PropertyItem id="p_row" text="row">
-                <IntegerEditor maximum="1000" />
+                <IntegerEditor id="pRowEditor" maximum="1000" />
             </PropertyItem>
             <PropertyItem id="p_column" text="column">
-                <IntegerEditor maximum="1000" />
+                <IntegerEditor id="pColumnEditor" maximum="1000" />
             </PropertyItem>
         </vbox>
     </PropertyEditor>

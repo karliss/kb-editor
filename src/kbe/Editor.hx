@@ -131,6 +131,16 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		switch [a, b] {
 			case [ModifyKey(id1, _), ModifyKey(id2, properties2)] if (id1 == id2):
 				return ModifyKey(id1, properties2);
+			case [ModifyKeys(ids1, prop1), ModifyKeys(ids2, prop2)] if (ids1.equals(ids2)):
+				var res = prop1.copy();
+				for (i in 0...prop1.length) {
+					var mapA = res[i];
+					var mapB = prop2[i];
+					for (key => value in mapB) {
+						mapA.set(key, value);
+					}
+				}
+				return ModifyKeys(ids1, res);
 			case [AddKey(key), ModifyKey(id2, properties2)] if (key.id == id2):
 				return AddKey(properties2);
 			case [MoveKeys(ids1, pos1), MoveKeys(ids2, pos2)] if (ids1.equals(ids2)):
@@ -229,8 +239,39 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(MoveKeys(resultKeys, resultPos), false);
 	}
 
-	public function modifyKeys(ids:Array<Int>, properties:Array<Map<String, Dynamic>>) {
-		runAction(ModifyKeys(ids, properties));
+	function comparePropertyChanges(a:Map<String, Dynamic>, b:Map<String, Dynamic>) {
+		for (key => value in a) {
+			if (b.get(key) != value) {
+				return false;
+			}
+		}
+		for (key => value in b) {
+			if (a.get(key) != value) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function modifyKeys(ids:Array<Int>, properties:Array<Map<String, Dynamic>>, mergeDuplicate:Bool = true) {
+		var prevAction = undoBuffer.lastAction();
+		var merge = false;
+		if (mergeDuplicate && prevAction != null) {
+			switch (prevAction) {
+				case ModifyKeys(prevId, prevProperties):
+					if (prevId.equals(ids)) {
+						merge = true;
+						for (i in 0...properties.length) {
+							if (!comparePropertyChanges(prevProperties[i], properties[i])) {
+								merge = false;
+								break;
+							}
+						}
+					}
+				default:
+			}
+		}
+		runAction(ModifyKeys(ids, properties), merge);
 	}
 
 	public function getConflictingWiring():Array<Key> {

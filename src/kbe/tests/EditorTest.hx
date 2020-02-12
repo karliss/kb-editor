@@ -160,6 +160,39 @@ class EditorTest extends utest.Test {
 		Assert.same([3, 4], getRowColumn(3));
 	}
 
+	function testModifyKeysMerge() {
+		var editor = new Editor(new KeyBoard());
+		var keys = [editor.addNewKey(), editor.addNewKey(), editor.addNewKey()];
+		Assert.equals(3, editor.undoBuffer.undoCount);
+		editor.modifyKeys([], []);
+		Assert.equals(4, editor.undoBuffer.undoCount);
+		editor.modifyKeys([], []);
+		Assert.equals(4, editor.undoBuffer.undoCount);
+		editor.modifyKeys([], [], false);
+		Assert.equals(5, editor.undoBuffer.undoCount);
+
+		editor.modifyKeys([0], [[]]);
+		Assert.equals(6, editor.undoBuffer.undoCount);
+		editor.modifyKeys([0, 1], [[], []]);
+		Assert.equals(7, editor.undoBuffer.undoCount);
+
+		editor.modifyKeys([1], [["row" => 1]]);
+		Assert.equals(8, editor.undoBuffer.undoCount);
+		editor.modifyKeys([1], [["row" => 1]]);
+		Assert.equals(8, editor.undoBuffer.undoCount);
+		editor.modifyKeys([1], [["row" => 2]]);
+		Assert.equals(9, editor.undoBuffer.undoCount);
+		editor.modifyKeys([1], [["column" => 1]]);
+		Assert.equals(10, editor.undoBuffer.undoCount);
+
+		editor.modifyKeys([3, 2], [["row" => 2], ["row" => 2]]);
+		Assert.equals(11, editor.undoBuffer.undoCount);
+		editor.modifyKeys([3, 2], [["row" => 2], ["row" => 2]]);
+		Assert.equals(11, editor.undoBuffer.undoCount);
+		editor.modifyKeys([3, 2], [["row" => 2], ["column" => 2]]);
+		Assert.equals(12, editor.undoBuffer.undoCount);
+	}
+
 	function testAlignKeys() {
 		var editor = new Editor(new KeyBoard());
 		var keys = [editor.addNewKey(), editor.addNewKey(), editor.addNewKey()];

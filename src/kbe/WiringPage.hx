@@ -79,7 +79,7 @@ class WiringPage extends HBox implements EditorPage {
 				var row = currentButton != null ? currentButton.key.row : -1;
 				var column = currentButton != null ? currentButton.key.column : -1;
 
-				var color:thx.color.Rgb = button.backgroundColor;
+				var color:thx.color.Rgb = null;
 				if (!button.selected) {
 					if (key.row == row) {
 						color = 0xe0fde0;

@@ -2,6 +2,7 @@ package kbe;
 
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.data.ListDataSource;
+import haxe.ui.containers.TableView;
 import haxe.ui.events.UIEvent;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
@@ -35,7 +36,6 @@ class WiringPage extends HBox implements EditorPage {
 		}
 		this.editor = editor;
 		this.keyboard = editor.getKeyboard();
-
 		percentWidth = 100;
 		percentHeight = 100;
 		text = "Wiring";
@@ -79,18 +79,25 @@ class WiringPage extends HBox implements EditorPage {
 				var row = currentButton != null ? currentButton.key.row : -1;
 				var column = currentButton != null ? currentButton.key.column : -1;
 
+				var color:thx.color.Rgb = button.backgroundColor;
 				if (!button.selected) {
 					if (key.row == row) {
-						button.backgroundColor = 0xe0fde0;
+						color = 0xe0fde0;
 					} else if (column == key.column) {
-						button.backgroundColor = 0xe0e0fd;
+						color = 0xe0e0fd;
 					}
 				}
 				if (conflictingKeys.exists(key.id)) {
-					button.backgroundColor = 0xffcc00;
+					color = 0xffcc00;
 				}
 				if (key.row == row && column == key.column && button != keyView.activeButton) {
-					button.backgroundColor = 0xff6666;
+					color = 0xff6666;
+				}
+				if (color != null) {
+					if (button.selected) {
+						color = color.darker(0.2);
+					}
+					button.backgroundColor = color.toInt();
 				}
 			}
 		} else if (colorMode == RainbowRows) {
@@ -270,12 +277,13 @@ class WiringPage extends HBox implements EditorPage {
 	public function reload() {
 		keyboard = editor.getKeyboard();
 		keyView.loadFromList(keyboard.keys);
+		keyView.updateLayout();
 		resizeMatrix();
 		refreshFormatting();
 	}
 
-	@:bind(keyView, KeyboardEvent.KEY_DOWN)
-	function onTopKeyDown(e:KeyboardEvent) {
+	@:bind(keyView, KeyboardEvent.KEY_UP)
+	function onTopKeyDownU(e:KeyboardEvent) {
 		if (e.keyCode == KC.R) {
 			quickSetMode.selectedIndex = 1;
 		} else if (e.keyCode == KC.C) {
@@ -290,12 +298,14 @@ class WiringPage extends HBox implements EditorPage {
 		var quickMode = quickSetMode.selectedItem.id;
 		if (number != null && (quickMode == "row" || quickMode == "column")) {
 			if (quickMode == "row") {
-				pRowEditor.focus = true;
 				pRowEditor.number = number;
+				pRowEditor.focus = true;
+				e.cancel();
 			}
 			if (quickMode == "column") {
-				pColumnEditor.focus = true;
 				pColumnEditor.number = number;
+				pColumnEditor.focus = true;
+				e.cancel();
 			}
 		}
 	}

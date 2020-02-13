@@ -15,12 +15,25 @@
 			"label": "html5 debug",
 			"command": "haxe",
 			"type": "shell",
-			"args": ["-debug", "html5.hxml"],
+			"args": [
+				"-debug",
+				"html5.hxml"
+			],
 			"problemMatcher": "$haxe",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			}
+		},
+		{
+			"label": "html5 release",
+			"command": "haxe",
+			"type": "shell",
+			"args": [
+				"html5.hxml"
+			],
+			"problemMatcher": "$haxe",
+			"group": "build"
 		},
 		{
 			"type": "hxml",
@@ -34,8 +47,8 @@
 			"command": "cd ./build/html5 && python3 -m http.server -b 127.0.0.1 8080",
 			"group": "none",
 			"presentation": {
-			    "reveal": "always",
-			    "panel": "new"
+				"reveal": "always",
+				"panel": "new"
 			},
 			"problemMatcher": []
 		}

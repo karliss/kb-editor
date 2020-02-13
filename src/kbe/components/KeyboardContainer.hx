@@ -141,6 +141,20 @@ class KeyboardContainer extends Box {
 		canvas.height = null;
 		canvas.width = null;
 		canvas.autoSize();
+
+		var w = Math.max(canvas.width, this.width - 16);
+		if (w > 0) {
+			canvas.width = w;
+		}
+		var h = Math.max(canvas.height, this.height - 16);
+		if (h > 0) {
+			canvas.height = h;
+		}
+	}
+
+	@:bind(this, UIEvent.RESIZE)
+	function onResize(_) {
+		updateLayout();
 	}
 
 	public function addKey(key:Key):KeyButton {

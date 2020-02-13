@@ -33,6 +33,8 @@ class KeyboardContainer extends Box {
 	static public var BUTTON_CHANGED = "BUTTON_CHANGED";
 	static public var BUTTON_CLICKED = "BUTTON_CLICKED";
 	static public var BUTTON_DOWN = "BUTTON_MOUSE_DOWN";
+	public static var TOP_OFFSET = 32;
+	public static var LEFT_OFFSET = 32;
 
 	private var scrollView:ScrollView = new ScrollView();
 	private var canvas:Absolute = new Absolute();
@@ -126,8 +128,8 @@ class KeyboardContainer extends Box {
 	public function screenToField(x:Float, y:Float):Point {
 		var result:Point = {x: 0, y: 0};
 
-		result.x = (x - canvas.screenLeft) / scale;
-		result.y = (y - canvas.screenTop) / scale;
+		result.x = (x - canvas.screenLeft - LEFT_OFFSET) / scale;
+		result.y = (y - canvas.screenTop - TOP_OFFSET) / scale;
 		return result;
 	}
 

@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.components.KeyboardContainer;
 import kbe.components.OneWayButton;
 
 class KeyButton extends OneWayButton {
@@ -16,8 +17,8 @@ class KeyButton extends OneWayButton {
 	}
 
 	public function refresh() {
-		top = 16 + key.y * scale;
-		left = 16 + key.x * scale;
+		top = KeyboardContainer.TOP_OFFSET + key.y * scale;
+		left = KeyboardContainer.LEFT_OFFSET + key.x * scale;
 		width = key.width * scale;
 		height = key.height * scale;
 	}

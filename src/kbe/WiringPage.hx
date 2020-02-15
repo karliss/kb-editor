@@ -1,7 +1,7 @@
 package kbe;
 
-import kbe.components.WireMappingTable;
-import kbe.KeyBoard.WireMapping;
+import haxe.ui.containers.VBox;
+import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.ItemEvent;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.data.ListDataSource;
@@ -9,6 +9,8 @@ import haxe.ui.containers.TableView;
 import haxe.ui.events.UIEvent;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
+import kbe.components.WireMappingTable;
+import kbe.KeyBoard.WireMapping;
 import kbe.components.OneWayButton;
 import kbe.components.properties.PropertyEditor;
 import kbe.components.KeyboardContainer;
@@ -19,6 +21,40 @@ private enum ColorMode {
 	Conflicts;
 	RainbowRows;
 	RainbowColumns;
+}
+
+@:build(haxe.ui.macros.ComponentMacros.build("assets/new_property_dialog.xml"))
+private class NewPropertyDialog extends Dialog {
+	public function new() {
+		super();
+		title = "New property";
+		buttons = DialogButton.OK | DialogButton.CANCEL;
+	}
+
+	public function result():String {
+		return inputField.text;
+	}
+}
+
+@:build(haxe.ui.macros.ComponentMacros.build("assets/delete_property_dialog.xml"))
+private class DeletePropertyDialog extends Dialog {
+	public function new() {
+		super();
+		title = "Remove property";
+		buttons = DialogButton.OK | DialogButton.CANCEL;
+	}
+
+	public function setProperties(properties:Array<String>) {
+		var ds = new haxe.ui.data.ArrayDataSource();
+		for (property in properties) {
+			ds.add({value: property});
+		}
+		propertySelector.dataSource = ds;
+	}
+
+	public function result():String {
+		return propertySelector.text;
+	}
 }
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/wiring_page.xml"))
@@ -378,6 +414,55 @@ class WiringPage extends HBox implements EditorPage {
 			var rows = keyboard.rowMapping.clone();
 			updateWireMappingFromDescr(rows, value);
 			editor.updateRowMapping(rows);
+			refreshRowMapping();
+		}
+	}
+
+	@:bind(addProperty, MouseEvent.CLICK)
+	function onAddPropertyClicked(e:MouseEvent) {
+		var dialog = new NewPropertyDialog();
+		dialog.width = 300;
+		dialog.height = 150;
+		dialog.onDialogClosed = onAddPropertyClosed;
+		dialog.show();
+	}
+
+	function onAddPropertyClosed(e:DialogEvent) {
+		if (e.button == DialogButton.OK) {
+			var dialog = cast(e.target, NewPropertyDialog);
+			var keyboard = editor.getKeyboard();
+			var rows = keyboard.rowMapping.clone();
+			var cols = keyboard.columnMapping.clone();
+
+			var newColumn = dialog.result();
+			rows.addColumn(newColumn);
+			cols.addColumn(newColumn);
+			editor.updateRowMapping(rows, cols);
+			refreshRowMapping();
+		}
+	}
+
+	@:bind(removeProperty, MouseEvent.CLICK)
+	function onDeletePropertyClicked(e:MouseEvent) {
+		var dialog = new DeletePropertyDialog();
+		dialog.width = 300;
+		dialog.height = 100;
+		dialog.onDialogClosed = onDeletePropertyClosed;
+		dialog.setProperties(editor.getKeyboard().rowMapping.columnNames);
+		dialog.show();
+	}
+
+	function onDeletePropertyClosed(e:DialogEvent) {
+		if (e.button == DialogButton.OK) {
+			var dialog = cast(e.target, DeletePropertyDialog);
+			var keyboard = editor.getKeyboard();
+			var rows = keyboard.rowMapping.clone();
+			var cols = keyboard.columnMapping.clone();
+
+			var newColumn = dialog.result();
+			rows.removeColumn(newColumn);
+			cols.removeColumn(newColumn);
+			editor.updateRowMapping(rows, cols);
 			refreshRowMapping();
 		}
 	}

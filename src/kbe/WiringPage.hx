@@ -317,7 +317,6 @@ class WiringPage extends HBox implements EditorPage {
 		var keyboard = editor.getKeyboard();
 		rowTable.mappingSource = keyboard.rowMapping;
 		colTable.mappingSource = keyboard.columnMapping;
-		trace("full refresh");
 	}
 
 	public function reload() {

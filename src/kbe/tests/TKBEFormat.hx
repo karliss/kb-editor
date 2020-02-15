@@ -56,7 +56,21 @@ class TKBEFormat extends utest.Test {
 			}
 		];
 		var expected = {
-			"keys": expectedKeys
+			"keys": expectedKeys,
+			"rowMapping": {
+				"size": 0,
+				"hasMatrixRows": false,
+				"properties": {
+					"pin": []
+				}
+			},
+			"columnMapping": {
+				"hasMatrixRows": false,
+				"size": 0,
+				"properties": {
+					"pin": []
+				}
+			}
 		};
 		Assert.same(expected, data);
 		var imported = importer.convert(exported);
@@ -102,7 +116,51 @@ class TKBEFormat extends utest.Test {
 		var exported = exporter.convert(keyboard);
 		var imported = importer.convert(exported);
 		Assert.same(keyboard, imported);
-		var exported2 = exporter.convert(keyboard);
+		var exported2 = exporter.convert(imported);
 		Assert.same(exported, exported2);
+	}
+
+	function testWireMapping() {
+		var keyboard = new KeyBoard();
+		var exporter = new TKBEExporter();
+		var importer = new TKBEImporter();
+
+		keyboard.rowMapping.setColumnValue(0, 0, "A1");
+		keyboard.columnMapping.setColumnValue(2, 0, "A2");
+
+		var exported = exporter.convert(keyboard);
+		var imported = importer.convert(exported);
+		Assert.equals(1, imported.rowMapping.rows);
+		Assert.same(["pin"], imported.rowMapping.columnNames);
+		Assert.equals("A1", imported.rowMapping.getColumnValue(0, 0));
+
+		Assert.equals(3, imported.columnMapping.rows);
+		Assert.same(["pin"], imported.columnMapping.columnNames);
+		Assert.equals("A2", imported.columnMapping.getColumnValue(2, 0));
+		var exported2 = exporter.convert(imported);
+		Assert.same(exported.toString(), exported2.toString());
+
+		keyboard.rowMapping.hasWireColumn = true;
+		keyboard.columnMapping.hasWireColumn = true;
+		keyboard.rowMapping.setMatrixRow(4, 5);
+		keyboard.rowMapping.setMatrixRow(5, 4);
+
+		keyboard.columnMapping.setMatrixRow(0, 1);
+		keyboard.columnMapping.setMatrixRow(1, 0);
+		keyboard.columnMapping.addColumn("foo");
+		keyboard.columnMapping.setColumnValue(1, 1, "bar");
+
+		exported = exporter.convert(keyboard);
+		imported = importer.convert(exported);
+		Assert.equals(5, imported.getMatrixRow(4));
+		Assert.equals(4, imported.getMatrixRow(5));
+
+		Assert.equals(1, imported.getMatrixCol(0));
+		Assert.equals(0, imported.getMatrixCol(1));
+		Assert.same(["pin", "foo"], imported.columnMapping.columnNames);
+		Assert.equals("bar", imported.columnMapping.getColumnValue(1, 1));
+
+		exported2 = exporter.convert(imported);
+		Assert.same(exported.toString(), exported2.toString());
 	}
 }

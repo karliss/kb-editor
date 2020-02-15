@@ -429,7 +429,7 @@ class KeyBoard implements Clonable<KeyBoard> {
 }
 
 class WireMapping {
-	public var hasWireColumn(default, set):Bool = true;
+	public var hasWireColumn(default, set):Bool = false;
 	public var columnNames(default, null) = new Array<String>();
 	public var rows(get, set):Int;
 
@@ -526,5 +526,17 @@ class WireMapping {
 			column.push(null);
 		}
 		return column[row] = value;
+	}
+
+	public function resize(count:Int) {
+		this.minRows = count;
+		if (matrixRow.length > count) {
+			matrixRow.resize(count);
+		}
+		for (column in columns) {
+			if (column.length > count) {
+				column.resize(count);
+			}
+		}
 	}
 }

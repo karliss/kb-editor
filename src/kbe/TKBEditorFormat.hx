@@ -72,6 +72,45 @@ class TKBEImporter implements Exporter.Importer {
 		return layout;
 	}
 
+	function convertWireMapping(input:DynamicAccess<Null<Dynamic>>):WireMapping {
+		var result = new WireMapping();
+		var columnData:DynamicAccess<Null<Dynamic>> = null;
+		for (key => value in input) {
+			switch (key) {
+				case "hasMatrixRows":
+					result.hasWireColumn = value;
+				case "size":
+					result.resize(value);
+				case "matrixRow":
+					var values:Array<Int> = value;
+					for (i in 0...values.length) {
+						result.setMatrixRow(i, values[i]);
+					}
+				case "properties":
+					columnData = value;
+				default:
+					throw 'Unsupported wire mapping property ($key)';
+			}
+		}
+		if (columnData != null) {
+			var names = result.columnNames.copy();
+			for (name in names) {
+				result.removeColumn(name);
+			}
+			var column = 0;
+			for (name => values in columnData) {
+				result.addColumn(name);
+				var index = 0;
+				for (value in cast(values, Array<Dynamic>)) {
+					result.setColumnValue(index, column, value);
+					index++;
+				}
+				column++;
+			}
+		}
+		return result;
+	}
+
 	public function convert(bytes:Bytes, ?name:String):KeyBoard {
 		var keyboard = new KeyBoard();
 		var json = Json.parse(bytes.toString());
@@ -92,6 +131,10 @@ class TKBEImporter implements Exporter.Importer {
 					for (key => value in description) {
 						keyboard.description.set(key, value == null ? "" : value);
 					}
+				case "rowMapping":
+					keyboard.rowMapping = convertWireMapping(value);
+				case "columnMapping":
+					keyboard.columnMapping = convertWireMapping(value);
 			}
 		}
 		return keyboard;
@@ -164,6 +207,35 @@ class TKBEExporter implements Exporter {
 		return result;
 	}
 
+	function convertWireMapping(mapping:WireMapping):Map<String, Dynamic> {
+		var data = new Map<String, Dynamic>();
+		data.set("hasMatrixRows", mapping.hasWireColumn);
+		var size = mapping.rows;
+		data.set("size", size);
+		if (mapping.hasWireColumn) {
+			data.set("matrixRow", [for (i in 0...size) mapping.getMatrixRow(i)]);
+		}
+		var columnIndex = 0;
+		var columnList = new Map<String, Dynamic>();
+		for (column in mapping.columnNames) {
+			var columnData = [for (i in 0...size) mapping.getColumnValue(i, columnIndex)];
+			var tailSize = 0;
+			while (columnData.length > 0) {
+				var last = columnData.pop();
+				if (last != null && last != "") {
+					columnData.push(last);
+					break;
+				}
+			}
+			columnList.set(column, columnData);
+			columnIndex += 1;
+		}
+		if (mapping.columnNames.length > 0) {
+			data.set("properties", columnList);
+		}
+		return data;
+	}
+
 	public function convertWithConfig(keyboard:KeyBoard, prettyPrint:Bool):Bytes {
 		var data = new Map<String, Dynamic>();
 		addArray(data, "keys", keyboard.keys.map(exportKey));
@@ -171,6 +243,8 @@ class TKBEExporter implements Exporter {
 		if (keyboard.description.iterator().hasNext()) {
 			data.set("description", keyboard.description);
 		}
+		data.set("rowMapping", convertWireMapping(keyboard.rowMapping));
+		data.set("columnMapping", convertWireMapping(keyboard.columnMapping));
 
 		return Bytes.ofString(Json.stringify(data, prettyPrint ? " " : null));
 	}

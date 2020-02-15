@@ -12,6 +12,28 @@
             </data>
         </dropdown>
     </vbox>
+    <vbox height="100%">
+        <checkbox id="checkHasMatrixRows" text="Separete electric row numbers" width="250"/>
+        <hbox>
+            <button id="addProperty" text="Add property"/>
+            <button id="removeProperty" text="Delete property"/>
+        </hbox>
+        <hbox>
+            <button id="btnAddRow" text="Add row"/>
+            <button id="btnRemoveRow" text="Delete row"/>
+        </hbox>
+        <WireMappingTable id="rowTable" height="50%" width="100%">
+
+        </WireMappingTable>
+        <hbox>
+            <button id="btnAddColumn" text="Add column"/>
+            <button id="btnRemoveColumn" text="Delete column"/>
+            <button text="Swap ⇅"/>
+        </hbox>
+        <WireMappingTable id="colTable" height="50%" width="100%">
+
+        </WireMappingTable>
+    </vbox>
     <vbox width="100%" height="100%">
         <KeyboardContainer id="keyView" height="50%"/>
         <hbox>

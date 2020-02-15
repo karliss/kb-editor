@@ -1,5 +1,7 @@
 package kbe;
 
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.Toolkit;
 import haxe.ui.events.KeyboardEvent;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
@@ -134,7 +136,13 @@ class EditorGui extends Component {
 		// TODO: remove if js
 		#if js
 		FileOpener.tryToOpenFile(function(bytes, names) {
-			var result = importer.convert(bytes[0], names[0]);
+			var result:KeyBoard = null;
+			try {
+				result = importer.convert(bytes[0], names[0]);
+			} catch (e:Dynamic) {
+				Toolkit.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
+				return;
+			}
 			this.keyboard = result;
 			editor.setKeyboard(keyboard);
 			editor.undoBuffer.clear();

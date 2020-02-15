@@ -29,16 +29,18 @@ class IntegerEditor extends NumberEditor {
 
 	override function onPlus(_) {
 		number += step;
+		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
 	override function onMinus(_) {
 		number -= step;
+		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
 	function set_number(v:Int):Int {
 		_value = clamp(v);
 		showVal();
-		dispatch(new UIEvent(UIEvent.CHANGE));
+		// dispatch(new UIEvent(UIEvent.CHANGE));
 		return _value;
 	}
 

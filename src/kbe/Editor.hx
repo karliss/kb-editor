@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.KeyBoard.WireMapping;
 import kbe.UndoBuffer.UndoExecutor;
 import thx.OrderedMap.EnumValueOrderedMap;
 import thx.Arrays;
@@ -20,6 +21,7 @@ class IPoint {
 }
 
 enum EditorAction {
+	ActionList(actions:Array<EditorAction>);
 	AddKey(key:Key);
 	RemoveKeys(id:Array<Int>);
 	ModifyKey(id:Int, properties:Key);
@@ -31,6 +33,7 @@ enum EditorAction {
 	UpdateLayout(name:String, layout:KeyboardLayout);
 	AddLayoutMapping(layout:String, gridId:Int, layoutId:Int);
 	AddLayoutExclusiveMapping(layout:String, gridId:Int, layoutId:Int);
+	UpdateWireMapping(rows:Null<WireMapping>, columns:Null<WireMapping>);
 }
 
 class Editor implements UndoExecutor<KeyBoard, EditorAction> {
@@ -67,6 +70,10 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 	public function applyAction(a:EditorAction):Dynamic {
 		switch (a) {
+			case ActionList(actions):
+				for (action in actions) {
+					applyAction(action);
+				}
 			case AddKey(key):
 				{
 					var k = key.clone();
@@ -104,6 +111,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 				keyboard.getLayoutByName(layout).addMapping(gridId, layoutId);
 			case AddLayoutExclusiveMapping(layout, gridId, layoutId):
 				keyboard.getLayoutByName(layout).addExclusiveMapping(gridId, layoutId);
+
+			case UpdateWireMapping(rows, columns):
+				if (rows != null) {
+					keyboard.rowMapping = rows.clone();
+				}
+				if (columns != null) {
+					keyboard.columnMapping = columns.clone();
+				}
 		}
 		return null;
 	}
@@ -344,5 +359,9 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 
 	public function updateLayout(name:String, layout:KeyboardLayout):KeyboardLayout {
 		return runAction(UpdateLayout(name, layout.clone()));
+	}
+
+	public function updateRowMapping(?rows:WireMapping, ?columns:WireMapping) {
+		runAction(UpdateWireMapping(rows, columns));
 	}
 }

@@ -1,5 +1,6 @@
 package kbe.components;
 
+import haxe.ui.events.UIEvent;
 import haxe.ui.focus.IFocusable;
 import haxe.ui.components.Button;
 import haxe.ui.components.TextField;
@@ -28,6 +29,7 @@ class NumberEditor extends Component implements IFocusable {
 		input.restrictChars = "-0-9.";
 		input.onChange = function(_) {
 			fromText();
+			dispatch(new UIEvent(UIEvent.CHANGE));
 		};
 
 		addComponent(plus);

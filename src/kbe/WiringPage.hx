@@ -1,5 +1,8 @@
 package kbe;
 
+import kbe.components.WireMappingTable;
+import kbe.KeyBoard.WireMapping;
+import haxe.ui.events.ItemEvent;
 import haxe.ui.events.KeyboardEvent;
 import haxe.ui.data.ListDataSource;
 import haxe.ui.containers.TableView;
@@ -274,12 +277,21 @@ class WiringPage extends HBox implements EditorPage {
 		}
 	}
 
+	function refreshRowMapping() {
+		var keyboard = editor.getKeyboard();
+		rowTable.mappingSource = keyboard.rowMapping;
+		colTable.mappingSource = keyboard.columnMapping;
+		trace("full refresh");
+	}
+
 	public function reload() {
 		keyboard = editor.getKeyboard();
 		keyView.loadFromList(keyboard.keys);
 		keyView.updateLayout();
 		resizeMatrix();
 		refreshFormatting();
+		checkHasMatrixRows.selected = keyboard.rowMapping.hasWireColumn;
+		refreshRowMapping();
 	}
 
 	@:bind(keyView, KeyboardEvent.KEY_UP)
@@ -307,6 +319,66 @@ class WiringPage extends HBox implements EditorPage {
 				pColumnEditor.focus = true;
 				e.cancel();
 			}
+		}
+	}
+
+	function updateWireMappingFromDescr(mapping:WireMapping, changes:kbe.components.WireMappingTable.SourceElement) {
+		var row = changes.tRow;
+		mapping.setMatrixRow(row, changes.tMatrixRow);
+		for (field in Reflect.fields(changes)) {
+			var column = mapping.getColumnIndex(field);
+			if (column > -1) {
+				mapping.setColumnValue(row, column, Reflect.getProperty(changes, field));
+			}
+		}
+	}
+
+	@:bind(checkHasMatrixRows, UIEvent.CHANGE)
+	function hasMatrixRowsChanged(e:UIEvent) {
+		var keyboard = editor.getKeyboard();
+		var rows = keyboard.rowMapping.clone();
+		rows.hasWireColumn = checkHasMatrixRows.selected;
+		var col = keyboard.columnMapping.clone();
+		col.hasWireColumn = checkHasMatrixRows.selected;
+		editor.updateRowMapping(rows, col);
+
+		refreshRowMapping();
+	}
+
+	function addRowClicked(row:Bool) {
+		var keyboard = editor.getKeyboard();
+		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
+		var count = rows.rows;
+
+		rows.rows = count + 1;
+		rows.setMatrixRow(count, count);
+		if (row) {
+			editor.updateRowMapping(rows);
+		} else {
+			editor.updateRowMapping(null, rows);
+		}
+		refreshRowMapping();
+	}
+
+	@:bind(btnAddRow, MouseEvent.CLICK)
+	function btnAddRowClicked(e:MouseEvent) {
+		addRowClicked(true);
+	}
+
+	@:bind(btnAddColumn, MouseEvent.CLICK)
+	function btnAddColClicked(e:MouseEvent) {
+		addRowClicked(false);
+	}
+
+	@:bind(rowTable, ItemEvent.COMPONENT_EVENT)
+	function onItemEvent(e:ItemEvent) {
+		if (e.sourceEvent.type == UIEvent.CHANGE && e.data != null) {
+			var value = e.data;
+			var keyboard = editor.getKeyboard();
+			var rows = keyboard.rowMapping.clone();
+			updateWireMappingFromDescr(rows, value);
+			editor.updateRowMapping(rows);
+			refreshRowMapping();
 		}
 	}
 }

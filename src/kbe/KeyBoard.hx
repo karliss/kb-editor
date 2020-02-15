@@ -243,6 +243,9 @@ class KeyBoard implements Clonable<KeyBoard> {
 	public var description = new Map<String, Dynamic>();
 	public var layouts(get, never):Vector<KeyboardLayout>;
 
+	public var rowMapping(default, default) = new WireMapping();
+	public var columnMapping(default, default) = new WireMapping();
+
 	var _layouts = new Array<KeyboardLayout>();
 
 	public function new() {}
@@ -256,6 +259,8 @@ class KeyBoard implements Clonable<KeyBoard> {
 		for (layout in _layouts) {
 			result._layouts.push(layout.clone());
 		}
+		result.rowMapping = rowMapping.clone();
+		result.columnMapping = columnMapping.clone();
 		return result;
 	}
 
@@ -396,11 +401,11 @@ class KeyBoard implements Clonable<KeyBoard> {
 	}
 
 	public function getMatrixRow(electricRow:Int):Int {
-		return electricRow; // TODO:
+		return rowMapping.getMatrixRow(electricRow);
 	}
 
 	public function getMatrixCol(electricCol:Int):Int {
-		return electricCol; // TODO:
+		return columnMapping.getMatrixRow(electricCol);
 	}
 
 	public function getMatrixPos(key:Key):RowCol {
@@ -420,5 +425,106 @@ class KeyBoard implements Clonable<KeyBoard> {
 			}
 		}
 		return {row: rows, col: col};
+	}
+}
+
+class WireMapping {
+	public var hasWireColumn(default, set):Bool = true;
+	public var columnNames(default, null) = new Array<String>();
+	public var rows(get, set):Int;
+
+	private var matrixRow = new Array<Int>();
+	private var columns = new Array<Array<Dynamic>>();
+	private var minRows:Int = 0;
+
+	public function new() {
+		addColumn("pin");
+	}
+
+	public function clone():WireMapping {
+		var result = new WireMapping();
+		result.hasWireColumn = this.hasWireColumn;
+		result.columnNames = columnNames.copy();
+		result.matrixRow = matrixRow.copy();
+		result.columns = columns.map(col -> col.copy());
+		result.minRows = minRows;
+		return result;
+	}
+
+	public function addColumn(name:String):Int {
+		var index = columns.length;
+		columns.push(new Array<Dynamic>());
+		columnNames.push(name);
+		return index;
+	}
+
+	public inline function getColumnIndex(name:String):Int {
+		return columnNames.indexOf(name);
+	}
+
+	public function removeColumn(name:String) {
+		var column = getColumnIndex(name);
+		if (column > -1) {
+			columnNames.splice(column, 1);
+			columns.splice(column, 1);
+		}
+	}
+
+	public function get_rows():Int {
+		var result = minRows;
+		if (hasWireColumn && matrixRow.length > result) {
+			result = matrixRow.length;
+		}
+		for (column in columns) {
+			if (column.length > result) {
+				result = column.length;
+			}
+		}
+		return result;
+	}
+
+	public function set_rows(v:Int):Int {
+		minRows = v;
+		return v;
+	}
+
+	function set_hasWireColumn(v:Bool):Bool {
+		hasWireColumn = v;
+		if (!hasWireColumn) {
+			matrixRow = [];
+		}
+		return v;
+	}
+
+	public function getMatrixRow(row:Int):Int {
+		if (hasWireColumn && row < matrixRow.length) {
+			return matrixRow[row];
+		}
+		return row;
+	}
+
+	public function setMatrixRow(row:Int, matrixRow:Int) {
+		while (this.matrixRow.length <= row) {
+			this.matrixRow.push(this.matrixRow.length);
+		}
+		this.matrixRow[row] = matrixRow;
+	}
+
+	public function getColumnValue(row:Int, columnIndex:Int):Dynamic {
+		if (columnIndex < columns.length) {
+			var column = columns[columnIndex];
+			if (row < column.length) {
+				return column[row];
+			}
+		}
+		return null;
+	}
+
+	public function setColumnValue(row:Int, columnIndex:Int, value:Dynamic):Dynamic {
+		var column = columns[columnIndex];
+		while (column.length <= row) {
+			column.push(null);
+		}
+		return column[row] = value;
 	}
 }

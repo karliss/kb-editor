@@ -32,10 +32,12 @@ class FloatEditor extends NumberEditor {
 
 	override function onPlus(_) {
 		number += step;
+		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
 	override function onMinus(_) {
 		number -= step;
+		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
 	function set_number(v:Float):Float {
@@ -44,7 +46,7 @@ class FloatEditor extends NumberEditor {
 			_value = Math.fround(_value / step) * step;
 		}
 		showVal();
-		dispatch(new UIEvent(UIEvent.CHANGE));
+		// dispatch(new UIEvent(UIEvent.CHANGE));
 		return _value;
 	}
 

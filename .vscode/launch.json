@@ -34,6 +34,15 @@
 			]
 		},
 		{
+			"name": "Debug js test",
+			"type": "node",
+			"request": "launch",
+			"args": [
+				"build/test_js/test.js"
+			],
+			"preLaunchTask": "test_js.hxml"
+		},
+		{
 			"name": "Debug macro",
 			"type": "haxe-eval",
 			"request": "launch",

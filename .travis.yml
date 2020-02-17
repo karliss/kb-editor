@@ -19,3 +19,4 @@ install:
 
 hxml:
   - travis.hxml
+  - travis2.hxml

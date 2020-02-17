@@ -2,6 +2,17 @@
     "editor.formatOnSave": true,
     "editor.formatOnType": true,
     "haxeTestExplorer.launchConfiguration": "Debug test",
+    "_haxeTestExplorer.launchConfiguration": "Debug js test",
+    "_haxeTestExplorer.testCommand": [
+        "${haxe}",
+        "-lib",
+        "test-adapter",
+        "-lib",
+        "hxnodejs",
+        "test_js.hxml",
+        "-cmd",
+        "node build/test_js/test.js"
+    ],
     "[haxe]": {
         "editor.tabSize": 4,
         "editor.insertSpaces": false

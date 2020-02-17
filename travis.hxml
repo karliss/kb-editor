@@ -1,6 +1,3 @@
 html5.hxml
 --next
 test.hxml
---next
-build_test_js.hxml
--cmd node build/test_js/test.js

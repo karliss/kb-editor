@@ -135,6 +135,8 @@ class TKBEImporter implements Exporter.Importer {
 					keyboard.rowMapping = convertWireMapping(value);
 				case "columnMapping":
 					keyboard.columnMapping = convertWireMapping(value);
+				default:
+					throw 'Unexpected property $key';
 			}
 		}
 		return keyboard;
@@ -143,59 +145,59 @@ class TKBEImporter implements Exporter.Importer {
 
 class TKBEExporter implements Exporter {
 	public var value(default, null):String = "this KBE exporter [WIP]";
-	public var prettyPrint:Bool = false;
+	public var prettyPrint:Bool = true;
 
 	public function new(defaultPrettyPrint:Bool = true) {}
 
-	function addArray(output:Map<String, Dynamic>, name:String, input:Array<Dynamic>) {
+	function addArray(output:Dynamic, name:String, input:Array<Dynamic>) {
 		if (input.length > 0) {
-			output.set(name, input);
+			Reflect.setField(output, name, input);
 		}
 	}
 
 	function exportKey(key:Key):Dynamic {
-		var result:Map<String, Dynamic> = [
-			"id" => key.id,
-			"x" => key.x,
-			"y" => key.y,
-			"row" => key.row,
-			"col" => key.column
-		];
+		var result = {
+			"id": key.id,
+			"x": key.x,
+			"y": key.y,
+			"row": key.row,
+			"col": key.column
+		};
 		if (key.name != "") {
-			result.set("name", key.name);
+			Reflect.setField(result, "name", key.name);
 		}
 		if (key.width != 1.0) {
-			result.set("w", key.width);
+			Reflect.setField(result, "w", key.width);
 		}
 		if (key.height != 1.0) {
-			result.set("h", key.height);
+			Reflect.setField(result, "h", key.height);
 		}
 		if (key.angle != 0.0) {
-			result.set("angle", key.angle);
+			Reflect.setField(result, "angle", key.angle);
 		}
 
 		return result;
 	}
 
 	function exportLayoutKey(key:Key):Dynamic {
-		var result:Map<String, Dynamic> = ["id" => key.id, "x" => key.x, "y" => key.y,];
+		var result = {"id": key.id, "x": key.x, "y": key.y};
 		if (key.name != "") {
-			result.set("name", key.name);
+			Reflect.setField(result, "name", key.name);
 		}
 		if (key.width != 1.0) {
-			result.set("w", key.width);
+			Reflect.setField(result, "w", key.width);
 		}
 		if (key.height != 1.0) {
-			result.set("h", key.height);
+			Reflect.setField(result, "h", key.height);
 		}
 
 		return key;
 	}
 
 	function exportLayout(layout:KeyboardLayout):Dynamic {
-		var result:Map<String, Dynamic> = ["name" => layout.name];
+		var result = {"name": layout.name};
 		if (layout.synchronised) {
-			result.set("synchronised", true);
+			Reflect.setField(result, "synchronised", true);
 		} else {
 			addArray(result, "keys", layout.keys.map(exportKey));
 			var mapping = [];
@@ -207,16 +209,17 @@ class TKBEExporter implements Exporter {
 		return result;
 	}
 
-	function convertWireMapping(mapping:WireMapping):Map<String, Dynamic> {
-		var data = new Map<String, Dynamic>();
-		data.set("hasMatrixRows", mapping.hasWireColumn);
+	function convertWireMapping(mapping:WireMapping):Dynamic {
 		var size = mapping.rows;
-		data.set("size", size);
+		var data = {
+			"hasMatrixRows": mapping.hasWireColumn,
+			"size": size
+		};
 		if (mapping.hasWireColumn) {
-			data.set("matrixRow", [for (i in 0...size) mapping.getMatrixRow(i)]);
+			Reflect.setField(data, "matrixRow", [for (i in 0...size) mapping.getMatrixRow(i)]);
 		}
 		var columnIndex = 0;
-		var columnList = new Map<String, Dynamic>();
+		var columnList = {};
 		for (column in mapping.columnNames) {
 			var columnData = [for (i in 0...size) mapping.getColumnValue(i, columnIndex)];
 			var tailSize = 0;
@@ -227,24 +230,24 @@ class TKBEExporter implements Exporter {
 					break;
 				}
 			}
-			columnList.set(column, columnData);
+			Reflect.setField(columnList, column, columnData);
 			columnIndex += 1;
 		}
 		if (mapping.columnNames.length > 0) {
-			data.set("properties", columnList);
+			Reflect.setField(data, "properties", columnList);
 		}
 		return data;
 	}
 
 	public function convertWithConfig(keyboard:KeyBoard, prettyPrint:Bool):Bytes {
-		var data = new Map<String, Dynamic>();
+		var data = {};
 		addArray(data, "keys", keyboard.keys.map(exportKey));
 		addArray(data, "layouts", keyboard.layouts.map(exportLayout).toArray());
 		if (keyboard.description.iterator().hasNext()) {
-			data.set("description", keyboard.description);
+			Reflect.setField(data, "description", keyboard.description);
 		}
-		data.set("rowMapping", convertWireMapping(keyboard.rowMapping));
-		data.set("columnMapping", convertWireMapping(keyboard.columnMapping));
+		Reflect.setField(data, "rowMapping", convertWireMapping(keyboard.rowMapping));
+		Reflect.setField(data, "columnMapping", convertWireMapping(keyboard.columnMapping));
 
 		return Bytes.ofString(Json.stringify(data, prettyPrint ? " " : null));
 	}

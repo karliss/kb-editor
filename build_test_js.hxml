@@ -1,0 +1,4 @@
+test_common.hxml
+-lib test-adapter
+-debug
+-js build/test_js/test.js

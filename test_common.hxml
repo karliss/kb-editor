@@ -1,0 +1,7 @@
+-cp src
+-main kbe.testHelper.TestMain
+
+-lib haxeui-core
+-lib utest
+common.hxml
+

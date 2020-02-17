@@ -108,8 +108,8 @@ class TKBEFormat extends utest.Test {
 		layout2.keys.push(lk3);
 
 		layout2.addMapping(10, 1);
-		layout2.addMapping(12, 12);
 		layout2.addMapping(11, 12);
+		layout2.addMapping(12, 12);
 
 		keyboard.addLayout(layout2);
 

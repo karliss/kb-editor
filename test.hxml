@@ -1,9 +1,2 @@
--cp src
--main kbe.testHelper.TestMain
-
--lib haxeui-core
--lib utest
-common.hxml
-
+test_common.hxml
 --interp
-#-x testHelper.TestMain

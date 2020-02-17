@@ -115,7 +115,7 @@ class TKBEFormat extends utest.Test {
 
 		var exported = exporter.convert(keyboard);
 		var imported = importer.convert(exported);
-		// Assert.same(keyboard, imported);
+		Assert.same(keyboard, imported);
 		var exported2 = exporter.convert(imported);
 		Assert.same(exported, exported2);
 	}

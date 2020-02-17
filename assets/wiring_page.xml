@@ -1,8 +1,5 @@
 <hbox id="pageWiring" text="Wiring" width="100%" height="100%">
     <vbox>
-        <onewaybutton id="TODO" text="TODO"/>
-        <label text="View"/>
-        <dropdown text="Color" id="colorSelect"/>
         <label text="Quick set"/>
         <dropdown id="quickSetMode">
             <data>
@@ -23,7 +20,6 @@
             <button id="btnRemoveRow" text="Delete row"/>
         </hbox>
         <WireMappingTable id="rowTable" height="50%" width="100%">
-
         </WireMappingTable>
         <hbox>
             <button id="btnAddColumn" text="Add column"/>
@@ -31,13 +27,24 @@
             <button text="Swap ⇅"/>
         </hbox>
         <WireMappingTable id="colTable" height="50%" width="100%">
-
         </WireMappingTable>
     </vbox>
     <vbox width="100%" height="100%">
+        <hbox>
+            <label text="View:" verticalAlign="center"/>
+            <dropdown text="Color" id="colorSelect" width="100"/>
+            <label text="layout label" verticalAlign="center"/>
+            <dropdown id="layoutLabelSelection" width="150"/>
+        </hbox>
         <KeyboardContainer id="keyView" height="50%"/>
         <hbox>
-            <label text="rows: "/>
+            <dropdown id="gridModeSelection" width="100">
+                <data>
+                    <item value="Wiring matrix" data="wiring"/>
+                    <item value="Scan matrix" data="scan"/>
+                </data>
+            </dropdown>
+            <label text="rows: " />
             <label text="" id="labelRows"/>
             <label text="columns: "/>
             <label text="" id="labelColumns"/>

@@ -348,11 +348,13 @@ class WiringPage extends HBox implements EditorPage {
 				pRowEditor.number = number;
 				pRowEditor.focus = true;
 				e.cancel();
+				pRowEditor.dispatch(new UIEvent(UIEvent.CHANGE));
 			}
 			if (quickMode == "column") {
 				pColumnEditor.number = number;
 				pColumnEditor.focus = true;
 				e.cancel();
+				pColumnEditor.dispatch(new UIEvent(UIEvent.CHANGE));
 			}
 		}
 	}
@@ -372,8 +374,11 @@ class WiringPage extends HBox implements EditorPage {
 	function hasMatrixRowsChanged(e:UIEvent) {
 		var keyboard = editor.getKeyboard();
 		var rows = keyboard.rowMapping.clone();
-		rows.hasWireColumn = checkHasMatrixRows.selected;
 		var col = keyboard.columnMapping.clone();
+		if (rows.hasWireColumn == checkHasMatrixRows.selected && col.hasWireColumn == checkHasMatrixRows.selected) {
+			return; // prevent polluting history when triggered by page initialization
+		}
+		rows.hasWireColumn = checkHasMatrixRows.selected;
 		col.hasWireColumn = checkHasMatrixRows.selected;
 		editor.updateRowMapping(rows, col);
 
@@ -381,17 +386,7 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	function addRowClicked(row:Bool) {
-		var keyboard = editor.getKeyboard();
-		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
-		var count = rows.rows;
-
-		rows.rows = count + 1;
-		rows.setMatrixRow(count, count);
-		if (row) {
-			editor.updateRowMapping(rows);
-		} else {
-			editor.updateRowMapping(null, rows);
-		}
+		editor.addWiringRow(row);
 		refreshRowMapping();
 	}
 

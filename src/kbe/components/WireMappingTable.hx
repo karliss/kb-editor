@@ -24,6 +24,7 @@ class WireMappingTable extends TableView {
 	var rowColumn = new Column();
 	var matrixRowColumn = new Column();
 	var header = new Header();
+	var initialized = false;
 
 	public function new() {
 		super();

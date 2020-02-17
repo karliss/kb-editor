@@ -23,7 +23,7 @@
             <dropdown id="colorSelection"/>
             <label text="layout label"/>
             <dropdown id="layoutLabelSelection" width="150"/>
-            <label text="layout label"/>
+            <label text="keyboard label"/>
             <dropdown id="keyboardLabelSelection" width="150"/>
         </hbox>
 

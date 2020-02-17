@@ -364,4 +364,16 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	public function updateRowMapping(?rows:WireMapping, ?columns:WireMapping) {
 		runAction(UpdateWireMapping(rows, columns));
 	}
+
+	public function addWiringRow(row:Bool) {
+		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
+		var count = rows.rows;
+		rows.rows = count + 1;
+		rows.setMatrixRow(count, count);
+		if (row) {
+			updateRowMapping(rows);
+		} else {
+			updateRowMapping(null, rows);
+		}
+	}
 }

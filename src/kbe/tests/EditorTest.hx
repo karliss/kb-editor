@@ -298,4 +298,29 @@ class EditorTest extends utest.Test {
 		editor.undoBuffer.redo();
 		Assert.equals("foobar", editor.getKeyboard().layouts[0].name);
 	}
+
+	function testAddWiringRow() {
+		var editor = new Editor(new KeyBoard());
+		editor.addWiringRow(true);
+		var keyboard = editor.getKeyboard();
+		Assert.equals(1, keyboard.rowMapping.rows);
+		Assert.equals(0, keyboard.getMatrixRow(0));
+		editor.undoBuffer.undo();
+		keyboard = editor.getKeyboard();
+		Assert.equals(0, keyboard.rowMapping.rows);
+		editor.undoBuffer.redo();
+		keyboard = editor.getKeyboard();
+		Assert.equals(1, keyboard.rowMapping.rows);
+		Assert.equals(0, keyboard.getMatrixRow(0));
+
+		editor.addWiringRow(false);
+		editor.addWiringRow(false);
+		var keyboard = editor.getKeyboard();
+		Assert.equals(2, keyboard.columnMapping.rows);
+		Assert.equals(1, keyboard.getMatrixCol(1));
+		editor.undoBuffer.undo();
+		editor.undoBuffer.undo();
+		var keyboard = editor.getKeyboard();
+		Assert.equals(0, keyboard.columnMapping.rows);
+	}
 }

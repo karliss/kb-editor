@@ -326,6 +326,8 @@ class WiringPage extends HBox implements EditorPage {
 		resizeMatrix();
 		refreshFormatting();
 		checkHasMatrixRows.selected = keyboard.rowMapping.hasWireColumn;
+		rowCountEditor.number = keyboard.rowMapping.rows;
+		columnCountEditor.number = keyboard.columnMapping.rows;
 		refreshRowMapping();
 	}
 
@@ -403,16 +405,30 @@ class WiringPage extends HBox implements EditorPage {
 		refreshRowMapping();
 	}
 
-	@:bind(rowTable, ItemEvent.COMPONENT_EVENT)
-	function onItemEvent(e:ItemEvent) {
+	function handleWiringTableChange(e:ItemEvent, row:Bool) {
 		if (e.sourceEvent.type == UIEvent.CHANGE && e.data != null) {
 			var value = e.data;
 			var keyboard = editor.getKeyboard();
-			var rows = keyboard.rowMapping.clone();
+			var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
 			updateWireMappingFromDescr(rows, value);
-			editor.updateRowMapping(rows);
+			if (row) {
+				editor.updateRowMapping(rows);
+			} else {
+				editor.updateRowMapping(null, rows);
+			}
+
 			refreshRowMapping();
 		}
+	}
+
+	@:bind(rowTable, ItemEvent.COMPONENT_EVENT)
+	function onRowItemEvent(e:ItemEvent) {
+		handleWiringTableChange(e, true);
+	}
+
+	@:bind(colTable, ItemEvent.COMPONENT_EVENT)
+	function onColItemEvent(e:ItemEvent) {
+		handleWiringTableChange(e, false);
 	}
 
 	@:bind(addProperty, MouseEvent.CLICK)

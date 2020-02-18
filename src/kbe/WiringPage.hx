@@ -460,4 +460,14 @@ class WiringPage extends HBox implements EditorPage {
 			refreshRowMapping();
 		}
 	}
+
+	@:bind(flipH, UIEvent.CHANGE)
+	function flipHChange(_) {
+		keyView.flipHorizontally = flipH.selected;
+	}
+
+	@:bind(flipV, UIEvent.CHANGE)
+	function flipVChange(_) {
+		keyView.flipVertically = flipV.selected;
+	}
 }

@@ -287,7 +287,6 @@ class MechanicalPage extends HBox implements EditorPage {
 
 	function addKey(key:Key, activate:Bool = true):KeyButton {
 		var button = cMechanical.addKey(key);
-		button.refresh();
 		if (activate) {
 			cMechanical.activeButton = button;
 			refreshProperties();
@@ -320,7 +319,7 @@ class MechanicalPage extends HBox implements EditorPage {
 	}
 
 	public function onKeyMove(key:KeyButton) {
-		key.refresh();
+		cMechanical.refreshButtonFormatting(key);
 		refreshProperties();
 	}
 

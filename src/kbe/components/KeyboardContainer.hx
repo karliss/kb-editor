@@ -46,10 +46,12 @@ class KeyboardContainer extends Box {
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
 
 	public var activeButton(get, set):Null<KeyButton>;
-	public var scale(default, set):Int = 32;
+	public var scale(default, set):Float = 32.0;
 	public var formatButton:(KeyButton) -> Void;
 	public var selectionMode(default, set):SelectionMode = SingleSet;
 	public var rectangleSelection:Bool = false;
+	public var flipHorizontally(default, set) = false;
+	public var flipVertically(default, set) = false;
 
 	public function new() {
 		super();
@@ -82,14 +84,18 @@ class KeyboardContainer extends Box {
 
 	public function refreshFormatting() {
 		for (button in buttons) {
-			button.refresh();
-			formatButton(button);
+			refreshButtonFormatting(button);
 		}
 	}
 
 	public function refreshButtonFormatting(button:KeyButton) {
 		if (button != null) {
-			button.refresh();
+			var key = button.key;
+			var pos = fieldToScreen(key);
+			button.top = pos.y;
+			button.left = pos.x;
+			button.width = key.width * scale;
+			button.height = key.height * scale;
 			formatButton(button);
 		}
 	}
@@ -123,6 +129,22 @@ class KeyboardContainer extends Box {
 
 	public function defaultFormat(key:KeyButton) {
 		key.text = key.key.name;
+	}
+
+	public function fieldToScreen(key:Key):Point {
+		var y:Float = 0.0;
+		var x:Float = 0.0;
+		if (flipHorizontally) {
+			x = 0.8 * width + KeyboardContainer.LEFT_OFFSET - (key.x + key.width) * scale;
+		} else {
+			x = KeyboardContainer.LEFT_OFFSET + key.x * scale;
+		}
+		if (flipVertically) {
+			y = 0.8 * height + KeyboardContainer.TOP_OFFSET - (key.y + key.height) * scale;
+		} else {
+			y = KeyboardContainer.TOP_OFFSET + key.y * scale;
+		}
+		return {x: x, y: y};
 	}
 
 	public function screenToField(x:Float, y:Float):Point {
@@ -161,11 +183,11 @@ class KeyboardContainer extends Box {
 
 	public function addKey(key:Key):KeyButton {
 		var button:KeyButton = new KeyButton(key);
-		button.scale = scale;
 		button.onClick = onKeyClick;
 		button.registerEvent(MouseEvent.MOUSE_DOWN, onMouseDown);
 		addComponent(button);
 		buttons.add(button);
+		refreshButtonFormatting(button);
 		return button;
 	}
 
@@ -181,11 +203,9 @@ class KeyboardContainer extends Box {
 		}
 	}
 
-	function set_scale(v:Int):Int {
+	function set_scale(v:Float):Float {
 		scale = v;
-		for (button in buttons) {
-			button.scale = v;
-		}
+		refreshFormatting();
 		return v;
 	}
 
@@ -361,6 +381,18 @@ class KeyboardContainer extends Box {
 			dispatch(new KeyButtonEvent(BUTTON_CHANGED, activeButton));
 		}
 		selectionStart = null;
+	}
+
+	function set_flipHorizontally(v:Bool):Bool {
+		this.flipHorizontally = v;
+		refreshFormatting();
+		return v;
+	}
+
+	function set_flipVertically(v:Bool):Bool {
+		this.flipVertically = v;
+		refreshFormatting();
+		return v;
 	}
 }
 

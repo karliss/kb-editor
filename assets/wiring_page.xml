@@ -35,6 +35,8 @@
             <dropdown text="Color" id="colorSelect" width="100"/>
             <label text="layout label" verticalAlign="center"/>
             <dropdown id="layoutLabelSelection" width="150"/>
+            <checkbox id="flipH" text="flip horizontally"/>
+            <checkbox id="flipV" text="flip vertically"/>
         </hbox>
         <KeyboardContainer id="keyView" height="50%"/>
         <hbox>

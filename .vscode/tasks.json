@@ -53,9 +53,9 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "test_js.hxml",
+			"label": "build_test_js.hxml",
 			"type": "hxml",
-			"file": "test_js.hxml",
+			"file": "build_test_js.hxml",
 			"problemMatcher": [
 				"$haxe-absolute",
 				"$haxe",

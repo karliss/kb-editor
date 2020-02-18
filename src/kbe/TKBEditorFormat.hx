@@ -204,6 +204,12 @@ class TKBEExporter implements Exporter {
 			for (keyboardId => layoutId in layout.getMapping()) {
 				mapping.push([keyboardId, layoutId]);
 			}
+			mapping.sort((a, b) -> {
+				if (a[0] != b[0]) {
+					return a[0] - b[0];
+				}
+				return a[1] - b[1];
+			});
 			addArray(result, "mapping", mapping);
 		}
 		return result;

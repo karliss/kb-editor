@@ -9,7 +9,7 @@
         "test-adapter",
         "-lib",
         "hxnodejs",
-        "test_js.hxml",
+        "build_test_js.hxml",
         "-cmd",
         "node build/test_js/test.js"
     ],

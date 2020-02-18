@@ -1,3 +1,17 @@
+-cmd "echo building html5.hxml"
 html5.hxml
+-cmd "echo building html5.hxml done"
+
 --next
+-cmd "echo running test.hxml"
+--next
+-D TEST_EVAL_NOEXIT=1
 test.hxml
+-cmd "echo test.hxml done"
+
+--next
+-cmd "echo building build_test_js.hxml"
+build_test_js.hxml
+-cmd "echo running build/test_js/test.js"
+-cmd node build/test_js/test.js 
+-cmd "echo build/test_js/test.js done"

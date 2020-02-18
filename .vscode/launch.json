@@ -40,7 +40,7 @@
 			"args": [
 				"build/test_js/test.js"
 			],
-			"preLaunchTask": "test_js.hxml"
+			"preLaunchTask": "build_test_js.hxml"
 		},
 		{
 			"name": "Debug macro",

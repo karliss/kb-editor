@@ -7,6 +7,7 @@ class EditorApp extends HaxeUIApp {
 	public function new() {
 		super();
 		ready(onReady);
+		adf
 	}
 
 	private function onReady() {

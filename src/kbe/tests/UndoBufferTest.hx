@@ -7,9 +7,6 @@ import kbe.testHelper.TestUndoExecutor.TestState;
 
 class UndoBufferTest extends utest.Test {
 	function testTestExecutor() {
-		#if js
-		Assert.isFalse(true);
-		#end
 		var executor = new TestUndoExecutor();
 		Assert.equals(0, executor.state.v);
 		executor.state = new TestState(4);

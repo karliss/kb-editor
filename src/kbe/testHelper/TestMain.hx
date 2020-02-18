@@ -25,6 +25,7 @@ class TestMain {
 		runner.addCases(kbe.tests);
 		#if TEST_EVAL_NOEXIT
 		var reporter = new NoExitPrintReport(runner);
+		asdf
 		#else
 		Report.create(runner);
 		#end

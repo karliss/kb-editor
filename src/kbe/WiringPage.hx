@@ -385,19 +385,22 @@ class WiringPage extends HBox implements EditorPage {
 		refreshRowMapping();
 	}
 
-	function addRowClicked(row:Bool) {
-		editor.addWiringRow(row);
+	@:bind(rowCountEditor, UIEvent.CHANGE)
+	function onChangeRowCount(e:MouseEvent) {
+		var keyboard = editor.getKeyboard();
+		var rows = keyboard.rowMapping.clone();
+		rows.resize(rowCountEditor.number);
+		editor.updateRowMapping(rows, null);
 		refreshRowMapping();
 	}
 
-	@:bind(btnAddRow, MouseEvent.CLICK)
-	function btnAddRowClicked(e:MouseEvent) {
-		addRowClicked(true);
-	}
-
-	@:bind(btnAddColumn, MouseEvent.CLICK)
-	function btnAddColClicked(e:MouseEvent) {
-		addRowClicked(false);
+	@:bind(columnCountEditor, UIEvent.CHANGE)
+	function onChangeColumnCount(e:MouseEvent) {
+		var keyboard = editor.getKeyboard();
+		var columns = keyboard.columnMapping.clone();
+		columns.resize(columnCountEditor.number);
+		editor.updateRowMapping(null, columns);
+		refreshRowMapping();
 	}
 
 	@:bind(rowTable, ItemEvent.COMPONENT_EVENT)

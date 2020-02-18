@@ -16,14 +16,14 @@
             <button id="removeProperty" text="Delete property"/>
         </hbox>
         <hbox>
-            <button id="btnAddRow" text="Add row"/>
-            <button id="btnRemoveRow" text="Delete row"/>
+            <label text="Rows" verticalAlign="center"/>
+            <IntegerEditor id="rowCountEditor" width="75" minimum="0" maximum="1024"/>
         </hbox>
         <WireMappingTable id="rowTable" height="50%" width="100%">
         </WireMappingTable>
         <hbox>
-            <button id="btnAddColumn" text="Add column"/>
-            <button id="btnRemoveColumn" text="Delete column"/>
+            <label text="Columns" verticalAlign="center"/>
+            <IntegerEditor id="columnCountEditor" width="75" minimum="0" maximum="1024"/>
             <button text="Swap ⇅"/>
         </hbox>
         <WireMappingTable id="colTable" height="50%" width="100%">

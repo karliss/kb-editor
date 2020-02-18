@@ -26,7 +26,7 @@ class TestMain {
 		#if TEST_EVAL_NOEXIT
 		var reporter = new NoExitPrintReport(runner);
 		#else
-		asdf Report.create(runner);
+		Report.create(runner);
 		#end
 		runner.run();
 	}

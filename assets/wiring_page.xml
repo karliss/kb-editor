@@ -8,6 +8,8 @@
                 <item value="column" id="column"/>
             </data>
         </dropdown>
+        <button id="btnSwap2Rows" text="Swap 2 rows"/>
+        <button id="btnSwap2Columns" text="Swap 2 columns"/>
     </vbox>
     <vbox height="100%">
         <checkbox id="checkHasMatrixRows" text="Separete electric row numbers" width="250"/>
@@ -30,7 +32,7 @@
             <button id="btnSwapWiringRowsColumns" text="Swap ⇅"/>
             <button id="btnSwapKeyRowsProperties" text="Swap properties"/>
         </hbox>
-        <WireMappingTable id="colTable" height="50%" width="100%">
+        <WireMappingTable id="colTable" isRow="false" height="50%" width="100%">
         </WireMappingTable>
     </vbox>
     <vbox width="100%" height="100%">

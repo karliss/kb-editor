@@ -211,9 +211,13 @@ class WiringPage extends HBox implements EditorPage {
 			properties.push(buttonProp);
 		}
 		editor.modifyKeys(ids, properties);
+		refreshBottom();
+		refreshFormatting();
+	}
+
+	inline function refreshBottom() {
 		resizeMatrix();
 		syncBottomSelection();
-		refreshFormatting();
 	}
 
 	function syncBottomSelection() {
@@ -329,6 +333,8 @@ class WiringPage extends HBox implements EditorPage {
 		rowCountEditor.number = keyboard.rowMapping.rows;
 		columnCountEditor.number = keyboard.columnMapping.rows;
 		refreshRowMapping();
+		btnSwap2Rows.disabled = rowTable.selectedIndices.length != 2;
+		btnSwap2Columns.disabled = colTable.selectedIndices.length != 2;
 	}
 
 	@:bind(keyView, KeyboardEvent.KEY_UP)
@@ -501,6 +507,7 @@ class WiringPage extends HBox implements EditorPage {
 		var selectedRows:Array<Int> = rowTable.selectedItems.map(descr -> descr.tRow);
 		var selection = keyView.buttons.filter(button -> selectedRows.indexOf(button.key.row) > -1);
 		keyView.selectButtons([for (button in selection) button]);
+		btnSwap2Rows.disabled = selectedRows.length != 2;
 	};
 
 	@:bind(colTable, UIEvent.CHANGE)
@@ -508,6 +515,7 @@ class WiringPage extends HBox implements EditorPage {
 		var selectedColumns:Array<Int> = colTable.selectedItems.map(descr -> descr.tRow);
 		var selection = keyView.buttons.filter(button -> selectedColumns.indexOf(button.key.column) > -1);
 		keyView.selectButtons([for (button in selection) button]);
+		btnSwap2Columns.disabled = selectedColumns.length != 2;
 	};
 
 	@:bind(btnSwapWiringRowsColumns, MouseEvent.CLICK)
@@ -520,5 +528,25 @@ class WiringPage extends HBox implements EditorPage {
 	function onBtnSwapKeyRowsProperties(e:MouseEvent) {
 		editor.swapWiringRowColumnProperties();
 		reload();
+	}
+
+	@:bind(btnSwap2Rows, MouseEvent.CLICK)
+	function swap2Rows(e:MouseEvent) {
+		var selection = rowTable.selectedIndices;
+		if (selection.length == 2) {
+			editor.swapTwoWiringRows(true, selection[0], selection[1]);
+			refreshBottom();
+			refreshFormatting();
+		}
+	}
+
+	@:bind(btnSwap2Columns, MouseEvent.CLICK)
+	function swap2Columns(e:MouseEvent) {
+		var selection = colTable.selectedIndices;
+		if (selection.length == 2) {
+			editor.swapTwoWiringRows(false, selection[0], selection[1]);
+			refreshBottom();
+			refreshFormatting();
+		}
 	}
 }

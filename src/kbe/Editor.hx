@@ -361,6 +361,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(UpdateWireMapping(rows, columns));
 	}
 
+	public function updateRowOrColumnMapping(rows:WireMapping, row:Bool) {
+		if (row) {
+			runAction(UpdateWireMapping(rows, null));
+		} else {
+			runAction(UpdateWireMapping(null, rows));
+		}
+	}
+
 	public function addWiringRow(row:Bool) {
 		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
 		var count = rows.rows;
@@ -402,5 +410,25 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			ModifyKeys(keys, properties),
 			UpdateWireMapping(keyboard.columnMapping.clone(), keyboard.rowMapping.clone()) // intentionally swapped
 		]));
+	}
+
+	public function swapTwoWiringRows(row:Bool, a:Int, b:Int) {
+		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
+		var keys:Array<Int> = [];
+		var properties:Array<Map<String, Dynamic>> = [];
+		for (key in keyboard.keys) {
+			var currentPos = row ? key.row : key.column;
+			if (currentPos == a || currentPos == b) {
+				var other = b;
+				if (currentPos == b) {
+					other = a;
+				}
+				keys.push(key.id);
+				var changes = new Map<String, Dynamic>();
+				changes.set(row ? "row" : "column", other);
+				properties.push(changes);
+			}
+		}
+		modifyKeys(keys, properties);
 	}
 }

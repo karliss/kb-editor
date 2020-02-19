@@ -34,7 +34,7 @@ class WireMappingTable extends TableView {
 		isRow = true;
 
 		matrixRowColumn.width = 90;
-		this.virtual = true;
+		// this.virtual = true;
 		addComponent(header);
 		this.selectionMode = haxe.ui.constants.SelectionMode.MULTIPLE_CLICK_MODIFIER_KEY;
 	}

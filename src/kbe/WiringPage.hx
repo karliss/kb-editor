@@ -495,4 +495,18 @@ class WiringPage extends HBox implements EditorPage {
 		editor.resizeWiringToKeyboard();
 		refreshRowMapping();
 	}
+
+	@:bind(rowTable, UIEvent.CHANGE)
+	function onRowSelectionChange(e:UIEvent) {
+		var selectedRows:Array<Int> = rowTable.selectedItems.map(descr -> descr.tRow);
+		var selection = keyView.buttons.filter(button -> selectedRows.indexOf(button.key.row) > -1);
+		keyView.selectButtons([for (button in selection) button]);
+	};
+
+	@:bind(colTable, UIEvent.CHANGE)
+	function onColumnSelectionChange(e:UIEvent) {
+		var selectedColumns:Array<Int> = colTable.selectedItems.map(descr -> descr.tRow);
+		var selection = keyView.buttons.filter(button -> selectedColumns.indexOf(button.key.column) > -1);
+		keyView.selectButtons([for (button in selection) button]);
+	};
 }

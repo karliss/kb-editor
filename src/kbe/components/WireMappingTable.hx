@@ -1,6 +1,5 @@
 package kbe.components;
 
-import haxe.ui.constants.ScrollMode;
 import haxe.ui.components.Label;
 import haxe.ui.components.TextField;
 import haxe.ui.core.ItemRenderer;
@@ -37,6 +36,7 @@ class WireMappingTable extends TableView {
 		matrixRowColumn.width = 90;
 		this.virtual = true;
 		addComponent(header);
+		this.selectionMode = haxe.ui.constants.SelectionMode.MULTIPLE_CLICK_MODIFIER_KEY;
 	}
 
 	public function set_isRow(v:Bool):Bool {

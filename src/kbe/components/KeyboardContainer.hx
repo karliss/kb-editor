@@ -233,6 +233,17 @@ class KeyboardContainer extends Box {
 		selectButtonInternal(button, mode, true);
 	}
 
+	public function selectButtons(selection:Array<KeyButton>) {
+		unselectButtons();
+		var singleButton = null;
+		for (button in selection) {
+			button.selected = true;
+			singleButton = button;
+		}
+		selectedButtons = selection.copy();
+		dispatch(new KeyButtonEvent(BUTTON_CHANGED, singleButton, true));
+	}
+
 	public function selectButtonInternal(button:Null<KeyButton>, mode:SelectionCommand = Set, software:Bool = false) {
 		if (mode == Set) {
 			unselectButtons();

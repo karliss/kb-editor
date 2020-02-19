@@ -1,5 +1,6 @@
 package kbe;
 
+import haxe.ui.components.Column;
 import kbe.KeyBoard.WireMapping;
 import kbe.UndoBuffer.UndoExecutor;
 import thx.OrderedMap.EnumValueOrderedMap;
@@ -375,5 +376,14 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		} else {
 			updateRowMapping(null, rows);
 		}
+	}
+
+	public function resizeWiringToKeyboard() {
+		var size = keyboard.getMatrixSize();
+		var rows = keyboard.rowMapping.clone();
+		var cols = keyboard.columnMapping.clone();
+		rows.resize(size.row);
+		cols.resize(size.col);
+		updateRowMapping(rows, cols);
 	}
 }

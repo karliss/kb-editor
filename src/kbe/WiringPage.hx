@@ -489,4 +489,10 @@ class WiringPage extends HBox implements EditorPage {
 	function flipVChange(_) {
 		keyView.flipVertically = flipV.selected;
 	}
+
+	@:bind(resizeToKeyboard, MouseEvent.CLICK)
+	function onResizeToKeyboard(_) {
+		editor.resizeWiringToKeyboard();
+		refreshRowMapping();
+	}
 }

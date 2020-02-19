@@ -16,6 +16,9 @@
             <button id="removeProperty" text="Delete property"/>
         </hbox>
         <hbox>
+            <button id="resizeToKeyboard" text="Resize to keyboard"/>
+        </hbox>
+        <hbox>
             <label text="Rows" verticalAlign="center"/>
             <IntegerEditor id="rowCountEditor" width="75" minimum="0" maximum="1024"/>
         </hbox>

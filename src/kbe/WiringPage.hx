@@ -509,4 +509,16 @@ class WiringPage extends HBox implements EditorPage {
 		var selection = keyView.buttons.filter(button -> selectedColumns.indexOf(button.key.column) > -1);
 		keyView.selectButtons([for (button in selection) button]);
 	};
+
+	@:bind(btnSwapWiringRowsColumns, MouseEvent.CLICK)
+	function onBtnSwapWiringRowsColumns(e:MouseEvent) {
+		editor.swapWiringRowColumnAssignment();
+		reload();
+	}
+
+	@:bind(btnSwapKeyRowsProperties, MouseEvent.CLICK)
+	function onBtnSwapKeyRowsProperties(e:MouseEvent) {
+		editor.swapWiringRowColumnProperties();
+		reload();
+	}
 }

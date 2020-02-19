@@ -27,7 +27,8 @@
         <hbox>
             <label text="Columns" verticalAlign="center"/>
             <IntegerEditor id="columnCountEditor" width="75" minimum="0" maximum="1024"/>
-            <button text="Swap ⇅"/>
+            <button id="btnSwapWiringRowsColumns" text="Swap ⇅"/>
+            <button id="btnSwapKeyRowsProperties" text="Swap properties"/>
         </hbox>
         <WireMappingTable id="colTable" height="50%" width="100%">
         </WireMappingTable>

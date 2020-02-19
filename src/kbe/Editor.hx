@@ -386,4 +386,26 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		cols.resize(size.col);
 		updateRowMapping(rows, cols);
 	}
+
+	public function swapWiringRowColumnProperties() {
+		var rows = keyboard.rowMapping.clone();
+		var cols = keyboard.columnMapping.clone();
+		updateRowMapping(cols, rows); // intentionally swapped
+	}
+
+	public function swapWiringRowColumnAssignment() {
+		var keys:Array<Int> = [];
+		var properties:Array<Map<String, Dynamic>> = [];
+		for (key in keyboard.keys) {
+			keys.push(key.id);
+			var changes = new Map<String, Dynamic>();
+			changes.set("row", key.column); // intentionally swapped
+			changes.set("column", key.row);
+			properties.push(changes);
+		}
+		runAction(ActionList([
+			ModifyKeys(keys, properties),
+			UpdateWireMapping(keyboard.columnMapping.clone(), keyboard.rowMapping.clone()) // intentionally swapped
+		]));
+	}
 }

@@ -1,12 +1,7 @@
 package kbe;
 
-import haxe.ui.components.Column;
 import kbe.KeyBoard.WireMapping;
 import kbe.UndoBuffer.UndoExecutor;
-import thx.OrderedMap.EnumValueOrderedMap;
-import thx.Arrays;
-import haxe.io.Bytes;
-import haxe.ui.data.ArrayDataSource;
 import kbe.KeyBoard.KeyboardLayout;
 
 using thx.Arrays;

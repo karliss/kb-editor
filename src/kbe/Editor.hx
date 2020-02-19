@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.KeyBoard.RowCol;
 import kbe.KeyBoard.WireMapping;
 import kbe.UndoBuffer.UndoExecutor;
 import kbe.KeyBoard.KeyboardLayout;
@@ -285,19 +286,19 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		runAction(ModifyKeys(ids, properties), merge);
 	}
 
-	public function getConflictingWiring():Array<Key> {
+	public function getConflictingWiring(logicalMatrix:Bool = false):Array<Key> {
 		var badKeys = new Array<Key>();
 
-		var cmp = function(a:IPoint, b:IPoint):Int {
-			if (a.x != b.x) {
-				return a.x - b.x;
+		var cmp = function(a:RowCol, b:RowCol):Int {
+			if (a.col != b.col) {
+				return a.col - b.col;
 			}
-			return a.y - b.y;
+			return a.row - b.row;
 		};
 
-		var posCount = new OrderedMap<IPoint, Int>(cmp);
+		var posCount = new OrderedMap<RowCol, Int>(cmp);
 		for (key in keyboard.keys) {
-			var pos = new IPoint(key.row, key.column);
+			var pos = keyboard.getKeyPos(logicalMatrix, key);
 			var count = posCount.get(pos);
 			if (count == null) {
 				posCount.set(pos, 1);
@@ -306,7 +307,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			}
 		}
 		for (key in keyboard.keys) {
-			var c = posCount.get(new IPoint(key.row, key.column));
+			var c = posCount.get(keyboard.getKeyPos(logicalMatrix, key));
 			if (c != null && c > 1) {
 				badKeys.push(key);
 			}
@@ -382,7 +383,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	}
 
 	public function resizeWiringToKeyboard() {
-		var size = keyboard.getMatrixSize();
+		var size = keyboard.getWiringMatrixSize();
 		var rows = keyboard.rowMapping.clone();
 		var cols = keyboard.columnMapping.clone();
 		rows.resize(size.row);

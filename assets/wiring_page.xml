@@ -12,7 +12,7 @@
         <button id="btnSwap2Columns" text="Swap 2 columns"/>
     </vbox>
     <vbox height="100%">
-        <checkbox id="checkHasMatrixRows" text="Separete electric row numbers" width="250"/>
+        <checkbox id="checkHasMatrixRows" text="Separete logical row numbers" width="250"/>
         <hbox>
             <button id="addProperty" text="Add property"/>
             <button id="removeProperty" text="Delete property"/>
@@ -49,7 +49,7 @@
             <dropdown id="gridModeSelection" width="100">
                 <data>
                     <item value="Wiring matrix" data="wiring"/>
-                    <item value="Scan matrix" data="scan"/>
+                    <item value="Logical matrix" data="logical"/>
                 </data>
             </dropdown>
             <label text="rows: " />

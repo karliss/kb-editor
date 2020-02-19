@@ -67,6 +67,7 @@ class WiringPage extends HBox implements EditorPage {
 
 	var rows = 0;
 	var columns = 0;
+	var showLogicalMatrix = false;
 
 	public function new(?editor:Editor) {
 		super();
@@ -146,6 +147,11 @@ class WiringPage extends HBox implements EditorPage {
 		}
 	}
 
+	function getKeyMatrixButton(key:Key):OneWayButton {
+		var pos = keyboard.getKeyPos(showLogicalMatrix, key);
+		return getMatrixButton(pos.col, pos.row);
+	}
+
 	inline function getMatrixButton(x:Int, y:Int):OneWayButton {
 		var component = matrixGrid.getComponentAt(x + y * columns);
 		return cast component;
@@ -153,7 +159,7 @@ class WiringPage extends HBox implements EditorPage {
 
 	function refreshFormatting() {
 		conflictingKeys.clear();
-		var badKeys = editor.getConflictingWiring();
+		var badKeys = editor.getConflictingWiring(showLogicalMatrix);
 		labelConflicts.text = '${badKeys.length}';
 		for (key in badKeys) {
 			conflictingKeys.set(key.id, 0);
@@ -175,13 +181,13 @@ class WiringPage extends HBox implements EditorPage {
 		}
 
 		for (key in keyboard.keys) {
-			var button = getMatrixButton(key.column, key.row);
+			var button = getKeyMatrixButton(key);
 			if (button != null) {
 				button.backgroundColor = null;
 			}
 		}
 		for (key in badKeys) {
-			var button = getMatrixButton(key.column, key.row);
+			var button = getKeyMatrixButton(key);
 			if (button != null) {
 				button.backgroundColor = 0xff6666;
 				if (button.selected) {
@@ -226,7 +232,7 @@ class WiringPage extends HBox implements EditorPage {
 		}
 		selectedBottomButtons = [];
 		for (button in keyView.activeButtons()) {
-			var bottomButton = getMatrixButton(button.key.column, button.key.row);
+			var bottomButton = getKeyMatrixButton(button.key);
 			if (bottomButton != null) {
 				selectedBottomButtons.push(bottomButton);
 				bottomButton.selected = true;
@@ -266,7 +272,8 @@ class WiringPage extends HBox implements EditorPage {
 
 	function selectTopButton(x:Int, y:Int) {
 		for (key in keyboard.keys) {
-			if (key.row == y && key.column == x) {
+			var pos = keyboard.getKeyPos(showLogicalMatrix, key);
+			if (pos.row == y && pos.col == x) {
 				keyView.activeButton = keyView.getButton(key);
 				return;
 			}
@@ -285,14 +292,10 @@ class WiringPage extends HBox implements EditorPage {
 	function resizeMatrix() {
 		var columnsNeed = 1;
 		var rowsNeed = 0;
-		for (key in keyboard.keys) {
-			if (key.column + 1 > columnsNeed) {
-				columnsNeed = key.column + 1;
-			}
-			if (key.row + 1 > rowsNeed) {
-				rowsNeed = key.row + 1;
-			}
-		}
+		var need = showLogicalMatrix ? keyboard.getMatrixSize() : keyboard.getWiringMatrixSize();
+		columnsNeed = need.col;
+		rowsNeed = need.row;
+
 		if (columnsNeed == columns && rowsNeed == rows) {
 			return;
 		}
@@ -338,7 +341,7 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	@:bind(keyView, KeyboardEvent.KEY_UP)
-	function onTopKeyDownU(e:KeyboardEvent) {
+	function onTopKeyDown(e:KeyboardEvent) {
 		if (e.keyCode == KC.R) {
 			quickSetMode.selectedIndex = 1;
 		} else if (e.keyCode == KC.C) {
@@ -379,7 +382,7 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	@:bind(checkHasMatrixRows, UIEvent.CHANGE)
-	function hasMatrixRowsChanged(e:UIEvent) {
+	function onHasMatrixRowsChange(e:UIEvent) {
 		var keyboard = editor.getKeyboard();
 		var rows = keyboard.rowMapping.clone();
 		var col = keyboard.columnMapping.clone();
@@ -424,6 +427,10 @@ class WiringPage extends HBox implements EditorPage {
 			}
 
 			refreshRowMapping();
+			if (checkHasMatrixRows.selected) {
+				refreshBottom();
+				refreshFormatting();
+			}
 		}
 	}
 
@@ -548,5 +555,16 @@ class WiringPage extends HBox implements EditorPage {
 			refreshBottom();
 			refreshFormatting();
 		}
+	}
+
+	@:bind(gridModeSelection, UIEvent.CHANGE)
+	function gridModeChange(e:UIEvent) {
+		if (gridModeSelection.selectedItem.data == "logical") {
+			showLogicalMatrix = true;
+		} else {
+			showLogicalMatrix = false;
+		}
+		refreshBottom();
+		refreshFormatting();
 	}
 }

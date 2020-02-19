@@ -43,10 +43,10 @@ class WireMappingTable extends TableView {
 		isRow = v;
 		if (isRow) {
 			rowColumn.text = "row";
-			matrixRowColumn.text = "matrix row";
+			matrixRowColumn.text = "logic row";
 		} else {
 			rowColumn.text = "col";
-			matrixRowColumn.text = "matrix col";
+			matrixRowColumn.text = "logic col";
 		}
 		return v;
 	}

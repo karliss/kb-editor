@@ -412,11 +412,34 @@ class KeyBoard implements Clonable<KeyBoard> {
 		return {row: getMatrixRow(key.row), col: getMatrixCol(key.column)};
 	}
 
+	public inline function getWiringPos(key:Key):RowCol {
+		return {row: key.row, col: key.column};
+	}
+
+	public inline function getKeyPos(logicalMatrix:Bool, key:Key):RowCol {
+		return logicalMatrix ? getMatrixPos(key) : getWiringPos(key);
+	}
+
 	public function getMatrixSize():RowCol {
 		var rows = 0;
 		var col = 0;
 		for (key in keys) {
 			var pos = getMatrixPos(key);
+			if (pos.row + 1 > rows) {
+				rows = pos.row + 1;
+			}
+			if (pos.col + 1 > col) {
+				col = pos.col + 1;
+			}
+		}
+		return {row: rows, col: col};
+	}
+
+	public function getWiringMatrixSize():RowCol {
+		var rows = 0;
+		var col = 0;
+		for (key in keys) {
+			var pos = getWiringPos(key);
 			if (pos.row + 1 > rows) {
 				rows = pos.row + 1;
 			}

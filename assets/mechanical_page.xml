@@ -26,7 +26,7 @@
     <PropertyEditor id="propEditor" width="200" height="100%">
         <vbox text="General">
             <PropertyItem id="p_id" text="Id">
-                <IntegerEditor minimum="0" maximum="1000" />
+                <IntegerEditor minimum="0" maximum="1000" disabled="true"/>
             </PropertyItem>
             <PropertyText id="p_name" text="Name" />
         </vbox>

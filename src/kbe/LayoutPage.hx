@@ -139,6 +139,12 @@ class LayoutPage extends HBox implements EditorPage {
 		}
 	}
 
+	@:bind(keyViewScale, UIEvent.CHANGE)
+	function keyViewScaleChange(e:UIEvent) {
+		layoutView.scale = keyViewScale.number;
+		keyboardView.scale = keyViewScale.number;
+	}
+
 	function refreshFormat() {
 		layoutView.refreshFormatting();
 		keyboardView.refreshFormatting();
@@ -147,12 +153,12 @@ class LayoutPage extends HBox implements EditorPage {
 	function formatLabel(button:KeyButton, mode:LabelMode) {
 		switch mode {
 			case Common(v):
-				KeyVisualizer.updateButtonLabel(button, v);
+				KeyVisualizer.updateButtonLabel(editor.getKeyboard(), button, v);
 			case SameAsTop:
 				{
 					var mode = layoutLabelMode;
 					if (mode == SameAsTop) {
-						KeyVisualizer.updateButtonLabel(button, Name);
+						KeyVisualizer.updateButtonLabel(editor.getKeyboard(), button, Name);
 					} else {
 						formatLabel(button, mode);
 					}

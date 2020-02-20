@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.KeyVisualizer.KeyLabelMode;
 import haxe.ui.containers.VBox;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.events.ItemEvent;
@@ -91,6 +92,19 @@ class WiringPage extends HBox implements EditorPage {
 		ds.add({value: "none", mode: ColorMode.None});
 		ds.add({value: "rows", mode: ColorMode.RainbowRows});
 		ds.add({value: "columns", mode: ColorMode.RainbowColumns});
+
+		layoutLabelSelection.dataSource = new ListDataSource<Dynamic>();
+
+		var initialLabelMode = null;
+		var i = 0;
+		for (mode in KeyVisualizer.COMMON_LABEL_MODES) {
+			layoutLabelSelection.dataSource.add(mode);
+			if (mode.mode == KeyLabelMode.RowColumn) {
+				initialLabelMode = i;
+			}
+			i++;
+		}
+		layoutLabelSelection.selectedIndex = initialLabelMode;
 	}
 
 	public function init(editor:Editor) {
@@ -109,9 +123,14 @@ class WiringPage extends HBox implements EditorPage {
 		refreshFormatting();
 	}
 
+	@:bind(layoutLabelSelection, UIEvent.CHANGE)
+	function onLayoutLabelModeChanged(e:UIEvent) {
+		keyView.refreshFormatting();
+	}
+
 	function formatButton(button:KeyButton) {
 		var key = button.key;
-		button.text = '${StringTools.hex(key.row)} ${StringTools.hex(key.column)}';
+		KeyVisualizer.updateButtonLabel(keyboard, button, layoutLabelSelection.selectedItem.mode);
 		button.backgroundColor = null;
 		if (colorMode == Conflicts) {
 			var currentButton = keyView.activeButton;
@@ -501,6 +520,11 @@ class WiringPage extends HBox implements EditorPage {
 	@:bind(flipV, UIEvent.CHANGE)
 	function flipVChange(_) {
 		keyView.flipVertically = flipV.selected;
+	}
+
+	@:bind(keyViewScale, UIEvent.CHANGE)
+	function keyViewScaleChange(e:UIEvent) {
+		this.keyView.scale = keyViewScale.number;
 	}
 
 	@:bind(resizeToKeyboard, MouseEvent.CLICK)

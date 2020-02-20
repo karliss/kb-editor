@@ -10,6 +10,7 @@ enum KeyLabelMode {
 	RowColumn;
 	Row;
 	Column;
+	LogicRowColumn;
 	Id;
 }
 
@@ -23,13 +24,14 @@ class KeyVisualizer {
 		return color.toInt();
 	}
 
-	public static function updateButtonLabel(button:KeyButton, mode:KeyLabelMode) {
+	public static function updateButtonLabel(keyboard:KeyBoard, button:KeyButton, mode:KeyLabelMode) {
 		var key = button.key;
 		button.text = switch (mode) {
 			case Name: key.name;
 			case RowColumn: '${StringTools.hex(key.row)} ${StringTools.hex(key.column)}';
 			case Row: '${key.row}';
 			case Column: '${key.column}';
+			case LogicRowColumn: '${StringTools.hex(keyboard.getMatrixRow(key.row))} ${StringTools.hex(keyboard.getMatrixCol(key.column))}';
 			case Id: '${key.id}';
 		};
 	}
@@ -39,6 +41,7 @@ class KeyVisualizer {
 		{value: "Row column", mode: KeyLabelMode.RowColumn},
 		{value: "Row", mode: KeyLabelMode.Row},
 		{value: "Column", mode: KeyLabelMode.Column},
+		{value: "Logic row column", mode: KeyLabelMode.LogicRowColumn},
 		{value: "Id", mode: KeyLabelMode.Id},
 	];
 }

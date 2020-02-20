@@ -1,5 +1,7 @@
 package kbe;
 
+import haxe.ui.events.UIEvent;
+import haxe.ui.data.ListDataSource;
 import haxe.ui.containers.HBox;
 import haxe.ui.events.MouseEvent;
 import haxe.ui.events.KeyboardEvent;
@@ -190,6 +192,7 @@ class MechanicalPage extends HBox implements EditorPage {
 		this.editor = editor;
 
 		cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
+		cMechanical.formatButton = formatButton;
 		propEditor.onChange = onPropertyChange;
 
 		bAddRight.onClick = addRight;
@@ -205,6 +208,11 @@ class MechanicalPage extends HBox implements EditorPage {
 		percentWidth = 100;
 		percentHeight = 100;
 		text = "Mechanical";
+
+		keyLabelSelection.dataSource = new ListDataSource<Dynamic>();
+		for (mode in KeyVisualizer.COMMON_LABEL_MODES) {
+			keyLabelSelection.dataSource.add(mode);
+		}
 	}
 
 	public function init(editor:Editor) {
@@ -351,5 +359,19 @@ class MechanicalPage extends HBox implements EditorPage {
 			editor.removeKeys(cMechanical.activeButtons().map(button -> button.key));
 			reload();
 		}
+	}
+
+	@:bind(keyViewScale, UIEvent.CHANGE)
+	function keyViewScaleChange(e:UIEvent) {
+		cMechanical.scale = keyViewScale.number;
+	}
+
+	@:bind(keyLabelSelection, UIEvent.CHANGE)
+	function onLayoutLabelModeChanged(e:UIEvent) {
+		cMechanical.refreshFormatting();
+	}
+
+	function formatButton(button:KeyButton) {
+		KeyVisualizer.updateButtonLabel(editor.getKeyboard(), button, keyLabelSelection.selectedItem.mode);
 	}
 }

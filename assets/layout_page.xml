@@ -18,13 +18,15 @@
     </vbox>
     <vbox width="100%" height="100%">
         <hbox>
-            <label text="VIEW "/>
-            <label text="color"/>
+            <label text="VIEW " verticalAlign="center"/>
+            <label text="color" verticalAlign="center"/>
             <dropdown id="colorSelection"/>
-            <label text="layout label"/>
+            <label text="layout label" verticalAlign="center"/>
             <dropdown id="layoutLabelSelection" width="150"/>
-            <label text="keyboard label"/>
+            <label text="keyboard label" verticalAlign="center"/>
             <dropdown id="keyboardLabelSelection" width="150"/>
+            <label text="Scale" verticalAlign="center"/>
+            <IntegerEditor id="keyViewScale" minimum="8" maximum="256" value="32" width="75"/>
         </hbox>
 
         <hbox>

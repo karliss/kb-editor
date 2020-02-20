@@ -271,19 +271,49 @@ class MechanicalPage extends HBox implements EditorPage {
 	}
 
 	function onPropertyChange(_) {
-		if (cMechanical.activeButton != null) {
-			cMechanical.refreshButtonFormatting(cMechanical.activeButton);
+		var changedObject = propEditor.source;
+		var buttons = cMechanical.activeButtons();
+		var ids = buttons.map(button -> button.key.id);
+		var changes = new Map<String, Dynamic>();
+		for (field in Reflect.fields(changedObject)) {
+			var value = Reflect.getProperty(changedObject, field);
+			if (value != null) {
+				changes.set(field, value);
+			}
 		}
+		editor.modifyKeys(ids, [for (_ in 0...ids.length) changes]);
+
+		cMechanical.refreshFormatting();
 		cMechanical.updateLayout();
-		// TODO: decide how to do this through editor
 	}
 
 	function onButtonChange(e:KeyButtonEvent) {
-		propEditor.source = e.button != null ? e.button.key : null;
+		refreshProperties();
+	}
+
+	function prepareSelectionPropertyDescription():Dynamic {
+		var result:Dynamic = {}
+		var buttons = cMechanical.activeButtons();
+		if (buttons.length == 0) {
+			return result;
+		}
+		for (field in Reflect.fields(buttons[0].key)) {
+			Reflect.setField(result, field, Reflect.getProperty(buttons[0].key, field));
+		}
+		for (button in buttons) {
+			var key = button.key;
+			for (field in Reflect.fields(key)) {
+				var value = Reflect.getProperty(key, field);
+				if (value != Reflect.getProperty(result, field)) {
+					Reflect.setField(result, field, null);
+				}
+			}
+		}
+		return result;
 	}
 
 	function refreshProperties() {
-		propEditor.source = cMechanical.activeButton == null ? null : cMechanical.activeButton.key;
+		propEditor.source = prepareSelectionPropertyDescription();
 	}
 
 	public function addNewButton(activate:Bool = true):KeyButton {

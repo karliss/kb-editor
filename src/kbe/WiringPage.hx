@@ -285,10 +285,6 @@ class WiringPage extends HBox implements EditorPage {
 		refreshFormatting();
 	}
 
-	function refreshProperties() {
-		propEditor.source = keyView.activeButton == null ? null : keyView.activeButton.key;
-	}
-
 	function selectTopButton(x:Int, y:Int) {
 		for (key in keyboard.keys) {
 			var pos = keyboard.getKeyPos(showLogicalMatrix, key);

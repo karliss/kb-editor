@@ -16,13 +16,9 @@ interface Importer {
 	public function convert(bytes:Bytes, ?name:String):KeyBoard;
 }
 
-interface PartialImporter {
-	public function convert(bytes:Bytes, keyboard:KeyBoard):Void;
-}
-
-interface LayoutExporter {
+interface LayoutExporter extends Exporter {
 	public var value(default, null):String;
 	public function fileName():String;
 	public function mimeType():String;
-	public function convert(keyboard:KeyBoard, currentLayout:KeyboardLayout):Bytes;
+	public function convertLayout(keyboard:KeyBoard, currentLayout:KeyboardLayout):Bytes;
 }

@@ -15,14 +15,12 @@ enum ArgName {
 class QMKLayoutMacroExporter implements LayoutExporter {
 	public var value(default, null):String;
 
-	public var exportAll:Bool;
 	public var argName:ArgName = LayoutRows;
 	public var unmappedKey:String = "KC_NO";
 	public var unexistingKey:String = "KC_NO";
 
 	public function new(all:Bool) {
-		this.exportAll = all;
-		if (exportAll) {
+		if (all) {
 			this.value = "QMK layout macro, all layouts";
 		} else {
 			this.value = "QMK layout macro";
@@ -65,7 +63,7 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		return {keys: keys, pos: pos};
 	}
 
-	private function convertLayout(buffer:StringBuf, keyboard:KeyBoard, layout:KeyboardLayout) {
+	private function convertLayoutImpl(buffer:StringBuf, keyboard:KeyBoard, layout:KeyboardLayout) {
 		var layout_order = calculateLayoutPos(layout);
 		var argNames = new Map<Int, String>();
 		if (layout_order.keys.length > 0) {
@@ -170,14 +168,16 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		buffer.add("}\n");
 	}
 
-	public function convert(keyboard:KeyBoard, currentLayout:KeyboardLayout):Bytes {
+	public function convertLayout(keyboard:KeyBoard, currentLayout:KeyboardLayout):Bytes {
 		var buffer = new StringBuf();
-		if (exportAll) {
-			for (layout in keyboard.layouts) {
-				convertLayout(buffer, keyboard, layout);
-			}
-		} else {
-			convertLayout(buffer, keyboard, currentLayout);
+		convertLayoutImpl(buffer, keyboard, currentLayout);
+		return Bytes.ofString(buffer.toString());
+	}
+
+	public function convert(keyboard:KeyBoard):Bytes {
+		var buffer = new StringBuf();
+		for (layout in keyboard.layouts) {
+			convertLayoutImpl(buffer, keyboard, layout);
 		}
 		return Bytes.ofString(buffer.toString());
 	}

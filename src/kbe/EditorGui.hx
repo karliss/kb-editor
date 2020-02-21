@@ -117,7 +117,13 @@ class EditorGui extends Component {
 
 	function onClickExport(_):Void {
 		var exporter = exportFormat.selectedItem;
-		var result:Bytes = exporter.convert(keyboard);
+		var result:Bytes;
+		try {
+			result = exporter.convert(keyboard);
+		} catch (e:Dynamic) {
+			Toolkit.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
+			return;
+		}
 
 		#if js
 		var intArray = new Array<Int>();

@@ -12,7 +12,7 @@ class QMKLayoutMacro extends utest.Test {
 		var exporter = new QMKLayoutMacroExporter(true);
 		var keyboard = new KeyBoard();
 
-		Assert.equals("", exporter.convert(keyboard, keyboard.layouts[0]).toString());
+		Assert.equals("", exporter.convert(keyboard).toString());
 	}
 
 	function testExport1() {
@@ -52,7 +52,7 @@ K10 \\
     { KC_NO,KC_NO,K10} \\
 }
 ";
-		Assert.equals(expected1, exporter.convert(keyboard, keyboard.layouts[0]).toString());
+		Assert.equals(expected1, exporter.convertLayout(keyboard, keyboard.layouts[0]).toString());
 
 		var expected2 = "#define layout0( \\
 K00,K01,K02, \\
@@ -69,8 +69,7 @@ K10 \\
     { KC_NO,KC_NO,K10} \\
 }
 ";
-		exporter.exportAll = true;
-		Assert.equals(expected2, exporter.convert(keyboard, keyboard.layouts[0]).toString());
+		Assert.equals(expected2, exporter.convert(keyboard).toString());
 
 		exporter.argName = MatrixRows;
 		var expected3 = "#define layout0( \\
@@ -88,6 +87,6 @@ K12 \\
     { KC_NO,KC_NO,K12} \\
 }
 ";
-		Assert.equals(expected3, exporter.convert(keyboard, keyboard.layouts[0]).toString());
+		Assert.equals(expected3, exporter.convert(keyboard).toString());
 	}
 }

@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
 import kbe.Exporter;
 
 class FormatManager {
@@ -17,6 +18,7 @@ class FormatManager {
 		return [
 			new CSVFormat.CSVExporter(),
 			new TKBEditorFormat.TKBEExporter(),
+			new QMKLayoutMacroExporter(true),
 			new TestExporter()
 		];
 	}

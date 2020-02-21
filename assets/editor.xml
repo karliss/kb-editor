@@ -1,12 +1,15 @@
 <vbox style="padding: 5px;" height="100%" width="100%">
+  <menubar id="mainMenu" width="100%">
+    <menu text="File">
+      <menu text="Import" id="importSubmenu"/>
+      <menu text="Export" id="exportSubmenu"/>
+    </menu>
+    <menu text="Edit" id="editMenu">
+      <menu-item text="Undo" id="undoMenuButton" shortcutText="Ctrl+Z" />
+      <menu-item text="Redo" id="redoMenuButton" shortcutText="Ctrl+Y" />
+    </menu>
+  </menubar>
   <hbox>
-    <dropdown text="Import format" id="importFormat" width="250">
-    </dropdown>
-    <button text="Import" id="importButton"/>
-    <dropdown text="Export format" id="exportFormat" width="250">
-    </dropdown>
-    <button text="Export" id="exportButton"/>
-
     <button text="Undo" id="undoButton"/>
     <button text="Redo" id="redoButton"/>
   </hbox>

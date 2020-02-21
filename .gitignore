@@ -1,4 +1,5 @@
-build/*
+build
+dump
 !build/html5/index.html
 .unittest
 /Html5Build.hx.n

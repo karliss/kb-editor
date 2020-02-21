@@ -1,5 +1,7 @@
 package kbe;
 
+import haxe.ui.containers.menus.MenuItem;
+import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.Toolkit;
 import haxe.ui.events.KeyboardEvent;
@@ -49,13 +51,15 @@ class EditorGui extends Component {
 
 		reloadPages();
 
-		this.exportButton.onClick = onClickExport;
-		this.importButton.onClick = onClickImport;
+		//this.exportButton.onClick = onClickExport;
+		//this.importButton.onClick = onClickImport;
 
 		tabList.onChange = onPageChange;
 
 		this.undoButton.onClick = _ -> undo();
+		this.undoMenuButton.onClick = _ -> undo();
 		this.redoButton.onClick = _ -> redo();
+		this.redoMenuButton.onClick = _ -> redo();
 
 		fillFormats();
 		#if js
@@ -103,20 +107,29 @@ class EditorGui extends Component {
 
 	function fillFormats() {
 		var importers = FormatManager.getImporters();
-		this.importFormat.dataSource = new ArrayDataSource();
+		importSubmenu.removeAllComponents();
 		for (importer in importers) {
-			importFormat.dataSource.add(importer);
+			var item = new MenuItem();
+			item.text = importer.value;
+			item.percentWidth = 100;
+			item.onClick = (_) -> {
+				onClickImport(importer);
+			};
+			importSubmenu.addComponent(item);
 		}
 
 		var exporters = FormatManager.getExporters();
-		exportFormat.dataSource = new ArrayDataSource();
 		for (exporter in exporters) {
-			exportFormat.dataSource.add(exporter);
+			var item = new MenuItem();
+			item.text = exporter.value;
+			item.onClick = (_) -> {
+				onClickExport(exporter);
+			}
+			exportSubmenu.addComponent(item);
 		}
 	}
 
-	function onClickExport(_):Void {
-		var exporter = exportFormat.selectedItem;
+	function onClickExport(exporter:Exporter):Void {
 		var result:Bytes;
 		try {
 			result = exporter.convert(keyboard);
@@ -134,11 +147,7 @@ class EditorGui extends Component {
 		#end
 	}
 
-	function onClickImport(_):Void {
-		var importer = importFormat.selectedItem;
-		if (importer == null) {
-			return;
-		}
+	function onClickImport(importer:Importer):Void {
 		// TODO: remove if js
 		#if js
 		FileOpener.tryToOpenFile(function(bytes, names) {

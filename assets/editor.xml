@@ -1,8 +1,11 @@
 <vbox style="padding: 5px;" height="100%" width="100%">
   <menubar id="mainMenu" width="100%">
     <menu text="File">
-      <menu text="Import" id="importSubmenu"/>
+      <menu text="Import" id="importSubmenu" width="350"/>
       <menu text="Export" id="exportSubmenu"/>
+      <menu text="Export configure" id="exportConfigureSubmenu">
+        <menu-item text="Export QMK layout macro" id="exportQMKLayoutMacros"/>
+      </menu>
     </menu>
     <menu text="Edit" id="editMenu">
       <menu-item text="Undo" id="undoMenuButton" shortcutText="Ctrl+Z" />

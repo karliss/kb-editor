@@ -81,7 +81,6 @@ class WiringPage extends HBox implements EditorPage {
 		percentHeight = 100;
 		text = "Wiring";
 
-		keyView.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		propEditor.onChange = onPropertyChange;
 		keyView.formatButton = formatButton;
 		keyView.selectionMode = MultiSelect;
@@ -279,8 +278,10 @@ class WiringPage extends HBox implements EditorPage {
 		return value;
 	}
 
+	@:bind(keyView, KeyboardContainer.BUTTON_CHANGED)
 	function onButtonChange(e:KeyButtonEvent) {
 		propEditor.source = getTopSelectionRowColumn();
+		btnAutoIncrementColumns.disabled = keyView.activeButtons().length <= 1;
 		syncBottomSelection();
 		refreshFormatting();
 	}
@@ -586,5 +587,14 @@ class WiringPage extends HBox implements EditorPage {
 		}
 		refreshBottom();
 		refreshFormatting();
+	}
+
+	@:bind(btnAutoIncrementColumns, MouseEvent.CLICK)
+	function onAutoIncrementColumns(_) {
+		var selectedKeys = keyView.selectedKeys();
+		if (selectedKeys.length > 1) {
+			editor.autoIncrementWiringColumns(selectedKeys);
+			reload();
+		}
 	}
 }

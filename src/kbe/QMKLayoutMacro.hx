@@ -12,12 +12,20 @@ enum ArgName {
 	MatrixRows;
 }
 
+typedef ExportLayoutConfig = {
+	layouts:Array<KeyboardLayout>,
+	unmappedKey:String,
+	argName:ArgName
+};
+
 class QMKLayoutMacroExporter implements LayoutExporter {
 	public var value(default, null):String;
 
-	public var argName:ArgName = LayoutRows;
-	public var unmappedKey:String = "KC_NO";
-	public var unexistingKey:String = "KC_NO";
+	static public var DEFAULT_CONFIG:ExportLayoutConfig = {
+		layouts: null,
+		unmappedKey: "KC_NO",
+		argName: LayoutRows
+	};
 
 	public function new(all:Bool) {
 		if (all) {
@@ -63,11 +71,11 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		return {keys: keys, pos: pos};
 	}
 
-	private function convertLayoutImpl(buffer:StringBuf, keyboard:KeyBoard, layout:KeyboardLayout) {
+	private function convertLayoutImpl(buffer:StringBuf, keyboard:KeyBoard, layout:KeyboardLayout, config:ExportLayoutConfig) {
 		var layout_order = calculateLayoutPos(layout);
 		var argNames = new Map<Int, String>();
 		if (layout_order.keys.length > 0) {
-			switch (argName) {
+			switch (config.argName) {
 				case LayoutRows:
 					{
 						for (key in layout_order.keys) {
@@ -147,13 +155,13 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 					buffer.add(",");
 				}
 				var key = matrix[row][col];
-				var name = this.unmappedKey;
+				var name = config.unmappedKey;
 				if (key != null) {
 					var layoutId = layout.mappingFromGrid(key.id);
 					if (layoutId != null) {
 						name = argNames.get(layoutId);
 					} else {
-						name = this.unmappedKey;
+						name = config.unmappedKey;
 					}
 				}
 				addPadding(minwidth - name.length);
@@ -170,15 +178,23 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 
 	public function convertLayout(keyboard:KeyBoard, currentLayout:KeyboardLayout):Bytes {
 		var buffer = new StringBuf();
-		convertLayoutImpl(buffer, keyboard, currentLayout);
+		convertLayoutImpl(buffer, keyboard, currentLayout, DEFAULT_CONFIG);
+		return Bytes.ofString(buffer.toString());
+	}
+
+	public function convertWithConfig(keyboard:KeyBoard, config:ExportLayoutConfig):Bytes {
+		var buffer = new StringBuf();
+		var layouts = config.layouts;
+		if (layouts == null) {
+			layouts = keyboard.layouts.toArray();
+		}
+		for (layout in layouts) {
+			convertLayoutImpl(buffer, keyboard, layout, config);
+		}
 		return Bytes.ofString(buffer.toString());
 	}
 
 	public function convert(keyboard:KeyBoard):Bytes {
-		var buffer = new StringBuf();
-		for (layout in keyboard.layouts) {
-			convertLayoutImpl(buffer, keyboard, layout);
-		}
-		return Bytes.ofString(buffer.toString());
+		return convertWithConfig(keyboard, DEFAULT_CONFIG);
 	}
 }

@@ -1,10 +1,12 @@
 package kbe;
 
+import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuBar;
+import haxe.ui.containers.Grid;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.Toolkit;
-import haxe.ui.events.KeyboardEvent;
+import haxe.ui.events.MouseEvent;
 import haxe.io.Bytes;
 import haxe.ui.data.ArrayDataSource;
 import kbe.Exporter.Importer;
@@ -14,8 +16,6 @@ import kbe.FormatManager;
 #if js
 import js.Browser;
 import js.html.Blob;
-import js.html.FileSaver;
-import js.lib.Uint8Array;
 #end
 import kbe.FileOpener;
 
@@ -51,15 +51,13 @@ class EditorGui extends Component {
 
 		reloadPages();
 
-		//this.exportButton.onClick = onClickExport;
-		//this.importButton.onClick = onClickImport;
-
 		tabList.onChange = onPageChange;
 
 		this.undoButton.onClick = _ -> undo();
 		this.undoMenuButton.onClick = _ -> undo();
 		this.redoButton.onClick = _ -> redo();
 		this.redoMenuButton.onClick = _ -> redo();
+		exportQMKLayoutMacros.onClick = onExportQMKLayoutMacros;
 
 		fillFormats();
 		#if js
@@ -138,13 +136,7 @@ class EditorGui extends Component {
 			return;
 		}
 
-		#if js
-		var intArray = new Array<Int>();
-		for (i in 0...result.length) {
-			intArray.push(result.get(i));
-		}
-		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), exporter.fileName(), true);
-		#end
+		FileAccess.saveFile(result, exporter.fileName());
 	}
 
 	function onClickImport(importer:Importer):Void {
@@ -164,6 +156,23 @@ class EditorGui extends Component {
 			reloadPages();
 		});
 		#end
+	}
+
+	function onExportQMKLayoutMacros(_) {
+		var keyboard = editor.getKeyboard();
+		var dialog = new ExportLayoutDialog(keyboard);
+		dialog.onAccept = (config) -> {
+			var result:Bytes;
+			var exporter = new QMKLayoutMacroExporter(false);
+			try {
+				result = exporter.convertWithConfig(keyboard, config);
+			} catch (e:Dynamic) {
+				Toolkit.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
+				return;
+			}
+			FileAccess.saveFile(result, exporter.fileName());
+		};
+		dialog.show();
 	}
 
 	function onPageChange(_) {

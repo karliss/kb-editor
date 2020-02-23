@@ -370,6 +370,29 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		}
 	}
 
+	public function autoIncrementWiringColumns(keys:Array<Key>) {
+		if (keys.length == 0) {
+			return;
+		}
+		keys.sort((a, b) -> {
+			var d = a.x - b.x;
+			if (d < 0) {
+				return -1;
+			} else if (d > 0) {
+				return 1;
+			}
+			return 0;
+		});
+		var column = keys[0].column;
+		var ids = keys.map(key -> key.id);
+		var changes = new Array<Map<String, Dynamic>>();
+		for (key in keys) {
+			changes.push(["column" => column]);
+			column += 1;
+		}
+		modifyKeys(ids, changes);
+	}
+
 	public function addWiringRow(row:Bool) {
 		var rows = (row ? keyboard.rowMapping : keyboard.columnMapping).clone();
 		var count = rows.rows;

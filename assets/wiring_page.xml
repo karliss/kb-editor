@@ -10,6 +10,7 @@
         </dropdown>
         <button id="btnSwap2Rows" text="Swap 2 rows"/>
         <button id="btnSwap2Columns" text="Swap 2 columns"/>
+        <button id="btnAutoIncrementColumns" text="Increment columns" disabled="true"/>
     </vbox>
     <vbox height="100%">
         <checkbox id="checkHasMatrixRows" text="Separete logical row numbers" width="250"/>

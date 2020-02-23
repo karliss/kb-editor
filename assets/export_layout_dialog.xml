@@ -1,0 +1,24 @@
+<vbox width="100%" height="100%">
+    <grid height="100%">
+        <label text="export count"/>
+        <vbox>
+            <optionbox id="exportCountAll" text="all" group="myGroup" selected="true"/>
+            <optionbox id="exportCountSingle" text="single" group="myGroup"/>
+            <optionbox id="exportCountSubset" text="subset" group="myGroup"/>
+        </vbox>
+
+        <label id="layoutSelectionLabel" text="layouts"/>
+        <listview id="layoutSelection" width="100%" height="100"/>
+
+        <label text="argument names"/>
+        <dropdown id="argNameType" selectedIndex="0">
+            <data>
+                <item value="layout grid" type="LayoutRows"/>
+                <item value="scan matrix" type="MatrixRows"/>
+            </data>
+        </dropdown>
+
+        <label text="empty positions"/>
+        <textfield id="unmappedKeyString" text="KC_NO"/>
+    </grid>
+</vbox>

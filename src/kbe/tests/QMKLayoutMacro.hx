@@ -1,9 +1,6 @@
 package kbe.tests;
 
 import kbe.KeyBoard.KeyboardLayout;
-import kbe.Key.Point;
-import haxe.ds.HashMap;
-import haxe.io.Bytes;
 import utest.Assert;
 import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
 
@@ -71,7 +68,8 @@ K10 \\
 ";
 		Assert.equals(expected2, exporter.convert(keyboard).toString());
 
-		exporter.argName = MatrixRows;
+		var config = Reflect.copy(QMKLayoutMacroExporter.DEFAULT_CONFIG);
+		config.argName = MatrixRows;
 		var expected3 = "#define layout0( \\
 K00,K01, U0, \\
 K12 \\
@@ -87,6 +85,6 @@ K12 \\
     { KC_NO,KC_NO,K12} \\
 }
 ";
-		Assert.equals(expected3, exporter.convert(keyboard).toString());
+		Assert.equals(expected3, exporter.convertWithConfig(keyboard, config).toString());
 	}
 }

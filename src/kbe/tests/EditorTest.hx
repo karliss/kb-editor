@@ -323,4 +323,27 @@ class EditorTest extends utest.Test {
 		var keyboard = editor.getKeyboard();
 		Assert.equals(0, keyboard.columnMapping.rows);
 	}
+
+	function testAutoIncrementColumn() {
+		var keyboard = new KeyBoard();
+		var key = keyboard.createAndAddKey();
+		key.column = 2;
+		var key2 = keyboard.createAndAddKey();
+		key2.x = 1;
+		var key3 = keyboard.createAndAddKey();
+		key3.x = 2;
+
+		var key4 = keyboard.createAndAddKey();
+		key4.x = 4;
+
+		var key5 = keyboard.createAndAddKey();
+
+		var editor = new Editor(keyboard);
+		editor.autoIncrementWiringColumns([key3, key2, key, key4]);
+		Assert.equals(2, key.column);
+		Assert.equals(3, key2.column);
+		Assert.equals(4, key3.column);
+		Assert.equals(5, key4.column);
+		Assert.equals(0, key5.column);
+	}
 }

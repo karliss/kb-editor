@@ -108,6 +108,10 @@ class KeyboardContainer extends Box {
 		return selectedButtons;
 	}
 
+	public function selectedKeys():Array<Key> {
+		return selectedButtons.map(button -> button.key);
+	}
+
 	public function loadFromList(keys:Array<Key>) {
 		var activeId = selectedButtons.map(b -> b.key.id);
 		clear();

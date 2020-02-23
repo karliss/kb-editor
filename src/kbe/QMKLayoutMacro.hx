@@ -43,11 +43,29 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		return "text/plain";
 	}
 
-	private function calculateLayoutPos(layout:KeyboardLayout):{
+	private function calculateLayoutPos(keys:Array<Key>):{
 		keys:Array<Key>,
 		pos:Map<Key, {row:Int, col:Int}>
 	} {
-		var keys = layout.keys;
+		var keys = keys.copy();
+
+		function compareFloat(a:Float, b:Float) {
+			var EPS = 0.01;
+			if (a < b - EPS) {
+				return -1;
+			} else if (a > b + EPS) {
+				return 1;
+			}
+			return 0;
+		}
+		keys.sort((a, b) -> {
+			var cmpy = compareFloat(a.y, b.y);
+			if (cmpy != 0) {
+				return cmpy;
+			}
+			return compareFloat(a.x, b.x);
+		});
+
 		var pos = new Map<Key, {row:Int, col:Int}>();
 		if (keys.length > 0) {
 			var row = 0;
@@ -58,9 +76,9 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 					row += 1;
 					col = 0;
 				} else if (key.x < prev.x) {
-					throw 'Can\'t analyze layout key order in layout ${layout.name}';
+					throw 'Can\'t analyze layout key order';
 				} else if (key.y < prev.y - 0.1) {
-					throw 'Can\'t analyze layout key order in layout ${layout.name}';
+					throw 'Can\'t analyze layout key order';
 				} else {
 					col += 1;
 				}
@@ -71,8 +89,61 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		return {keys: keys, pos: pos};
 	}
 
+	function addPadding(buffer:StringBuf, w:Int) {
+		for (_ in 0...w) {
+			buffer.add(" ");
+		}
+	}
+
+	function printMacroArgs(buffer:StringBuf, keys:Array<Key>, labels:Array<String>) {
+		var minwidth = 1;
+		for (label in labels) {
+			var l = label.length + 1;
+			if (l > minwidth) {
+				minwidth = l;
+			}
+		}
+
+		var layout_order = calculateLayoutPos(keys);
+
+		var lineWidth = 0;
+		for (i in 0...keys.length) {
+			var key = keys[i];
+			var name = labels[i];
+			var x = Std.int((minwidth) * key.x + 0.01);
+			if (x > lineWidth) {
+				var w = x - lineWidth;
+				addPadding(buffer, w);
+				lineWidth += w;
+			}
+			var paddingl = 0, paddingr = 0;
+			var paddingW = Std.int(minwidth * key.width) - 1 - name.length;
+			if (key.width <= 1) {
+				paddingl = paddingW;
+			} else {
+				paddingr = Std.int(paddingW / 2);
+				paddingl = paddingW - paddingr;
+			}
+			addPadding(buffer, paddingl);
+			buffer.add(name);
+			addPadding(buffer, paddingr);
+			lineWidth += paddingl + paddingr + name.length + 1;
+			var pos = layout_order.pos.get(keys[i]);
+			if (i + 1 < keys.length) {
+				var nextPos = layout_order.pos.get(keys[i + 1]);
+				buffer.add(",");
+				if (nextPos.row != pos.row) {
+					buffer.add(' \\\n');
+					lineWidth = 0;
+				}
+			} else {
+				buffer.add(' \\\n');
+			}
+		}
+	}
+
 	private function convertLayoutImpl(buffer:StringBuf, keyboard:KeyBoard, layout:KeyboardLayout, config:ExportLayoutConfig) {
-		var layout_order = calculateLayoutPos(layout);
+		var layout_order = calculateLayoutPos(layout.keys);
 		var argNames = new Map<Int, String>();
 		if (layout_order.keys.length > 0) {
 			switch (config.argName) {
@@ -114,29 +185,11 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		}
 		buffer.add('#define ${layout.name}( \\\n');
 
-		var addPadding = (w:Int) -> {
-			for (_ in 0...w) {
-				buffer.add(" ");
-			}
-		};
 		var keys = layout_order.keys;
-		for (i in 0...keys.length) {
-			var key = keys[i];
-			var name = argNames.get(key.id);
-			var padding = minwidth - name.length;
-			var pos = layout_order.pos.get(keys[i]);
-			addPadding(padding);
-			buffer.add(name);
-			if (i + 1 < keys.length) {
-				var nextPos = layout_order.pos.get(keys[i + 1]);
-				buffer.add(",");
-				if (nextPos.row != pos.row) {
-					buffer.add(' \\\n');
-				}
-			} else {
-				buffer.add(' \\\n');
-			}
-		}
+		var argLabels = layout_order.keys.map(key -> {
+			argNames.get(key.id);
+		});
+		printMacroArgs(buffer, layout_order.keys, argLabels);
 		buffer.add(") {\\\n");
 		var matrixSize = keyboard.getMatrixSize();
 		var matrix:Array<Array<Key>> = [for (y in 0...matrixSize.row) [for (x in 0...matrixSize.col) null]];
@@ -148,6 +201,21 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 			}
 			matrix[pos.row][pos.col] = key;
 		}
+
+		var hasUnmapped = false;
+		for (row in matrix) {
+			for (v in row) {
+				if (v == null) {
+					hasUnmapped = true;
+				}
+			}
+		}
+		if (hasUnmapped) {
+			if (minwidth < config.unmappedKey.length) {
+				minwidth = config.unmappedKey.length;
+			}
+		}
+
 		for (row in 0...matrix.length) {
 			buffer.add("    { ");
 			for (col in 0...matrixSize.col) {
@@ -164,7 +232,7 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 						name = config.unmappedKey;
 					}
 				}
-				addPadding(minwidth - name.length);
+				addPadding(buffer, minwidth - name.length);
 				buffer.add(name);
 			}
 			if (row != matrix.length - 1) {

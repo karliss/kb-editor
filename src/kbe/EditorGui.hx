@@ -23,12 +23,12 @@ import kbe.FileOpener;
 class EditorGui extends Component {
 	var pageMechanical:MechanicalPage;
 	var pageWiring:WiringPage;
-	var keyboard = new KeyBoard();
 	var editor:Editor;
 	var pages = new Array<EditorPage>();
 
 	public function new() {
 		super();
+		var keyboard = new KeyBoard();
 		editor = new Editor(keyboard);
 		pageMechanical = new MechanicalPage(editor);
 		tabList.addComponent(pageMechanical);
@@ -130,7 +130,7 @@ class EditorGui extends Component {
 	function onClickExport(exporter:Exporter):Void {
 		var result:Bytes;
 		try {
-			result = exporter.convert(keyboard);
+			result = exporter.convert(editor.getKeyboard());
 		} catch (e:Dynamic) {
 			Toolkit.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
 			return;
@@ -150,7 +150,7 @@ class EditorGui extends Component {
 				Toolkit.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
 				return;
 			}
-			this.keyboard = result;
+			var keyboard = result;
 			editor.setKeyboard(keyboard);
 			editor.undoBuffer.clear();
 			reloadPages();

@@ -13,7 +13,7 @@ enum ArgName {
 }
 
 typedef ExportLayoutConfig = {
-	layouts:Array<KeyboardLayout>,
+	layouts:Null<Array<KeyboardLayout>>,
 	unmappedKey:String,
 	argName:ArgName
 };
@@ -129,8 +129,14 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 			addPadding(buffer, paddingr);
 			lineWidth += paddingl + paddingr + name.length + 1;
 			var pos = layout_order.pos.get(keys[i]);
+			if (pos == null) {
+				throw "Key position not calcualted";
+			}
 			if (i + 1 < keys.length) {
 				var nextPos = layout_order.pos.get(keys[i + 1]);
+				if (nextPos == null) {
+					throw "Key position not calcualted";
+				}
 				buffer.add(",");
 				if (nextPos.row != pos.row) {
 					buffer.add(' \\\n');
@@ -151,6 +157,9 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 					{
 						for (key in layout_order.keys) {
 							var pos = layout_order.pos.get(key);
+							if (pos == null) {
+								throw "Layout key position not calculated properly";
+							}
 							argNames.set(key.id, 'K${StringTools.hex(pos.row)}${StringTools.hex(pos.col)}');
 						}
 					}
@@ -187,12 +196,17 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 
 		var keys = layout_order.keys;
 		var argLabels = layout_order.keys.map(key -> {
-			argNames.get(key.id);
+			var result = argNames.get(key.id);
+			if (result == null) {
+				throw "Macro argument name missing";
+			} else {
+				return (result : String);
+			}
 		});
 		printMacroArgs(buffer, layout_order.keys, argLabels);
 		buffer.add(") {\\\n");
 		var matrixSize = keyboard.getMatrixSize();
-		var matrix:Array<Array<Key>> = [for (y in 0...matrixSize.row) [for (x in 0...matrixSize.col) null]];
+		var matrix:Array<Array<Null<Key>>> = [for (y in 0...matrixSize.row) [for (x in 0...matrixSize.col) null]];
 		for (key in keyboard.keys) {
 			var pos = keyboard.getMatrixPos(key);
 			var existingKey = matrix[pos.row][pos.col];
@@ -227,7 +241,11 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 				if (key != null) {
 					var layoutId = layout.mappingFromGrid(key.id);
 					if (layoutId != null) {
-						name = argNames.get(layoutId);
+						var argName = argNames.get(layoutId);
+						if (argName == null) {
+							throw "argName null, this shouldn't happen";
+						}
+						name = argName;
 					} else {
 						name = config.unmappedKey;
 					}

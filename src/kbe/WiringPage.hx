@@ -1,5 +1,6 @@
 package kbe;
 
+import kbe.KeyBoard.RowColNull;
 import kbe.KeyVisualizer.KeyLabelMode;
 import haxe.ui.containers.VBox;
 import haxe.ui.containers.dialogs.Dialog;
@@ -71,12 +72,12 @@ class WiringPage extends HBox implements EditorPage {
 	var showLogicalMatrix = false;
 
 	public function new(?editor:Editor) {
-		super();
 		if (editor == null) {
 			throw "can't call without editor";
 		}
 		this.editor = editor;
 		this.keyboard = editor.getKeyboard();
+		super();
 		percentWidth = 100;
 		percentHeight = 100;
 		text = "Wiring";
@@ -94,7 +95,7 @@ class WiringPage extends HBox implements EditorPage {
 
 		layoutLabelSelection.dataSource = new ListDataSource<Dynamic>();
 
-		var initialLabelMode = null;
+		var initialLabelMode = -1;
 		var i = 0;
 		for (mode in KeyVisualizer.COMMON_LABEL_MODES) {
 			layoutLabelSelection.dataSource.add(mode);
@@ -137,7 +138,7 @@ class WiringPage extends HBox implements EditorPage {
 				var row = currentButton != null ? currentButton.key.row : -1;
 				var column = currentButton != null ? currentButton.key.column : -1;
 
-				var color:thx.color.Rgb = null;
+				var color:Null<thx.color.Rgb> = null;
 				if (!button.selected) {
 					if (key.row == row) {
 						color = 0xe0fde0;
@@ -217,20 +218,25 @@ class WiringPage extends HBox implements EditorPage {
 
 	function onPropertyChange(_) {
 		var data = propEditor.source;
+		if (data == null) {
+			return;
+		}
 		var ids = [];
 		var properties = [];
 		var activeButtons = keyView.activeButtons();
-		if (activeButtons.length == 0 || (data.row == null && data.column == null)) {
+		var row = data.get("row");
+		var column = data.get("col");
+		if (activeButtons.length == 0 || (row == null && column == null)) {
 			return;
 		}
 		for (button in activeButtons) {
 			ids.push(button.key.id);
 			var buttonProp = new Map<String, Dynamic>();
-			if (data.row != null) {
-				buttonProp.set("row", data.row);
+			if (row != null) {
+				buttonProp.set("row", row);
 			}
-			if (data.column != null) {
-				buttonProp.set("column", data.column);
+			if (column != null) {
+				buttonProp.set("column", column);
 			}
 			properties.push(buttonProp);
 		}
@@ -258,21 +264,21 @@ class WiringPage extends HBox implements EditorPage {
 		}
 	}
 
-	function getTopSelectionRowColumn():Dynamic {
-		var value = {row: null, column: null};
+	function getTopSelectionRowColumn():RowColNull {
+		var value = {row: null, col: null};
 		var activeButtons = keyView.activeButtons();
 		if (activeButtons.length == 0) {
 			return value;
 		}
 		value.row = activeButtons[0].key.row;
-		value.column = activeButtons[0].key.column;
+		value.col = activeButtons[0].key.column;
 		for (button in activeButtons) {
 			var key = button.key;
 			if (key.row != value.row) {
 				value.row = null;
 			}
-			if (key.column != value.column) {
-				value.column = null;
+			if (key.column != value.col) {
+				value.col = null;
 			}
 		}
 		return value;
@@ -280,7 +286,8 @@ class WiringPage extends HBox implements EditorPage {
 
 	@:bind(keyView, KeyboardContainer.BUTTON_CHANGED)
 	function onButtonChange(e:KeyButtonEvent) {
-		propEditor.source = getTopSelectionRowColumn();
+		var data = getTopSelectionRowColumn();
+		propEditor.source = ["row" => data.row, "col" => data.col];
 		btnAutoIncrementColumns.disabled = keyView.activeButtons().length <= 1;
 		syncBottomSelection();
 		refreshFormatting();
@@ -363,7 +370,7 @@ class WiringPage extends HBox implements EditorPage {
 		} else if (e.keyCode == KC.C) {
 			quickSetMode.selectedIndex = 2;
 		}
-		var number = null;
+		var number:Null<Int> = null;
 		if (e.keyCode >= KC.N0 && e.keyCode <= KC.N9) {
 			number = e.keyCode - KC.N0;
 		} else if (e.keyCode >= KC.NP_0 && e.keyCode <= KC.NP_9) {

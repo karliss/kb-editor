@@ -41,7 +41,7 @@ class KeyboardContainer extends Box {
 	private var selectedButtons:Array<KeyButton> = [];
 	private var clickingOnButton:Bool = false;
 	private var selectionStart:Null<haxe.ui.geom.Point> = null;
-	private var selectionRect:Component = null;
+	private var selectionRect:Null<Component> = null;
 
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
 
@@ -54,6 +54,7 @@ class KeyboardContainer extends Box {
 	public var flipVertically(default, set) = false;
 
 	public function new() {
+		formatButton = defaultFormat;
 		super();
 		scrollView.addComponent(canvas);
 		// canvas.backgroundColor = 0x00ff00;
@@ -68,7 +69,6 @@ class KeyboardContainer extends Box {
 		// scrollView.layout.autoSize(); //TODO: what happens
 		scrollView.scrollMode = ScrollMode.NORMAL;
 
-		formatButton = defaultFormat;
 		percentWidth = 100;
 		percentHeight = 100;
 
@@ -138,13 +138,22 @@ class KeyboardContainer extends Box {
 	public function fieldToScreen(key:Key):Point {
 		var y:Float = 0.0;
 		var x:Float = 0.0;
+		var areaWidth = width;
+		if (areaWidth == null) {
+			areaWidth = 300;
+		}
+		var areaHeight = height;
+		if (areaHeight == null) {
+			areaHeight = 300;
+		}
+
 		if (flipHorizontally) {
-			x = 0.8 * width + KeyboardContainer.LEFT_OFFSET - (key.x + key.width) * scale;
+			x = 0.8 * areaWidth + KeyboardContainer.LEFT_OFFSET - (key.x + key.width) * scale;
 		} else {
 			x = KeyboardContainer.LEFT_OFFSET + key.x * scale;
 		}
 		if (flipVertically) {
-			y = 0.8 * height + KeyboardContainer.TOP_OFFSET - (key.y + key.height) * scale;
+			y = 0.8 * areaHeight + KeyboardContainer.TOP_OFFSET - (key.y + key.height) * scale;
 		} else {
 			y = KeyboardContainer.TOP_OFFSET + key.y * scale;
 		}
@@ -170,13 +179,23 @@ class KeyboardContainer extends Box {
 		canvas.width = null;
 		canvas.autoSize();
 
-		var w = Math.max(canvas.width, this.width - 16);
-		if (w > 0) {
-			canvas.width = w;
-		}
-		var h = Math.max(canvas.height, this.height - 16);
-		if (h > 0) {
-			canvas.height = h;
+		var cw = canvas.width;
+		var ch = canvas.height;
+		var thisW = this.width;
+		var thisH = this.height;
+		if (thisH != null && thisW != null) {
+			if (cw != null && this.width != null) {
+				var w = Math.max(cw, thisW - 16);
+				if (w > 0) {
+					canvas.width = w;
+				}
+			}
+			if (ch != null) {
+				var h = Math.max(ch, thisH - 16);
+				if (h > 0) {
+					canvas.height = h;
+				}
+			}
 		}
 	}
 
@@ -239,7 +258,7 @@ class KeyboardContainer extends Box {
 
 	public function selectButtons(selection:Array<KeyButton>) {
 		unselectButtons();
-		var singleButton = null;
+		var singleButton:Null<KeyButton> = null;
 		for (button in selection) {
 			button.selected = true;
 			singleButton = button;
@@ -354,41 +373,68 @@ class KeyboardContainer extends Box {
 	}
 
 	private function onMouseMoveCanvas(e:MouseEvent) {
-		if (selectionRect != null) {
-			selectionRect.left = Math.min(e.localX, selectionStart.x);
-			selectionRect.top = Math.min(e.localY, selectionStart.y);
-			selectionRect.width = Math.abs(e.localX - selectionStart.x);
-			selectionRect.height = Math.abs(e.localY - selectionStart.y);
-			canvas.width = Math.max(canvas.width, e.localX + 32);
-			canvas.height = Math.max(canvas.height, e.localY + 32);
+		if (selectionRect != null && selectionStart != null) {
+			var localX = e.localX, localY = e.localY;
+			if (localY == null || localX == null) {
+				return;
+			}
+			selectionRect.left = Math.min(localX, selectionStart.x);
+			selectionRect.top = Math.min(localY, selectionStart.y);
+			selectionRect.width = Math.abs(localX - selectionStart.x);
+			selectionRect.height = Math.abs(localY - selectionStart.y);
+			var width = canvas.width;
+			var height = canvas.height;
+			if (width != null && height != null) {
+				canvas.width = Math.max(width, localX + 32);
+				canvas.height = Math.max(height, localY + 32);
+			}
 		}
 	}
 
 	private function onMouseMoveSelf(e:MouseEvent) {
 		if (selectionRect != null) {
-			canvas.width = Math.max(canvas.width, e.localX + 32);
-			canvas.height = Math.max(canvas.height, e.localY + 32);
+			var localX = e.localX, localY = e.localY;
+			if (localY == null || localX == null) {
+				return;
+			}
+			var canvasWidth = canvas.width;
+			var canvasHeight = canvas.height;
+			if (canvasWidth == null || canvasHeight == null) {
+				canvas.width = localX + 32;
+				canvas.height = localY + 32;
+			} else {
+				canvas.width = Math.max(canvasWidth, localX + 32);
+				canvas.height = Math.max(canvasHeight, localY + 32);
+			}
 		}
 	}
 
 	private function onMouseUpArea(e:MouseEvent) {
 		clickingOnButton = false;
-		if (selectionStart != null) {
+		if (selectionStart != null && selectionRect != null) {
 			canvas.removeComponent(selectionRect);
 			selectionRect = null;
-			var top = Math.min(selectionStart.y, e.localY);
-			var bottom = Math.max(selectionStart.y, e.localY);
-			var left = Math.min(selectionStart.x, e.localX);
-			var right = Math.max(selectionStart.x, e.localX);
+			var localX = e.localX, localY = e.localY;
+			if (localY == null || localX == null) {
+				return;
+			}
+			var top = Math.min(selectionStart.y, localY);
+			var bottom = Math.max(selectionStart.y, localY);
+			var left = Math.min(selectionStart.x, localX);
+			var right = Math.max(selectionStart.x, localX);
 			if (!e.shiftKey) {
 				unselectButtons();
 			}
+
 			for (button in buttons) {
-				if (button.top >= top
-					&& button.left >= left
-					&& button.top + button.height <= bottom
-					&& button.width + button.left <= right
-					&& !button.selected) {
+				var buttonTop = button.top;
+				var buttonLeft = button.left;
+				var buttonWidth = button.width;
+				var buttonHeight = button.height;
+				if (buttonTop == null || buttonLeft == null || buttonWidth == null || buttonHeight == null) {
+					continue;
+				}
+				if (buttonTop >= top && buttonLeft >= left && buttonTop + buttonHeight <= bottom && buttonWidth + buttonLeft <= right && !button.selected) {
 					selectedButtons.push(button);
 					button.selected = true;
 				}
@@ -412,21 +458,21 @@ class KeyboardContainer extends Box {
 }
 
 class KeyButtonEvent extends UIEvent {
-	public function new(type:String, target:KeyButton, software:Bool = false) {
+	public function new(type:String, target:Null<KeyButton>, software:Bool = false) {
 		super(type);
 		data = target;
 		this.software = software;
 	}
 
-	public var button(get, set):KeyButton;
+	public var button(get, set):Null<KeyButton>;
 	public var mouseEvent:Null<MouseEvent> = null;
 	public var software:Bool = false;
 
-	function get_button():KeyButton {
+	function get_button():Null<KeyButton> {
 		return data;
 	}
 
-	function set_button(btn:KeyButton):KeyButton {
+	function set_button(btn:Null<KeyButton>):Null<KeyButton> {
 		data = btn;
 		return btn;
 	}

@@ -12,11 +12,15 @@ class FloatEditor extends NumberEditor {
 	public var step:Float = 1;
 	public var floatRound:Bool = false;
 
-	override function fromText() {
+	override function fromText():Bool {
 		var num = Std.parseFloat(input.value);
 		if (Math.isFinite(num) && num >= minimum && num <= maximum) {
-			number = num;
+			if (Math.abs(num - number) > step || !Math.isFinite(number)) {
+				number = num;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	function clamp(v:Float):Float {
@@ -40,10 +44,14 @@ class FloatEditor extends NumberEditor {
 		dispatch(new UIEvent(UIEvent.CHANGE));
 	}
 
-	function set_number(v:Float):Float {
-		_value = clamp(v);
-		if (floatRound) {
-			_value = Math.fround(_value / step) * step;
+	function set_number(v:Null<Float>):Float {
+		if (v != null) {
+			_value = clamp(v);
+			if (floatRound) {
+				_value = Math.fround(_value / step) * step;
+			}
+		} else {
+			_value = Math.NaN;
 		}
 		showVal();
 		// dispatch(new UIEvent(UIEvent.CHANGE));

@@ -19,6 +19,9 @@ class TKBEImporter implements Exporter.Importer {
 		}
 		var key = new Key(id);
 		for (prop => value in input) {
+			if (value == null) {
+				continue;
+			}
 			switch (prop) {
 				case "id":
 					{}
@@ -51,6 +54,9 @@ class TKBEImporter implements Exporter.Importer {
 	private function convertLayout(input:DynamicAccess<Null<Dynamic>>):KeyboardLayout {
 		var layout = new KeyboardLayout();
 		for (key => value in input) {
+			if (value == null) {
+				continue;
+			}
 			switch (key) {
 				case "name":
 					layout.name = value;
@@ -74,8 +80,11 @@ class TKBEImporter implements Exporter.Importer {
 
 	function convertWireMapping(input:DynamicAccess<Null<Dynamic>>):WireMapping {
 		var result = new WireMapping();
-		var columnData:DynamicAccess<Null<Dynamic>> = null;
+		var columnData:Null<DynamicAccess<Null<Dynamic>>> = null;
 		for (key => value in input) {
+			if (value == null) {
+				continue;
+			}
 			switch (key) {
 				case "hasMatrixRows":
 					result.hasWireColumn = value;
@@ -101,6 +110,9 @@ class TKBEImporter implements Exporter.Importer {
 			for (name => values in columnData) {
 				result.addColumn(name);
 				var index = 0;
+				if (values == null) {
+					continue;
+				}
 				for (value in cast(values, Array<Dynamic>)) {
 					result.setColumnValue(index, column, value);
 					index++;
@@ -116,6 +128,9 @@ class TKBEImporter implements Exporter.Importer {
 		var json = Json.parse(bytes.toString());
 
 		for (key => value in (json : DynamicAccess<Null<Dynamic>>)) {
+			if (value == null) {
+				continue;
+			}
 			switch (key) {
 				case "keys":
 					for (key in convertKeys(value)) {

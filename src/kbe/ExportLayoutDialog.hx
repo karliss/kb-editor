@@ -9,16 +9,19 @@ import haxe.ui.data.ListDataSource;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/export_layout_dialog.xml"))
 class ExportLayoutDialog extends Dialog {
-	public var onAccept:(ExportLayoutConfig) -> Void = null;
+	public var onAccept:Null<(ExportLayoutConfig) -> Void> = null;
 
 	private var keyboard:KeyBoard;
 
 	public function new(?keyboard:KeyBoard) {
+		if (keyboard == null) {
+			throw "keyboard not set";
+		}
+		this.keyboard = keyboard;
 		super();
 		title = "Export layout";
 		buttons = DialogButton.OK | DialogButton.CANCEL;
 		onDialogClosed = onClosed;
-		this.keyboard = keyboard;
 		this.width = 300;
 		this.height = 300;
 
@@ -57,7 +60,7 @@ class ExportLayoutDialog extends Dialog {
 	}
 
 	public function result():ExportLayoutConfig {
-		var layouts:Array<KeyboardLayout> = null;
+		var layouts:Null<Array<KeyboardLayout>> = null;
 		if (!exportCountAll.selected) {
 			layouts = layoutSelection.selectedItems.map(item -> item.layout);
 		}

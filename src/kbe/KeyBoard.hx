@@ -10,6 +10,11 @@ enum KeyboarLayoutAutoConnectMode {
 	Position;
 }
 
+typedef RowColNull = {
+	row:Null<Int>,
+	col:Null<Int>
+}
+
 typedef RowCol = {
 	row:Int,
 	col:Int
@@ -106,7 +111,9 @@ class KeyboardLayout {
 		var current = mapping.get(gridId);
 		if (current != null) {
 			var reverse = reverseMapping.get(current);
-			reverse.remove(gridId);
+			if (reverse != null) {
+				reverse.remove(gridId);
+			}
 		}
 		mapping.remove(gridId);
 	}
@@ -134,7 +141,7 @@ class KeyboardLayout {
 		var keyboardKeys = keyboard.keys.filter(key -> !hasKeyboardMapping(key.id));
 		var layoutKeys = keys.filter(key -> !hasLayoutMapping(key.id));
 		for (keyboardKey in keyboardKeys) {
-			var nearest:Key = null;
+			var nearest:Null<Key> = null;
 			var nearestDistance = maxDistance + 1;
 			for (layoutKey in layoutKeys) {
 				var d = comparator(keyboardKey, layoutKey);
@@ -152,7 +159,7 @@ class KeyboardLayout {
 	@:generic
 	public function autoConnect<T>(keyboard:KeyBoard, groupFunction:Null<Key->T>, comparator:(Key, Key) -> Float = null, maxDistance:Float = 0.5,
 			unassigned:Bool = false) {
-		var createGroups = (keys:Array<Key>) -> {
+		var createGroups = (keys:Array<Key>, groupFunction:Key->T) -> {
 			var result = new Map<T, Array<Key>>();
 			for (key in keys) {
 				var groupId = groupFunction(key);
@@ -178,9 +185,9 @@ class KeyboardLayout {
 		}
 		if (groupFunction != null) {
 			var layoutKeys = keys.filter(key -> !hasLayoutMapping(key.id));
-			var groupsLayout = createGroups(layoutKeys);
+			var groupsLayout = createGroups(layoutKeys, groupFunction);
 			var keyboardKeys = keyboard.keys.filter(key -> !mapping.exists(key.id));
-			var groupsKeyboard = createGroups(keyboardKeys);
+			var groupsKeyboard = createGroups(keyboardKeys, groupFunction);
 			if (!(groupSize(groupsLayout) == 1 && groupSize(groupsKeyboard) == 1 && keyboardKeys.length > 1)) {
 				for (groupId => group in groupsKeyboard) {
 					var layoutGroup = groupsLayout.get(groupId);
@@ -191,7 +198,7 @@ class KeyboardLayout {
 						addMapping(group[0].id, layoutGroup[0].id);
 					} else if (comparator != null && group.length == layoutGroup.length && group.length < 3) {
 						for (keyboardKey in group) {
-							var nearest:Key = null;
+							var nearest:Null<Key> = null;
 							var nearestDistance = maxDistance + 1;
 							for (layoutKey in layoutGroup) {
 								var d = comparator(keyboardKey, layoutKey);
@@ -335,7 +342,7 @@ class KeyBoard implements Clonable<KeyBoard> {
 		return last + 1;
 	}
 
-	public function getKeyById(id:Int) {
+	public function getKeyById(id:Int):Null<Key> {
 		for (key in keys) {
 			if (key.id == id) {
 				return key;
@@ -362,10 +369,13 @@ class KeyBoard implements Clonable<KeyBoard> {
 	}
 
 	public function removeLayout(name:String) {
-		_layouts.remove(getLayoutByName(name));
+		var layout = getLayoutByName(name);
+		if (layout != null) {
+			_layouts.remove(layout);
+		}
 	}
 
-	public function updateLayout(name:String, layout:KeyboardLayout):KeyboardLayout {
+	public function updateLayout(name:String, layout:KeyboardLayout):Null<KeyboardLayout> {
 		for (i in 0..._layouts.length) {
 			if (_layouts[i].name == name) {
 				if (name != layout.name) {
@@ -457,7 +467,7 @@ class WireMapping {
 	public var rows(get, set):Int;
 
 	private var matrixRow = new Array<Int>();
-	private var columns = new Array<Array<Dynamic>>();
+	private var columns = new Array<Array<Null<Dynamic>>>();
 	private var minRows:Int = 0;
 
 	public function new() {
@@ -533,7 +543,7 @@ class WireMapping {
 		this.matrixRow[row] = matrixRow;
 	}
 
-	public function getColumnValue(row:Int, columnIndex:Int):Dynamic {
+	public function getColumnValue(row:Int, columnIndex:Int):Null<Dynamic> {
 		if (columnIndex < columns.length) {
 			var column = columns[columnIndex];
 			if (row < column.length) {

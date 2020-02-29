@@ -21,15 +21,13 @@ import kbe.FileOpener;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
 class EditorGui extends Component {
-	var pageMechanical:MechanicalPage;
-	var pageWiring:WiringPage;
-	var editor:Editor;
+	var pageMechanical:Null<MechanicalPage> = null;
+	var pageWiring:Null<WiringPage> = null;
+	var editor:Editor = new Editor(new KeyBoard());
 	var pages = new Array<EditorPage>();
 
 	public function new() {
 		super();
-		var keyboard = new KeyBoard();
-		editor = new Editor(keyboard);
 		pageMechanical = new MechanicalPage(editor);
 		tabList.addComponent(pageMechanical);
 		pages.push(pageMechanical);
@@ -100,7 +98,9 @@ class EditorGui extends Component {
 
 	function reloadCurrentPage() {
 		var page:EditorPage = cast tabList.selectedPage;
-		page.reload();
+		if (page != null) {
+			page.reload();
+		}
 	}
 
 	function fillFormats() {

@@ -28,8 +28,9 @@ class NumberEditor extends Component implements IFocusable {
 		addComponent(input);
 		input.restrictChars = "-0-9.";
 		input.onChange = function(_) {
-			fromText();
-			dispatch(new UIEvent(UIEvent.CHANGE));
+			if (fromText()) {
+				dispatch(new UIEvent(UIEvent.CHANGE));
+			}
 		};
 
 		addComponent(plus);
@@ -37,22 +38,29 @@ class NumberEditor extends Component implements IFocusable {
 		plus.onClick = onPlus;
 		plus.repeater = true;
 		plus.repeatInterval = 150;
+		plus.width = 20;
 
 		addComponent(minus);
 		minus.text = "-";
 		minus.onClick = onMinus;
 		minus.repeater = true;
 		minus.repeatInterval = 150;
+		minus.width = 20;
 
 		input.percentWidth = 100;
 	}
 
-	function fromText() {
+	function fromText():Bool {
 		throw "Not implemented!";
 	}
 
 	function showVal() {
-		input.text = Std.string(value);
+		var v:Float = value;
+		if (Math.isFinite(v)) {
+			input.text = Std.string(value);
+		} else {
+			input.text = "";
+		}
 	}
 
 	function onPlus(_) {

@@ -11,11 +11,15 @@ class IntegerEditor extends NumberEditor {
 	public var maximum:Int = 100;
 	public var step:Int = 1;
 
-	override function fromText() {
+	override function fromText():Bool {
 		var num = Std.parseInt(input.value);
 		if (num != null && num >= minimum && num <= maximum) {
-			number = num;
+			if (number != num) {
+				number = num;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	function clamp(v:Int):Int {

@@ -71,7 +71,7 @@
             <PropertyItem id="p_row" text="row">
                 <IntegerEditor id="pRowEditor" maximum="1000" />
             </PropertyItem>
-            <PropertyItem id="p_column" text="column">
+            <PropertyItem id="p_col" text="column">
                 <IntegerEditor id="pColumnEditor" maximum="1000" />
             </PropertyItem>
         </vbox>

@@ -2,10 +2,8 @@
 -main kbe.EditorApp
 
 -lib haxeui-core
--lib haxeui-hxwidgets
---debug
-#--macro nullSafety("kbe", Loose)
+-lib haxeui-qt
+-lib hxQt
 common.hxml
-#-D dump=pretty
 
 -cpp build/cpp/Main

@@ -171,9 +171,9 @@ class EditorTest extends utest.Test {
 		editor.modifyKeys([], [], false);
 		Assert.equals(5, editor.undoBuffer.undoCount);
 
-		editor.modifyKeys([0], [[]]);
+		editor.modifyKeys([1], [[]]);
 		Assert.equals(6, editor.undoBuffer.undoCount);
-		editor.modifyKeys([0, 1], [[], []]);
+		editor.modifyKeys([1, 2], [[], []]);
 		Assert.equals(7, editor.undoBuffer.undoCount);
 
 		editor.modifyKeys([1], [["row" => 1]]);

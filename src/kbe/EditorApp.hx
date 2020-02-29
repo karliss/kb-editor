@@ -11,10 +11,9 @@ class EditorApp extends HaxeUIApp {
 
 	private function onReady() {
 		var editor:Component = new EditorGui();
-		addComponent(editor);
 		editor.percentWidth = 100;
 		editor.percentHeight = 100;
-
+		addComponent(editor);
 		start();
 	}
 

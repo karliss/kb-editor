@@ -65,7 +65,7 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		return this.keyboard;
 	}
 
-	public function applyAction(a:EditorAction):Dynamic {
+	public function applyAction(a:EditorAction):Null<Dynamic> {
 		switch (a) {
 			case ActionList(actions):
 				for (action in actions) {
@@ -80,12 +80,19 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			case RemoveKeys(ids):
 				{
 					for (id in ids) {
-						keyboard.removeKey(keyboard.getKeyById(id));
+						var key = keyboard.getKeyById(id);
+						if (key != null) {
+							keyboard.removeKey(key);
+						}
 					}
 				}
 
 			case ModifyKey(id, prop):
-				keyboard.getKeyById(id).copyProperties(prop);
+				var key = keyboard.getKeyById(id);
+				if (key == null) {
+					throw "Key not found";
+				}
+				key.copyProperties(prop);
 			case ModifyKeys(id, prop):
 				modifyKeysImpl(id, prop);
 
@@ -105,9 +112,19 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 			case UpdateLayout(name, layout):
 				return keyboard.updateLayout(name, layout.clone());
 			case AddLayoutMapping(layout, gridId, layoutId):
-				keyboard.getLayoutByName(layout).addMapping(gridId, layoutId);
+				var layout = keyboard.getLayoutByName(layout);
+				if (layout != null) {
+					layout.addMapping(gridId, layoutId);
+				} else {
+					trace('Warning layout not found, should not happen');
+				}
 			case AddLayoutExclusiveMapping(layout, gridId, layoutId):
-				keyboard.getLayoutByName(layout).addExclusiveMapping(gridId, layoutId);
+				var layout = keyboard.getLayoutByName(layout);
+				if (layout != null) {
+					layout.addExclusiveMapping(gridId, layoutId);
+				} else {
+					trace('Warning layout not found, should not happen');
+				}
 
 			case UpdateWireMapping(rows, columns):
 				if (rows != null) {
@@ -123,6 +140,9 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 	private function modifyKeysImpl(ids:Array<Int>, prop:Array<Map<String, Dynamic>>) {
 		for (i in 0...ids.length) {
 			var key = keyboard.getKeyById(ids[i]);
+			if (key == null) {
+				throw "Key not found";
+			}
 			for (name => value in prop[i]) {
 				Reflect.setField(key, name, value);
 			}
@@ -133,8 +153,10 @@ class Editor implements UndoExecutor<KeyBoard, EditorAction> {
 		var index = 0;
 		for (id in ids) {
 			var key = keyboard.getKeyById(id);
-			key.x = positions[index].x;
-			key.y = positions[index].y;
+			if (key != null) {
+				key.x = positions[index].x;
+				key.y = positions[index].y;
+			}
 			index++;
 		}
 	}

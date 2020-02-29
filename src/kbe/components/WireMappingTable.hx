@@ -16,8 +16,8 @@ typedef SourceElement = {
 };
 
 class WireMappingTable extends TableView {
-	public var mappingSource(default, set):KeyBoard.WireMapping = null;
-	public var isRow(default, set):Bool;
+	public var mappingSource(default, set):Null<KeyBoard.WireMapping> = null;
+	public var isRow(default, set):Bool = true;
 
 	var ds = new ArrayDataSource<SourceElement>();
 	var rowColumn = new Column();
@@ -31,10 +31,9 @@ class WireMappingTable extends TableView {
 		rowColumn.id = "tRow";
 		matrixRowColumn.id = "tMatrixRow";
 
-		isRow = true;
-
 		matrixRowColumn.width = 90;
 		// this.virtual = true;
+		isRow = true; // trigger setter
 		addComponent(header);
 		this.selectionMode = haxe.ui.constants.SelectionMode.MULTIPLE_CLICK_MODIFIER_KEY;
 	}
@@ -62,6 +61,7 @@ class WireMappingTable extends TableView {
 		while (header.childComponents.length > 0) {
 			header.removeComponentAt(header.childComponents.length - 1, false, false);
 		}
+		// TODO: how to make null pointer checker accpet this
 		itemRenderer = null;
 		var renderers = [];
 		header.addComponent(rowColumn);

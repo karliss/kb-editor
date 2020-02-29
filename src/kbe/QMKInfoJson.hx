@@ -14,7 +14,7 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 
 	public function new() {}
 
-	function chooseMainLayout(layouts:Array<KeyboardLayout>):KeyboardLayout {
+	function chooseMainLayout(layouts:Array<KeyboardLayout>):Null<KeyboardLayout> {
 		// If necesarry add some heuristics for choosing main layout
 		if (layouts.length > 0) {
 			return layouts[0];
@@ -30,6 +30,9 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 			var key = new Key(id);
 			id++;
 			for (name => value in properties) {
+				if (value == null) {
+					continue;
+				}
 				switch (name) {
 					case "label":
 						key.name = value;
@@ -60,12 +63,21 @@ class QMKInfoJsonImporter implements Exporter.Importer {
 		for (key => value in json) {
 			switch (key) {
 				case "layouts":
+					if (value == null) {
+						continue;
+					}
 					var layouts:DynamicAccess<Null<Dynamic>> = value;
 					for (name => lprop in layouts) {
 						var layout = new KeyboardLayout();
 						layout.name = name;
+						if (lprop == null) {
+							continue;
+						}
 						var layoutProperties:DynamicAccess<Null<Dynamic>> = lprop;
 						for (propertyName => propertyValue in layoutProperties) {
+							if (propertyValue == null) {
+								continue;
+							}
 							switch (propertyName) {
 								case "layout":
 									layout.keys = parseKeys(propertyValue);

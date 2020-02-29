@@ -262,9 +262,13 @@ class LayoutPage extends HBox implements EditorPage {
 		var layout = selectedLayout();
 
 		if (layout != null) {
+			if (layout.name == nameField.text) {
+				return;
+			}
+			trace('renaming layout'); // TODO: test
 			editor.renameLayout(layout, nameField.text);
+			reloadLayouts();
 		}
-		reloadLayouts();
 	}
 
 	@:bind(layoutRemove, MouseEvent.CLICK)

@@ -67,7 +67,10 @@ class AddTool extends MoveTool {
 
 class RemoveTool extends Tool {
 	function buttonClicked(e:KeyButtonEvent) {
-		page.eraseButton(e.button);
+		var button = e.button;
+		if (button != null) {
+			page.eraseButton(button);
+		}
 	}
 
 	override function activate() {
@@ -92,18 +95,18 @@ class SelectTool extends Tool {
 }
 
 class MoveTool extends Tool {
-	var movableButtons:Array<KeyButton> = null;
+	var movableButtons:Null<Array<KeyButton>> = null;
 	var offsets:Array<Point> = [];
 	var firstMove = true;
 	var buttonToToggle:Null<KeyButton> = null;
 
 	function onMouseDown(e:KeyButtonEvent) {
 		buttonToToggle = null;
-		if (e.mouseEvent == null) {
+		var button = e.button;
+		if (e.mouseEvent == null || button == null) {
 			return;
 		}
 		var container = page.cMechanical;
-		var button = e.button;
 		buttonToToggle = button;
 		if (e.mouseEvent.shiftKey) {
 			container.selectButton(button, Toggle);
@@ -185,11 +188,11 @@ class MechanicalPage extends HBox implements EditorPage {
 	var currentToolBtn:Null<Button> = null;
 
 	public function new(?editor:Editor) {
-		super();
 		if (editor == null) {
 			throw "Bad call";
 		}
 		this.editor = editor;
+		super();
 
 		cMechanical.registerEvent(KeyboardContainer.BUTTON_CHANGED, onButtonChange);
 		cMechanical.formatButton = formatButton;
@@ -271,12 +274,14 @@ class MechanicalPage extends HBox implements EditorPage {
 	}
 
 	function onPropertyChange(_) {
-		var changedObject = propEditor.source;
+		var changedObject:Map<String, Null<Dynamic>> = propEditor.source;
+		if (changedObject == null) {
+			return;
+		}
 		var buttons = cMechanical.activeButtons();
 		var ids = buttons.map(button -> button.key.id);
 		var changes = new Map<String, Dynamic>();
-		for (field in Reflect.fields(changedObject)) {
-			var value = Reflect.getProperty(changedObject, field);
+		for (field => value in changedObject) {
 			if (value != null) {
 				changes.set(field, value);
 			}
@@ -291,21 +296,21 @@ class MechanicalPage extends HBox implements EditorPage {
 		refreshProperties();
 	}
 
-	function prepareSelectionPropertyDescription():Dynamic {
-		var result:Dynamic = {}
+	function prepareSelectionPropertyDescription():Map<String, Null<Dynamic>> {
+		var result:Map<String, Null<Dynamic>> = [];
 		var buttons = cMechanical.activeButtons();
 		if (buttons.length == 0) {
 			return result;
 		}
 		for (field in Reflect.fields(buttons[0].key)) {
-			Reflect.setField(result, field, Reflect.getProperty(buttons[0].key, field));
+			result.set(field, Reflect.getProperty(buttons[0].key, field));
 		}
 		for (button in buttons) {
 			var key = button.key;
 			for (field in Reflect.fields(key)) {
 				var value = Reflect.getProperty(key, field);
-				if (value != Reflect.getProperty(result, field)) {
-					Reflect.setField(result, field, null);
+				if (value != result.get(field)) {
+					result.set(field, null);
 				}
 			}
 		}
@@ -341,18 +346,20 @@ class MechanicalPage extends HBox implements EditorPage {
 	}
 
 	function addRight(_) {
-		if (cMechanical.activeButton == null) {
+		var button = cMechanical.activeButton;
+		if (button == null) {
 			return;
 		}
-		var key = editor.addRight(cMechanical.activeButton.key);
+		var key = editor.addRight(button.key);
 		addKey(key);
 	}
 
 	function addDown(_) {
-		if (cMechanical.activeButton == null) {
+		var button = cMechanical.activeButton;
+		if (button == null) {
 			return;
 		}
-		var key = editor.addDown(cMechanical.activeButton.key);
+		var key = editor.addDown(button.key);
 		var button = addKey(key);
 	}
 
@@ -368,8 +375,9 @@ class MechanicalPage extends HBox implements EditorPage {
 	@:bind(bAlignX, MouseEvent.CLICK)
 	function onAlignXClicked(_) {
 		var selection = cMechanical.activeButtons().map(button -> button.key);
-		if (selection.length > 1) {
-			editor.alignKeys(cMechanical.activeButton.key, selection, false);
+		var activeButton = cMechanical.activeButton;
+		if (selection.length > 1 && activeButton != null) {
+			editor.alignKeys(activeButton.key, selection, false);
 			reload();
 		}
 	}
@@ -377,8 +385,9 @@ class MechanicalPage extends HBox implements EditorPage {
 	@:bind(bAlignY, MouseEvent.CLICK)
 	function onAlignYClicked(_) {
 		var selection = cMechanical.activeButtons().map(button -> button.key);
-		if (selection.length > 1) {
-			editor.alignKeys(cMechanical.activeButton.key, selection, true);
+		var button = cMechanical.activeButton;
+		if (selection.length > 1 && button != null) {
+			editor.alignKeys(button.key, selection, true);
 			reload();
 		}
 	}

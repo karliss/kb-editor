@@ -7,9 +7,11 @@
 			"type": "hxml",
 			"file": "html5.hxml",
 			"problemMatcher": [
+				"$haxe-absolute",
 				"$haxe"
 			],
-			"group": "build"
+			"group": "test",
+			"label": "haxe: html5.hxml"
 		},
 		{
 			"label": "html5 debug",
@@ -19,7 +21,10 @@
 				"-debug",
 				"html5.hxml"
 			],
-			"problemMatcher": "$haxe",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe"
+			],
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -32,13 +37,10 @@
 			"args": [
 				"html5.hxml"
 			],
-			"problemMatcher": "$haxe",
-			"group": "build"
-		},
-		{
-			"type": "hxml",
-			"file": "cpp.hxml",
-			"problemMatcher": "$haxe",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe"
+			],
 			"group": "build"
 		},
 		{
@@ -63,6 +65,21 @@
 				"$haxe-trace"
 			],
 			"group": "build"
+		},
+		{
+			"type": "haxe",
+			"args": "active configuration",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"label": "haxe: active configuration"
 		}
 	]
 }

@@ -3,9 +3,9 @@
         <label text="Quick set"/>
         <dropdown id="quickSetMode">
             <data>
-                <item value="none" id="none" />
-                <item value="row" id="row"/>
-                <item value="column" id="column"/>
+                <item text="none" id="none" />
+                <item text="row" id="row"/>
+                <item text="column" id="column"/>
             </data>
         </dropdown>
         <button id="btnSwap2Rows" text="Swap 2 rows"/>
@@ -51,8 +51,8 @@
         <hbox>
             <dropdown id="gridModeSelection" width="100">
                 <data>
-                    <item value="Wiring matrix" data="wiring"/>
-                    <item value="Logical matrix" data="logical"/>
+                    <item text="Wiring matrix" data="wiring"/>
+                    <item text="Logical matrix" data="logical"/>
                 </data>
             </dropdown>
             <label text="rows: " />

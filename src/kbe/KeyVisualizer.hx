@@ -2,7 +2,7 @@ package kbe;
 
 import haxe.io.Bytes;
 import kbe.KeyBoard;
-import thx.color.Hsv;
+import haxe.ui.util.ColorUtil;
 import haxe.ui.util.Color;
 
 enum KeyLabelMode {
@@ -15,16 +15,16 @@ enum KeyLabelMode {
 }
 
 class KeyVisualizer {
-	public static function getIndexedColor(index:Int, selected:Bool):Int {
+	public static function getIndexedColor(index:Int, selected:Bool):Color {
 		var angle = (129.0 * index) % 360.0;
-		var color = Hsv.fromFloats([angle, 0.4, 0.8]).toRgb();
+		var color = ColorUtil.fromHSL(angle, 0.4, 0.8);
 		if (selected) {
-			color = color.darker(0.3);
+			color = ColorUtil.fromHSL(angle, 0.4, 0.8 - 0.3);
 		}
 		return color.toInt();
 	}
 
-	public static function updateButtonLabel(keyboard:KeyBoard, button:KeyButton, mode:KeyLabelMode) {
+	public static function updateButtonLabel(keyboard:KeyBoard, button:KeyButton, mode:Null<KeyLabelMode>) {
 		var key = button.key;
 		button.text = switch (mode) {
 			case Name: key.name;
@@ -33,15 +33,16 @@ class KeyVisualizer {
 			case Column: '${key.column}';
 			case LogicRowColumn: '${StringTools.hex(keyboard.getMatrixRow(key.row))} ${StringTools.hex(keyboard.getMatrixCol(key.column))}';
 			case Id: '${key.id}';
+			default: '';
 		};
 	}
 
 	public static var COMMON_LABEL_MODES = [
-		{value: "Name", mode: KeyLabelMode.Name},
-		{value: "Row column", mode: KeyLabelMode.RowColumn},
-		{value: "Row", mode: KeyLabelMode.Row},
-		{value: "Column", mode: KeyLabelMode.Column},
-		{value: "Logic row column", mode: KeyLabelMode.LogicRowColumn},
-		{value: "Id", mode: KeyLabelMode.Id},
+		{text: "Name", mode: KeyLabelMode.Name},
+		{text: "Row column", mode: KeyLabelMode.RowColumn},
+		{text: "Row", mode: KeyLabelMode.Row},
+		{text: "Column", mode: KeyLabelMode.Column},
+		{text: "Logic row column", mode: KeyLabelMode.LogicRowColumn},
+		{text: "Id", mode: KeyLabelMode.Id},
 	];
 }

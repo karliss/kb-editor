@@ -16,5 +16,6 @@
     "[haxe]": {
         "editor.tabSize": 4,
         "editor.insertSpaces": false
-    }
+    },
+    "cmake.configureOnOpen": false
 }

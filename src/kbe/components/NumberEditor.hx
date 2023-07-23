@@ -10,6 +10,7 @@ import haxe.ui.core.Component;
 class NumberEditor extends Component implements IFocusable {
 	public var focus(get, set):Bool;
 	public var allowFocus(get, set):Bool;
+	public var autoFocus(get, set):Bool;
 
 	var input:TextField;
 	var plus:Button;
@@ -85,5 +86,13 @@ class NumberEditor extends Component implements IFocusable {
 
 	function set_allowFocus(value:Bool):Bool {
 		return input.focus = value;
+	}
+
+	public function get_autoFocus():Bool {
+		return input.autoFocus;
+	}
+
+	public function set_autoFocus(value:Bool):Bool {
+		return input.autoFocus = value;
 	}
 }

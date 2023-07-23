@@ -4,8 +4,10 @@ import haxe.ui.data.ArrayDataSource;
 import kbe.QMKLayoutMacro.ExportLayoutConfig;
 import kbe.KeyBoard.KeyboardLayout;
 import haxe.ui.containers.VBox;
+import haxe.ui.containers.ListView;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.data.ListDataSource;
+import haxe.ui.ComponentBuilder;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/export_layout_dialog.xml"))
 class ExportLayoutDialog extends Dialog {
@@ -27,7 +29,7 @@ class ExportLayoutDialog extends Dialog {
 
 		var ds = new ArrayDataSource();
 		for (layout in keyboard.layouts) {
-			ds.add({value: layout.name, layout: layout});
+			ds.add({text: layout.name, layout: layout});
 		}
 		layoutSelection.dataSource = ds;
 		layoutSelection.dataSource;

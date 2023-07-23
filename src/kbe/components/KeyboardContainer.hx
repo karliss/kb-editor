@@ -216,7 +216,7 @@ class KeyboardContainer extends Box {
 
 	public function removeKey(key:KeyButton) {
 		buttons.remove(key);
-		removeComponent(key);
+		canvas.removeComponent(key, false, false);
 	}
 
 	public function clear() {

@@ -1,4 +1,6 @@
-<vbox width="100%" height="100%">
-    <label text="Name:"/>
-    <textfield id="inputField" />
-</vbox>
+<dialog>
+    <vbox width="100%" height="100%">
+        <label text="Name:"/>
+        <textfield id="inputField" />
+    </vbox>
+</dialog>

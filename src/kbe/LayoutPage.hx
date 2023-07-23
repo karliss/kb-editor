@@ -1,7 +1,10 @@
 package kbe;
 
+import haxe.ui.util.ColorUtil;
+import haxe.ui.util.Color;
 import haxe.io.Bytes;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.Toolkit;
 import haxe.ui.data.ListDataSource;
 import haxe.ui.events.UIEvent;
@@ -55,7 +58,7 @@ class LayoutPage extends HBox implements EditorPage {
 		keyboardView.selectionMode = SingleToggle;
 
 		var labelModes = KeyVisualizer.COMMON_LABEL_MODES.map(data -> {
-			value: data.value,
+			text: data.text,
 			mode: Common(data.mode)
 		});
 		keyboardLabelSelection.dataSource = new ListDataSource<Dynamic>();
@@ -67,17 +70,17 @@ class LayoutPage extends HBox implements EditorPage {
 			keyboardLabelSelection.dataSource.add(mode);
 		}
 		for (mode in [
-			{value: "Unassigned", mode: ColorMode.Unassigned},
-			{value: "Mapping", mode: ColorMode.MappingPairs}
+			{text: "Unassigned", mode: ColorMode.Unassigned},
+			{text: "Mapping", mode: ColorMode.MappingPairs}
 		]) {
 			colorSelection.dataSource.add(mode);
 		}
 
 		autoConnectMode.dataSource = new ListDataSource<Dynamic>();
 		for (mode in [
-			{value: "Name and position", mode: KeyboarLayoutAutoConnectMode.NamePos},
-			{value: "Name", mode: KeyboarLayoutAutoConnectMode.NameOnly},
-			{value: "Position", mode: KeyboarLayoutAutoConnectMode.Position}
+			{text: "Name and position", mode: KeyboarLayoutAutoConnectMode.NamePos},
+			{text: "Name", mode: KeyboarLayoutAutoConnectMode.NameOnly},
+			{text: "Position", mode: KeyboarLayoutAutoConnectMode.Position}
 		]) {
 			autoConnectMode.dataSource.add(mode);
 		}
@@ -101,9 +104,11 @@ class LayoutPage extends HBox implements EditorPage {
 			switch (colorMode) {
 				case Unassigned:
 					if (layout.mappingToGrid(button.key.id).length == 0) {
-						var color:thx.color.Rgb = 0xffffff;
+						var color:Color = 0xffffff;
 						if (button.selected) {
-							color = color.darker(0.20);
+							var hsl = ColorUtil.toHSL(color);
+							hsl.l -= 0.2;
+							color = ColorUtil.fromHSL(hsl.h, hsl.s, hsl.l);
 						}
 						button.backgroundColor = color.toInt();
 					}
@@ -125,11 +130,8 @@ class LayoutPage extends HBox implements EditorPage {
 		switch (colorMode) {
 			case Unassigned:
 				if (layout.mappingFromGrid(button.key.id) == null) {
-					var color:thx.color.Rgb = 0xffffff;
-					if (button.selected) {
-						color = color.darker(0.20);
-					}
-					button.backgroundColor = color.toInt();
+					var color = button.selected ? ColorUtil.fromHSL(0, 0, 1) : ColorUtil.fromHSL(0, 0, 0.8);
+					button.backgroundColor = color;
 				}
 			case MappingPairs:
 				var mapping = layout.mappingFromGrid(button.key.id);
@@ -474,7 +476,7 @@ class LayoutPage extends HBox implements EditorPage {
 	function handleImportLayoutFile(bytes:Array<Bytes>, names:Array<String>) {
 		var importer = importFormat.selectedItem;
 		if (importer == null) {
-			Toolkit.messageBox("Format not selected", null, MessageBoxType.TYPE_WARNING);
+			haxe.ui.containers.dialogs.Dialogs.messageBox("Format not selected", null, MessageBoxType.TYPE_WARNING);
 			return;
 		}
 		try {
@@ -502,9 +504,9 @@ class LayoutPage extends HBox implements EditorPage {
 				reloadLayouts();
 				selectLastLayout();
 			}
-			Toolkit.messageBox('Imported $count layouts', null, MessageBoxType.TYPE_INFO);
+			Dialogs.messageBox('Imported $count layouts', null, MessageBoxType.TYPE_INFO);
 		} catch (e:Dynamic) {
-			Toolkit.messageBox('Import error "$e"', null, MessageBoxType.TYPE_ERROR);
+			Dialogs.messageBox('Import error "$e"', null, MessageBoxType.TYPE_ERROR);
 		}
 	}
 

@@ -6,9 +6,11 @@ import haxe.ui.events.MouseEvent;
 class OneWayButton extends Button {
 	public function new() {
 		super();
-		// this.native = true;
+		addClass("button");
+		this.native = true;
 		this.toggle = true;
 		this.registerEvent(MouseEvent.CLICK, onMouseClick);
+		addClass("button");
 	}
 
 	function onMouseClick(event:MouseEvent) {

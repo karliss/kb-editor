@@ -1,5 +1,6 @@
 package kbe;
 
+import haxe.ui.util.Color;
 import kbe.KeyBoard.RowColNull;
 import kbe.KeyVisualizer.KeyLabelMode;
 import haxe.ui.containers.VBox;
@@ -17,6 +18,8 @@ import kbe.components.OneWayButton;
 import kbe.components.properties.PropertyEditor;
 import kbe.components.KeyboardContainer;
 import kbe.components.KeyboardContainer.KeyButtonEvent;
+import kbe.ColorExtensions.darker;
+import kbe.ColorExtensions;
 
 private enum ColorMode {
 	None;
@@ -88,10 +91,10 @@ class WiringPage extends HBox implements EditorPage {
 		keyView.rectangleSelection = true;
 
 		var ds = colorSelect.dataSource = new ListDataSource<Dynamic>();
-		ds.add({value: "conflicts", mode: ColorMode.Conflicts});
-		ds.add({value: "none", mode: ColorMode.None});
-		ds.add({value: "rows", mode: ColorMode.RainbowRows});
-		ds.add({value: "columns", mode: ColorMode.RainbowColumns});
+		ds.add({text: "conflicts", mode: ColorMode.Conflicts});
+		ds.add({text: "none", mode: ColorMode.None});
+		ds.add({text: "rows", mode: ColorMode.RainbowRows});
+		ds.add({text: "columns", mode: ColorMode.RainbowColumns});
 
 		layoutLabelSelection.dataSource = new ListDataSource<Dynamic>();
 
@@ -130,7 +133,7 @@ class WiringPage extends HBox implements EditorPage {
 
 	function formatButton(button:KeyButton) {
 		var key = button.key;
-		KeyVisualizer.updateButtonLabel(keyboard, button, layoutLabelSelection.selectedItem.mode);
+		KeyVisualizer.updateButtonLabel(keyboard, button, layoutLabelSelection.selectedItem?.mode);
 		button.backgroundColor = null;
 		if (colorMode == Conflicts) {
 			var currentButton = keyView.activeButton;
@@ -138,7 +141,7 @@ class WiringPage extends HBox implements EditorPage {
 				var row = currentButton != null ? currentButton.key.row : -1;
 				var column = currentButton != null ? currentButton.key.column : -1;
 
-				var color:Null<thx.color.Rgb> = null;
+				var color:Null<Color> = null;
 				if (!button.selected) {
 					if (key.row == row) {
 						color = 0xe0fde0;
@@ -154,7 +157,8 @@ class WiringPage extends HBox implements EditorPage {
 				}
 				if (color != null) {
 					if (button.selected) {
-						color = color.darker(0.2);
+						var c:Color = color;
+						color = ColorExtensions.darker(color, 0.2);
 					}
 					button.backgroundColor = color.toInt();
 				}
@@ -420,7 +424,7 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	@:bind(rowCountEditor, UIEvent.CHANGE)
-	function onChangeRowCount(e:MouseEvent) {
+	function onChangeRowCount(e:UIEvent) {
 		var keyboard = editor.getKeyboard();
 		var rows = keyboard.rowMapping.clone();
 		rows.resize(rowCountEditor.number);
@@ -429,7 +433,7 @@ class WiringPage extends HBox implements EditorPage {
 	}
 
 	@:bind(columnCountEditor, UIEvent.CHANGE)
-	function onChangeColumnCount(e:MouseEvent) {
+	function onChangeColumnCount(e:UIEvent) {
 		var keyboard = editor.getKeyboard();
 		var columns = keyboard.columnMapping.clone();
 		columns.resize(columnCountEditor.number);
@@ -449,7 +453,7 @@ class WiringPage extends HBox implements EditorPage {
 				editor.updateRowMapping(null, rows);
 			}
 
-			refreshRowMapping();
+			// refreshRowMapping(); // causes stuff to break
 			if (checkHasMatrixRows.selected) {
 				refreshBottom();
 				refreshFormatting();

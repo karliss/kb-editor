@@ -1,9 +1,9 @@
 <hbox id="pageMechanical" text="Mechanical" width="100%" height="100%">
     <vbox>
-        <onewaybutton id="bAdd" text="Add"/>
-        <onewaybutton id="bRemove" text="Remove"/>
-        <onewaybutton id="bMove" text="Move"/>
-        <onewaybutton id="bSelect" text="Select"/>
+        <button id="bAdd" text="Add"/>
+        <button id="bRemove" text="Remove"/>
+        <button id="bMove" text="Move"/>
+        <button id="bSelect" text="Select"/>
         <!-- TODO: add icons -->
         <spacer/>
         <checkbox id="bAlign" text="Alignment" selected="true"/>

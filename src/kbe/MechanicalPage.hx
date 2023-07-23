@@ -216,6 +216,7 @@ class MechanicalPage extends HBox implements EditorPage {
 		for (mode in KeyVisualizer.COMMON_LABEL_MODES) {
 			keyLabelSelection.dataSource.add(mode);
 		}
+		keyLabelSelection.selectedIndex = 0;
 	}
 
 	public function init(editor:Editor) {

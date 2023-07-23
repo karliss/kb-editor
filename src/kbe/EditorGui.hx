@@ -1,10 +1,12 @@
 package kbe;
 
+import haxe.ui.containers.VBox;
 import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
 import haxe.ui.containers.menus.MenuItem;
 import haxe.ui.containers.menus.MenuBar;
 import haxe.ui.containers.Grid;
 import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.dialogs.Dialogs;
 import haxe.ui.Toolkit;
 import haxe.ui.events.MouseEvent;
 import haxe.io.Bytes;
@@ -20,7 +22,7 @@ import js.html.Blob;
 import kbe.FileOpener;
 
 @:build(haxe.ui.macros.ComponentMacros.build("assets/editor.xml"))
-class EditorGui extends Component {
+class EditorGui extends VBox {
 	var pageMechanical:Null<MechanicalPage> = null;
 	var pageWiring:Null<WiringPage> = null;
 	var editor:Editor = new Editor(new KeyBoard());
@@ -132,7 +134,7 @@ class EditorGui extends Component {
 		try {
 			result = exporter.convert(editor.getKeyboard());
 		} catch (e:Dynamic) {
-			Toolkit.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
+			Dialogs.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
 			return;
 		}
 
@@ -147,7 +149,7 @@ class EditorGui extends Component {
 			try {
 				result = importer.convert(bytes[0], names[0]);
 			} catch (e:Dynamic) {
-				Toolkit.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
+				Dialogs.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
 				return;
 			}
 			var keyboard = result;
@@ -167,7 +169,7 @@ class EditorGui extends Component {
 			try {
 				result = exporter.convertWithConfig(keyboard, config);
 			} catch (e:Dynamic) {
-				Toolkit.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
+				Dialogs.messageBox('Export converter error $e', null, MessageBoxType.TYPE_ERROR);
 				return;
 			}
 			FileAccess.saveFile(result, exporter.fileName());

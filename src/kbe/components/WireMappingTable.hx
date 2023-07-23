@@ -1,5 +1,9 @@
 package kbe.components;
 
+import haxe.ui.components.Button;
+import haxe.ui.components.CheckBox;
+import haxe.ui.components.NumberStepper;
+import haxe.ui.core.Component;
 import haxe.ui.components.Label;
 import haxe.ui.components.TextField;
 import haxe.ui.core.ItemRenderer;
@@ -20,21 +24,19 @@ class WireMappingTable extends TableView {
 	public var isRow(default, set):Bool = true;
 
 	var ds = new ArrayDataSource<SourceElement>();
-	var rowColumn = new Column();
-	var matrixRowColumn = new Column();
-	var header = new Header();
+	var rowColumn:Column = null;
+	var matrixRowColumn:Column = null;
 	var initialized = false;
 
 	public function new() {
 		super();
 		this.dataSource = ds;
-		rowColumn.id = "tRow";
-		matrixRowColumn.id = "tMatrixRow";
+		rowColumn = addColumn("tRow");
+		matrixRowColumn = addColumn("tMatrixRow");
 
-		matrixRowColumn.width = 90;
-		// this.virtual = true;
+		matrixRowColumn.width = 80;
+		this.virtual = true;
 		isRow = true; // trigger setter
-		addComponent(header);
 		this.selectionMode = haxe.ui.constants.SelectionMode.MULTIPLE_CLICK_MODIFIER_KEY;
 	}
 
@@ -57,48 +59,43 @@ class WireMappingTable extends TableView {
 	}
 
 	public function reloadColumnsFromSource() {
-		ds.clear();
-		while (header.childComponents.length > 0) {
-			header.removeComponentAt(header.childComponents.length - 1, false, false);
+		// ds.clear();
+		header.removeComponent(rowColumn, false);
+		if (matrixRowColumn.parentComponent == header) {
+			header.removeComponent(matrixRowColumn, false);
 		}
-		// TODO: how to make null pointer checker accpet this
-		itemRenderer = null;
-		var renderers = [];
+		this.clearContents(true);
 		header.addComponent(rowColumn);
-		var rowLabel = new Label();
-		rowLabel.id = "tRow";
-		var r = new ItemRenderer();
-		r.addComponent(rowLabel);
-		renderers.push(r);
+
+		var r = itemRenderer;
 		if (mappingSource != null) {
 			if (mappingSource.hasWireColumn) {
 				header.addComponent(matrixRowColumn);
-				var renderer = new ItemRenderer();
-				var input = new IntegerEditor();
-				input.maximum = 1024;
-				input.width = 60;
+
+				var foo:Component = r.findComponent("tMatrixRow");
+				var renderer:ItemRenderer = cast foo.parentComponent;
+				renderer.removeAllComponents();
+				var input = new NumberStepper();
+				input.max = 1024;
+				input.min = 0;
 
 				input.id = "tMatrixRow";
 				renderer.addComponent(input);
-				renderers.push(renderer);
 			}
 			for (name in mappingSource.columnNames) {
-				var column = new Column();
+				var column = addColumn(name);
 				column.text = name;
 				column.id = name;
-				column.width = 50;
-				header.addComponent(column);
+				column.width = 60;
+				var foo:Component = r.findComponent(name);
+				var renderer:ItemRenderer = cast foo.parentComponent;
+				renderer.removeAllComponents();
+
 				var input = new TextField();
 				input.id = name;
-				input.width = 40;
-				var renderer = new ItemRenderer();
+				input.width = 50;
 				renderer.addComponent(input);
-				renderers.push(renderer);
 			}
-		}
-		this.addComponent(header);
-		for (renderer in renderers) {
-			addComponent(renderer);
 		}
 	}
 

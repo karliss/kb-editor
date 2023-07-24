@@ -10,10 +10,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        submodules: true
       - uses: krdlab/setup-haxe@3437f1adfca98b22815d926271cc39faaf996f25 # v1.5.1
         with:
           haxe-version: 4.3.1
-          # cache-dependency-path: 'travis.hxml'
+          cache-dependency-path: 'travis.hxml'
       - run: |
           haxe -version
           haxelib install travis.hxml --always

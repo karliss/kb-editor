@@ -1,15 +1,18 @@
 package kbe;
 
 class KC {
-	public static var DELETE = 46;
-	public static var N0 = 48;
-	public static var N9 = 57;
+	public static final DELETE = 46;
+	public static final N0 = 48;
+	public static final N9 = 57;
 
-	public static var C = 67;
-	public static var R = 82;
-	public static var Y = 89;
-	public static var Z = 90;
+	public static final A = 65;
+	public static final M = 77;
+	public static final S = 83;
+	public static final C = 67;
+	public static final R = 82;
+	public static final Y = 89;
+	public static final Z = 90;
 
-	public static var NP_0 = 96;
-	public static var NP_9 = 105;
+	public static final NP_0 = 96;
+	public static final NP_9 = 105;
 }

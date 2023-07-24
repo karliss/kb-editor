@@ -185,7 +185,6 @@ class MechanicalPage extends HBox implements EditorPage {
 	var tools:Map<ToolType, Tool> = [];
 	var toolButtons:Map<ToolType, Button> = [];
 	var currentTool:Null<Tool> = null;
-	var currentToolBtn:Null<Button> = null;
 
 	public function new(?editor:Editor) {
 		if (editor == null) {
@@ -226,6 +225,20 @@ class MechanicalPage extends HBox implements EditorPage {
 		reload();
 	}
 
+	@:bind(cMechanical, KeyboardEvent.KEY_UP)
+	function onTopKeyDown(e:KeyboardEvent) {
+		switch (e.keyCode) {
+			case KC.R:
+				selectTool(ToolType.Remove);
+			case KC.A:
+				selectTool(ToolType.Add);
+			case KC.M:
+				selectTool(ToolType.Move);
+			case KC.S:
+				selectTool(ToolType.Select);
+		}
+	}
+
 	function createTools():Map<ToolType, Tool> {
 		var result:Map<ToolType, Tool> = [
 			Add => new AddTool(this, editor),
@@ -246,14 +259,12 @@ class MechanicalPage extends HBox implements EditorPage {
 		if (tool == currentTool) {
 			return;
 		}
-		if (currentTool != null /*&& currentToolBtn != null*/) {
+		if (currentTool != null) {
 			currentTool.deactivate();
-			// currentToolBtn.selected = false;
 		}
 		currentTool = tool;
-		currentToolBtn = btn;
 		currentTool.activate();
-		// btn.selected = true;
+		toolButtonBar.selectedButton = btn;
 	}
 
 	function bindToolButtons() {

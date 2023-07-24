@@ -21,7 +21,7 @@ jobs:
         run: |
           haxe -version
           haxelib install travis.hxml --always
-          haxe travis.hxml
+          haxelib list
       - name: test
         run: |
           haxe -version

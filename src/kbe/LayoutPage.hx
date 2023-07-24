@@ -64,7 +64,7 @@ class LayoutPage extends HBox implements EditorPage {
 		keyboardLabelSelection.dataSource = new ListDataSource<Dynamic>();
 		layoutLabelSelection.dataSource = new ListDataSource<Dynamic>();
 		colorSelection.dataSource = new ListDataSource<Dynamic>();
-		keyboardLabelSelection.dataSource.add({value: "Same as layout", mode: SameAsTop});
+		keyboardLabelSelection.dataSource.add({text: "Same as layout", mode: SameAsTop});
 		for (mode in labelModes) {
 			layoutLabelSelection.dataSource.add(mode);
 			keyboardLabelSelection.dataSource.add(mode);
@@ -143,8 +143,8 @@ class LayoutPage extends HBox implements EditorPage {
 
 	@:bind(keyViewScale, UIEvent.CHANGE)
 	function keyViewScaleChange(e:UIEvent) {
-		layoutView.scale = keyViewScale.number;
-		keyboardView.scale = keyViewScale.number;
+		layoutView.scale = keyViewScale.value;
+		keyboardView.scale = keyViewScale.value;
 	}
 
 	function refreshFormat() {
@@ -199,7 +199,7 @@ class LayoutPage extends HBox implements EditorPage {
 		// ds.allowCallbacks = false;
 		ds.clear();
 		for (layout in editor.getKeyboard().layouts) {
-			ds.add({value: layout.name, layout: layout});
+			ds.add({text: layout.name, layout: layout});
 		}
 		// ds.allowCallbacks = true;
 		layoutSelect.selectedIndex = -1;

@@ -10,7 +10,7 @@ import kbe.Exporter;
 
 // https://beta.docs.qmk.fm/reference/reference_info_json
 class QMKInfoJsonImporter implements Exporter.Importer {
-	public var value(default, null):String = "QMK info.json importer";
+	public var text(default, null):String = "QMK info.json importer";
 
 	public function new() {}
 

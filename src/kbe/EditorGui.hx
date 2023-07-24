@@ -110,7 +110,7 @@ class EditorGui extends VBox {
 		importSubmenu.removeAllComponents();
 		for (importer in importers) {
 			var item = new MenuItem();
-			item.text = importer.value;
+			item.text = importer.text;
 			item.percentWidth = 100;
 			item.onClick = (_) -> {
 				onClickImport(importer);

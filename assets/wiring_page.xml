@@ -1,7 +1,7 @@
 <hbox id="pageWiring" text="Wiring" width="100%" height="100%">
     <vbox>
         <label text="Quick set"/>
-        <dropdown id="quickSetMode">
+        <dropdown id="quickSetMode" width="100%">
             <data>
                 <item text="none" id="none" />
                 <item text="row" id="row"/>
@@ -45,7 +45,7 @@
             <checkbox id="flipH" text="flip horizontally" verticalAlign="center"/>
             <checkbox id="flipV" text="flip vertically" verticalAlign="center"/>
             <label text="Scale" verticalAlign="center"/>
-            <IntegerEditor id="keyViewScale" minimum="8" maximum="256" value="32" width="75"/>
+            <numberstepper id="keyViewScale" min="8" max="256" value="32"/>
         </hbox>
         <KeyboardContainer id="keyView" height="50%"/>
         <hbox>

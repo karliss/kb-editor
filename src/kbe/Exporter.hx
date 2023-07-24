@@ -12,7 +12,7 @@ interface Exporter {
 }
 
 interface Importer {
-	public var value(default, null):String;
+	public var text(default, null):String;
 	public function convert(bytes:Bytes, ?name:String):KeyBoard;
 }
 

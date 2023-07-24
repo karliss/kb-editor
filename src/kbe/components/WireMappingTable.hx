@@ -65,9 +65,12 @@ class WireMappingTable extends TableView {
 			header.removeComponent(matrixRowColumn, false);
 		}
 		this.clearContents(true);
-		header.addComponent(rowColumn);
-
 		var r = itemRenderer;
+
+		header.addComponent(rowColumn);
+		var rowLabel:Component = r.findComponent("tRow");
+		rowLabel.parentComponent.verticalAlign = "center";
+
 		if (mappingSource != null) {
 			if (mappingSource.hasWireColumn) {
 				header.addComponent(matrixRowColumn);
@@ -75,7 +78,8 @@ class WireMappingTable extends TableView {
 				var foo:Component = r.findComponent("tMatrixRow");
 				var renderer:ItemRenderer = cast foo.parentComponent;
 				renderer.removeAllComponents();
-				var input = new NumberStepper();
+				var input:NumberStepper = new NumberStepper();
+				input.percentWidth = 90;
 				input.max = 1024;
 				input.min = 0;
 

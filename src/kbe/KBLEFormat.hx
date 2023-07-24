@@ -10,7 +10,7 @@ import kbe.Exporter;
 // Importer exporter for Keyboard layout editor https://github.com/ijprest/keyboard-layout-editor
 // http://www.keyboard-layout-editor.com/
 class KBLEImporter implements Exporter.Importer {
-	public var value(default, null):String = "Keyboard layout editor .json importer";
+	public var text(default, null):String = "Keyboard layout editor .json importer";
 
 	public function new() {}
 
@@ -75,7 +75,7 @@ class KBLERawImporter extends KBLEImporter {
 	// public var value(default, null):String = "Keyboard layout editor .json importer";
 	public function new() {
 		super();
-		this.value = "Raw layout.json";
+		this.text = "Raw layout.json";
 	}
 
 	override public function convert(bytes:Bytes, ?name:String):KeyBoard {

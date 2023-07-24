@@ -4,7 +4,6 @@ import haxe.ui.components.Label;
 import haxe.ui.containers.HBox;
 import haxe.ui.core.Component;
 import haxe.ui.events.UIEvent;
-import haxe.ui.util.Variant;
 
 class PropertyItem extends HBox {
 	var label:Label;
@@ -32,7 +31,7 @@ class PropertyItem extends HBox {
 		super.addComponent(child);
 		editor = child;
 		child.percentWidth = 50;
-		child.registerEvent(UIEvent.CHANGE, function(_) {
+		child.registerEvent(UIEvent.CHANGE, function(e:UIEvent) {
 			dispatch(new UIEvent(UIEvent.CHANGE));
 		});
 		return child;

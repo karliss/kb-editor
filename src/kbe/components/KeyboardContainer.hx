@@ -229,6 +229,7 @@ class KeyboardContainer extends Box {
 	function set_scale(v:Float):Float {
 		scale = v;
 		refreshFormatting();
+		updateLayout();
 		return v;
 	}
 

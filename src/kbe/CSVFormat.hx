@@ -7,7 +7,7 @@ import kbe.KeyBoard;
 import kbe.Exporter;
 
 class CSVImporter implements Exporter.Importer {
-	public var value(default, null):String = "CSV importer [WIP]";
+	public var text(default, null):String = "CSV importer [WIP]";
 
 	public function new() {}
 

@@ -246,14 +246,14 @@ class MechanicalPage extends HBox implements EditorPage {
 		if (tool == currentTool) {
 			return;
 		}
-		if (currentTool != null && currentToolBtn != null) {
+		if (currentTool != null /*&& currentToolBtn != null*/) {
 			currentTool.deactivate();
-			currentToolBtn.selected = false;
+			// currentToolBtn.selected = false;
 		}
 		currentTool = tool;
 		currentToolBtn = btn;
 		currentTool.activate();
-		btn.selected = true;
+		// btn.selected = true;
 	}
 
 	function bindToolButtons() {
@@ -403,7 +403,7 @@ class MechanicalPage extends HBox implements EditorPage {
 
 	@:bind(keyViewScale, UIEvent.CHANGE)
 	function keyViewScaleChange(e:UIEvent) {
-		cMechanical.scale = keyViewScale.number;
+		cMechanical.scale = keyViewScale.value;
 	}
 
 	@:bind(keyLabelSelection, UIEvent.CHANGE)

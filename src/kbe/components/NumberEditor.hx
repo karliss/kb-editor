@@ -1,5 +1,6 @@
 package kbe.components;
 
+import haxe.ui.containers.VBox;
 import haxe.ui.events.UIEvent;
 import haxe.ui.focus.IFocusable;
 import haxe.ui.components.Button;
@@ -34,19 +35,22 @@ class NumberEditor extends Component implements IFocusable {
 			}
 		};
 
-		addComponent(plus);
-		plus.text = "+";
+		var vbox = new VBox();
+		vbox.addComponent(plus);
+		vbox.addClass("stepper");
 		plus.onClick = onPlus;
 		plus.repeater = true;
 		plus.repeatInterval = 150;
-		plus.width = 20;
+		plus.easeInRepeater = true;
+		plus.styleNames = "stepper-button stepper-inc";
 
-		addComponent(minus);
-		minus.text = "-";
+		vbox.addComponent(minus);
 		minus.onClick = onMinus;
 		minus.repeater = true;
 		minus.repeatInterval = 150;
-		minus.width = 20;
+		plus.easeInRepeater = true;
+		minus.styleNames = "stepper-button stepper-deinc";
+		addComponent(vbox);
 
 		input.percentWidth = 100;
 	}

@@ -8,7 +8,7 @@ import kbe.KeyBoard;
 import kbe.Exporter;
 
 class TKBEImporter implements Exporter.Importer {
-	public var value(default, null):String = "this KBE JSON importer [WIP]";
+	public var text(default, null):String = "this KBE JSON importer [WIP]";
 
 	public function new() {}
 

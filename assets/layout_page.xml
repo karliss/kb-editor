@@ -24,15 +24,15 @@
             <label text="layout label" verticalAlign="center"/>
             <dropdown id="layoutLabelSelection" width="150"/>
             <label text="keyboard label" verticalAlign="center"/>
-            <dropdown id="keyboardLabelSelection" width="150"/>
+            <dropdown id="keyboardLabelSelection" text="Select label" width="150" />
             <label text="Scale" verticalAlign="center"/>
-            <IntegerEditor id="keyViewScale" minimum="8" maximum="256" value="32" width="75"/>
+            <numberstepper id="keyViewScale" min="8" max="256" value="32"/>
         </hbox>
 
         <hbox>
             <dropdown text="" id="layoutSelect" width="200"/>
             <textfield id="nameField"/>
-            <checkbox id="synchronizeLayout" text="synchronize" />
+            <checkbox id="synchronizeLayout" text="synchronize" verticalAlign="center"/>
             <button id="layoutRemove" text="Remove"/>
             <button id="layoutFromThis" text="New from this"/>
             <button id="layoutImport" text="Import"/>

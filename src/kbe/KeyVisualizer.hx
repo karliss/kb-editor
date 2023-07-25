@@ -17,9 +17,9 @@ enum KeyLabelMode {
 class KeyVisualizer {
 	public static function getIndexedColor(index:Int, selected:Bool):Color {
 		var angle = (129.0 * index) % 360.0;
-		var color = ColorUtil.fromHSL(angle, 0.4, 0.8);
+		var color = ColorUtil.fromHSL(angle, 0.4 * 100, 100 * 0.8);
 		if (selected) {
-			color = ColorUtil.fromHSL(angle, 0.4, 0.8 - 0.3);
+			color = ColorUtil.fromHSL(angle, 0.4 * 100, 100 * (0.8 - 0.3));
 		}
 		return color.toInt();
 	}

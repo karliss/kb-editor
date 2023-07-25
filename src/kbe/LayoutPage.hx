@@ -130,7 +130,7 @@ class LayoutPage extends HBox implements EditorPage {
 		switch (colorMode) {
 			case Unassigned:
 				if (layout.mappingFromGrid(button.key.id) == null) {
-					var color = button.selected ? ColorUtil.fromHSL(0, 0, 1) : ColorUtil.fromHSL(0, 0, 0.8);
+					var color = button.selected ? ColorUtil.fromHSL(0, 0, 1 * 100) : ColorUtil.fromHSL(0, 0, 0.85 * 100);
 					button.backgroundColor = color;
 				}
 			case MappingPairs:

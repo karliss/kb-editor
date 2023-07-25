@@ -14,8 +14,8 @@
             <label text="argument names"/>
             <dropdown id="argNameType" selectedIndex="0">
                 <data>
-                    <item value="layout grid" type="LayoutRows"/>
-                    <item value="scan matrix" type="MatrixRows"/>
+                    <item text="layout grid" type="LayoutRows"/>
+                    <item text="scan matrix" type="MatrixRows"/>
                 </data>
             </dropdown>
 

@@ -2,14 +2,18 @@
 -main kbe.EditorApp
 
 -lib haxeui-core
--lib haxeui-html5
+-lib haxeui-heaps
+-lib hlsdl
+-lib heaps
 -lib utest
+
 common.hxml
+
+-D resourcesPath=assets
 #--macro nullSafety("kbe", Loose)
 #-D dump=pretty
 
--js build/html5/Main.js
+-hl build/heaps/kbeditor.hl
 
 --next
 
--x Html5Build.hx

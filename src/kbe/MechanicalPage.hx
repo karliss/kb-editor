@@ -414,7 +414,7 @@ class MechanicalPage extends HBox implements EditorPage {
 
 	@:bind(keyViewScale, UIEvent.CHANGE)
 	function keyViewScaleChange(e:UIEvent) {
-		cMechanical.scale = keyViewScale.value;
+		cMechanical.drawScale = keyViewScale.value;
 	}
 
 	@:bind(keyLabelSelection, UIEvent.CHANGE)

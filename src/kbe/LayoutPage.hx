@@ -143,8 +143,8 @@ class LayoutPage extends HBox implements EditorPage {
 
 	@:bind(keyViewScale, UIEvent.CHANGE)
 	function keyViewScaleChange(e:UIEvent) {
-		layoutView.scale = keyViewScale.value;
-		keyboardView.scale = keyViewScale.value;
+		layoutView.drawScale = keyViewScale.value;
+		keyboardView.drawScale = keyViewScale.value;
 	}
 
 	function refreshFormat() {

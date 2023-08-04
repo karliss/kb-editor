@@ -1,5 +1,7 @@
 package kbe;
 
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.OpenFileDialog;
 import haxe.ui.containers.VBox;
 import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
 import haxe.ui.containers.menus.MenuItem;
@@ -143,21 +145,30 @@ class EditorGui extends VBox {
 
 	function onClickImport(importer:Importer):Void {
 		// TODO: remove if js
-		#if js
-		FileOpener.tryToOpenFile(function(bytes, names) {
-			var result:KeyBoard = null;
-			try {
-				result = importer.convert(bytes[0], names[0]);
-			} catch (e:Dynamic) {
-				Dialogs.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
-				return;
+		var dialog = new OpenFileDialog();
+		dialog.options = {
+			readContents: true,
+			title: "Open file",
+			readAsBinary: true,
+			extensions: [{label: "Text Files", extension: "txt"}, {label: "Json", extension: "json"}]
+		}
+		FileDialogTypes.TEXTS;
+		dialog.onDialogClosed = function(event) {
+			if (event.button == DialogButton.OK) {
+				var result:KeyBoard = null;
+				try {
+					result = importer.convert(dialog.selectedFiles[0].bytes, dialog.selectedFiles[0].name);
+				} catch (e:Dynamic) {
+					Dialogs.messageBox('Import error $e', null, MessageBoxType.TYPE_ERROR);
+					return;
+				}
+				var keyboard = result;
+				editor.setKeyboard(keyboard);
+				editor.undoBuffer.clear();
+				reloadPages();
 			}
-			var keyboard = result;
-			editor.setKeyboard(keyboard);
-			editor.undoBuffer.clear();
-			reloadPages();
-		});
-		#end
+		}
+		dialog.show();
 	}
 
 	function onExportQMKLayoutMacros(_) {

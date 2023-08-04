@@ -1,23 +1,30 @@
 package kbe;
 
+import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
+import haxe.ui.containers.dialogs.Dialogs;
+import haxe.ui.containers.dialogs.Dialog.DialogButton;
+import haxe.ui.containers.dialogs.SaveFileDialog;
 import haxe.io.Bytes;
-#if js
-import js.Browser;
-import js.html.Blob;
-import js.html.FileSaver;
-import js.lib.Uint8Array;
-#end
 
 class FileAccess {
 	public static function saveFile(data:Bytes, preferredName:String) {
-		#if js
-		var intArray = new Array<Int>();
-		for (i in 0...data.length) {
-			intArray.push(data.get(i));
+		var dialog = new SaveFileDialog();
+		var extension = haxe.io.Path.extension(preferredName);
+
+		dialog.options = {
+			title: "Save file",
+			writeAsBinary: true,
+			extensions: [{label: preferredName, extension: extension}]
+		};
+		dialog.onDialogClosed = function(event) {
+			if (event.button == DialogButton.OK) {
+				Dialogs.messageBox("File saved!", "Save Result", MessageBoxType.TYPE_INFO);
+			}
 		}
-		FileSaver.saveAs(new Blob([new Uint8Array(intArray)]), preferredName, true);
-		#else
-		throw "File access not implemented";
-		#end
+		dialog.fileInfo = {
+			name: preferredName,
+			bytes: data,
+		}
+		dialog.show();
 	}
 }

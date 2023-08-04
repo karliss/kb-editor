@@ -4,7 +4,7 @@ import haxe.io.Bytes;
 import kbe.Exporter.Importer;
 
 class TestImporter implements Importer {
-	public var value(default, null):String = "Dummy importer";
+	public var text(default, null):String = "Dummy importer";
 
 	public function new() {}
 

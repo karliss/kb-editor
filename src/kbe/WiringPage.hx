@@ -532,7 +532,7 @@ class WiringPage extends HBox implements EditorPage {
 
 	@:bind(keyViewScale, UIEvent.CHANGE)
 	function keyViewScaleChange(e:UIEvent) {
-		this.keyView.scale = keyViewScale.value;
+		this.keyView.drawScale = keyViewScale.value;
 	}
 
 	@:bind(resizeToKeyboard, MouseEvent.CLICK)

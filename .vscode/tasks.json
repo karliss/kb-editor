@@ -80,6 +80,20 @@
 				"isDefault": true
 			},
 			"label": "haxe: active configuration"
+		},
+		{
+			"type": "haxe",
+			"args": "active configuration",
+			"problemMatcher": [
+				"$haxe-absolute",
+				"$haxe",
+				"$haxe-error",
+				"$haxe-trace"
+			],
+			"group": {
+				"kind": "build",
+			},
+			"label": "haxe build: active configuration"
 		}
 	]
 }

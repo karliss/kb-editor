@@ -46,7 +46,7 @@ class KeyboardContainer extends Box {
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
 
 	public var activeButton(get, set):Null<KeyButton>;
-	public var scale(default, set):Float = 32.0;
+	public var drawScale(default, set):Float = 32.0;
 	public var formatButton:(KeyButton) -> Void;
 	public var selectionMode(default, set):SelectionMode = SingleSet;
 	public var rectangleSelection:Bool = false;
@@ -94,8 +94,8 @@ class KeyboardContainer extends Box {
 			var pos = fieldToScreen(key);
 			button.top = pos.y;
 			button.left = pos.x;
-			button.width = key.width * scale;
-			button.height = key.height * scale;
+			button.width = key.width * drawScale;
+			button.height = key.height * drawScale;
 			formatButton(button);
 		}
 	}
@@ -148,14 +148,14 @@ class KeyboardContainer extends Box {
 		}
 
 		if (flipHorizontally) {
-			x = 0.8 * areaWidth + KeyboardContainer.LEFT_OFFSET - (key.x + key.width) * scale;
+			x = 0.8 * areaWidth + KeyboardContainer.LEFT_OFFSET - (key.x + key.width) * drawScale;
 		} else {
-			x = KeyboardContainer.LEFT_OFFSET + key.x * scale;
+			x = KeyboardContainer.LEFT_OFFSET + key.x * drawScale;
 		}
 		if (flipVertically) {
-			y = 0.8 * areaHeight + KeyboardContainer.TOP_OFFSET - (key.y + key.height) * scale;
+			y = 0.8 * areaHeight + KeyboardContainer.TOP_OFFSET - (key.y + key.height) * drawScale;
 		} else {
-			y = KeyboardContainer.TOP_OFFSET + key.y * scale;
+			y = KeyboardContainer.TOP_OFFSET + key.y * drawScale;
 		}
 		return {x: x, y: y};
 	}
@@ -163,8 +163,8 @@ class KeyboardContainer extends Box {
 	public function screenToField(x:Float, y:Float):Point {
 		var result:Point = {x: 0, y: 0};
 
-		result.x = (x - canvas.screenLeft - LEFT_OFFSET) / scale;
-		result.y = (y - canvas.screenTop - TOP_OFFSET) / scale;
+		result.x = (x - canvas.screenLeft - LEFT_OFFSET) / drawScale;
+		result.y = (y - canvas.screenTop - TOP_OFFSET) / drawScale;
 		return result;
 	}
 
@@ -226,8 +226,8 @@ class KeyboardContainer extends Box {
 		}
 	}
 
-	function set_scale(v:Float):Float {
-		scale = v;
+	function set_drawScale(v:Float):Float {
+		drawScale = v;
 		refreshFormatting();
 		updateLayout();
 		return v;

@@ -26,7 +26,7 @@
             <label text="keyboard label" verticalAlign="center"/>
             <dropdown id="keyboardLabelSelection" text="Select label" width="150" />
             <label text="Scale" verticalAlign="center"/>
-            <numberstepper id="keyViewScale" min="8" max="256" value="32"/>
+            <numberstepper id="keyViewScale" min="8" max="256" value="48"/>
         </hbox>
 
         <hbox>

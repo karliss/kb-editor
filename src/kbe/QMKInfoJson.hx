@@ -169,8 +169,25 @@ class QMKInfoJsonExporter implements Exporter.Exporter {
 
 	function convertLayout(keyboard:KeyBoard, layout:KeyboardLayout, out:Dynamic) {
 		var content:Dynamic = {};
+		var keys_sorted = layout.keys.copy();
+		function compareFloat(a:Float, b:Float) {
+			var EPS = 0.01;
+			if (a < b - EPS) {
+				return -1;
+			} else if (a > b + EPS) {
+				return 1;
+			}
+			return 0;
+		}
+		keys_sorted.sort((a, b) -> {
+			var cmpy = compareFloat(a.y, b.y);
+			if (cmpy != 0) {
+				return cmpy;
+			}
+			return compareFloat(a.x, b.x);
+		});
 		var keys = [];
-		for (layoutKey in layout.keys) {
+		for (layoutKey in keys_sorted) {
 			var keyboardId = layout.mappingToGrid(layoutKey.id);
 			var keyboardKey = keyboardId.length > 0 ? keyboard.getKeyById(keyboardId[0]) : null;
 			var key:Dynamic = {};

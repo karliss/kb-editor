@@ -45,7 +45,7 @@
             <checkbox id="flipH" text="flip horizontally" verticalAlign="center"/>
             <checkbox id="flipV" text="flip vertically" verticalAlign="center"/>
             <label text="Scale" verticalAlign="center"/>
-            <numberstepper id="keyViewScale" min="8" max="256" value="32"/>
+            <numberstepper id="keyViewScale" min="8" max="256" value="48"/>
         </hbox>
         <KeyboardContainer id="keyView" height="50%"/>
         <hbox>

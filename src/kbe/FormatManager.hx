@@ -19,6 +19,7 @@ class FormatManager {
 			new CSVFormat.CSVExporter(),
 			new TKBEditorFormat.TKBEExporter(),
 			new QMKLayoutMacroExporter(true),
+			new QMKKeymapJsonTemplate.QMKKeymapJsonTemplateExporter(true),
 			new QMKInfoJson.QMKInfoJsonExporter(),
 			new TestExporter()
 		];

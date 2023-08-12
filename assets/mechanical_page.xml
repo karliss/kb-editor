@@ -20,7 +20,7 @@
             <label text="label" verticalAlign="center"/>
             <dropdown id="keyLabelSelection" width="150"/>
             <label text="Scale" verticalAlign="center"/>
-            <numberstepper id="keyViewScale" min="8" max="256" value="32"/>
+            <numberstepper id="keyViewScale" min="8" max="256" value="48"/>
         </hbox>
         <KeyboardContainer id="cMechanical" height="100%" width="100%"/>
     </vbox>

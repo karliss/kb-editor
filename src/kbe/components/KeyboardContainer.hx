@@ -46,7 +46,7 @@ class KeyboardContainer extends Box {
 	public var buttons(default, null):List<KeyButton> = new List<KeyButton>();
 
 	public var activeButton(get, set):Null<KeyButton>;
-	public var drawScale(default, set):Float = 32.0;
+	public var drawScale(default, set):Float = 48.0;
 	public var formatButton:(KeyButton) -> Void;
 	public var selectionMode(default, set):SelectionMode = SingleSet;
 	public var rectangleSelection:Bool = false;

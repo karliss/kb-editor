@@ -43,7 +43,7 @@ class QMKLayoutMacroExporter implements LayoutExporter {
 		return "text/plain";
 	}
 
-	private function calculateLayoutPos(keys:Array<Key>):{
+	public static function calculateLayoutPos(keys:Array<Key>):{
 		keys:Array<Key>,
 		pos:Map<Key, {row:Int, col:Int}>
 	} {

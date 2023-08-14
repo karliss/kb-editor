@@ -138,13 +138,20 @@ class MoveTool extends Tool {
 	}
 
 	function onMouseMove(e:MouseEvent) {
-		if (movableButtons == null || !e.buttonDown) {
+		if (movableButtons == null || !e.buttonDown || movableButtons.length == 0) {
 			return;
 		}
 		var p = page.cMechanical.screenToField(e.screenX, e.screenY);
 		var index = 0;
 		var ids = new Array<Int>();
 		var positions = new Array<Key.Point>();
+		var minOffset:Point = {x: offsets[0].x, y: offsets[0].y};
+		for (offset in offsets) {
+			minOffset.x = Math.min(minOffset.x, offset.x);
+			minOffset.y = Math.min(minOffset.y, offset.y);
+		}
+		p.x = Math.max(p.x, -minOffset.x);
+		p.y = Math.max(p.y, -minOffset.y);
 		for (movableButton in movableButtons) {
 			ids.push(movableButton.key.id);
 			positions.push({x: p.x + offsets[index].x, y: p.y + offsets[index].y});

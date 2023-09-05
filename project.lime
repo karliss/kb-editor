@@ -4,7 +4,7 @@
     <meta title="KB editor" package="kbe" version="1.0.0" company="My Company" />
     <app main="kbe.EditorApp" path="build" file="KBEditor" />
 
-    <source path="src" exclude="src/tests" />
+    <source path="src" />
 
     <haxelib name="openfl" />
     <haxelib name="haxeui-core" />

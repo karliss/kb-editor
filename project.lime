@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+
+    <meta title="KB editor" package="kbe" version="1.0.0" company="My Company" />
+    <app main="kbe.EditorApp" path="build" file="KBEditor" />
+
+    <source path="src" exclude="src/tests" />
+
+    <haxelib name="openfl" />
+    <haxelib name="haxeui-core" />
+    <haxelib name="haxeui-openfl" />
+    <haxelib name="hscript" />
+    <haxelib name="thx.csv" />
+    <haxelib name="tjson" />
+
+    <assets path="assets" />
+    <!--icon path="Assets/openfl.svg" /-->
+
+</project>

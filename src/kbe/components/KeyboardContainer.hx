@@ -78,7 +78,7 @@ class KeyboardContainer extends Box {
 		this.registerEvent(MouseEvent.MOUSE_MOVE, onMouseMoveSelf);
 
 		#if js
-		this.element.tabIndex = 1;
+		// this.element.tabIndex = 1;
 		#end
 	}
 
@@ -138,11 +138,11 @@ class KeyboardContainer extends Box {
 	public function fieldToScreen(key:Key):Point {
 		var y:Float = 0.0;
 		var x:Float = 0.0;
-		var areaWidth = width;
+		var areaWidth:Null<Float> = width;
 		if (areaWidth == null) {
 			areaWidth = 300;
 		}
-		var areaHeight = height;
+		var areaHeight:Null<Float> = height;
 		if (areaHeight == null) {
 			areaHeight = 300;
 		}
@@ -175,16 +175,16 @@ class KeyboardContainer extends Box {
 
 	public function updateLayout() {
 		// canvas.autoHeight = canvas.autoWidth = true;
-		canvas.height = null;
-		canvas.width = null;
+		canvas.height = 0; // null;
+		canvas.width = 0; // null;
 		canvas.autoSize();
 
-		var cw = canvas.width;
-		var ch = canvas.height;
-		var thisW = this.width;
-		var thisH = this.height;
+		var cw:Null<Float> = canvas.width;
+		var ch:Null<Float> = canvas.height;
+		var thisW:Null<Float> = this.width;
+		var thisH:Null<Float> = this.height;
 		if (thisH != null && thisW != null) {
-			if (cw != null && this.width != null) {
+			if (cw != null && cast(this.width, Null<Float>) != null) {
 				var w = Math.max(cw, thisW - 16);
 				if (w > 0) {
 					canvas.width = w;
@@ -383,8 +383,8 @@ class KeyboardContainer extends Box {
 			selectionRect.top = Math.min(localY, selectionStart.y);
 			selectionRect.width = Math.abs(localX - selectionStart.x);
 			selectionRect.height = Math.abs(localY - selectionStart.y);
-			var width = canvas.width;
-			var height = canvas.height;
+			var width:Null<Float> = canvas.width;
+			var height:Null<Float> = canvas.height;
 			if (width != null && height != null) {
 				canvas.width = Math.max(width, localX + 32);
 				canvas.height = Math.max(height, localY + 32);
@@ -394,12 +394,12 @@ class KeyboardContainer extends Box {
 
 	private function onMouseMoveSelf(e:MouseEvent) {
 		if (selectionRect != null) {
-			var localX = e.localX, localY = e.localY;
+			var localX:Null<Float> = e.localX, localY:Null<Float> = e.localY;
 			if (localY == null || localX == null) {
 				return;
 			}
-			var canvasWidth = canvas.width;
-			var canvasHeight = canvas.height;
+			var canvasWidth:Null<Float> = canvas.width;
+			var canvasHeight:Null<Float> = canvas.height;
 			if (canvasWidth == null || canvasHeight == null) {
 				canvas.width = localX + 32;
 				canvas.height = localY + 32;
@@ -428,10 +428,10 @@ class KeyboardContainer extends Box {
 			}
 
 			for (button in buttons) {
-				var buttonTop = button.top;
-				var buttonLeft = button.left;
-				var buttonWidth = button.width;
-				var buttonHeight = button.height;
+				var buttonTop:Null<Float> = button.top;
+				var buttonLeft:Null<Float> = button.left;
+				var buttonWidth:Null<Float> = button.width;
+				var buttonHeight:Null<Float> = button.height;
 				if (buttonTop == null || buttonLeft == null || buttonWidth == null || buttonHeight == null) {
 					continue;
 				}

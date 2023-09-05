@@ -1,7 +1,6 @@
 package kbe;
 
 import kbe.QMKLayoutMacro.QMKLayoutMacroExporter;
-import kbe.tests.QMKLayoutMacro;
 import haxe.DynamicAccess;
 import haxe.io.Bytes;
 import haxe.io.BytesBuffer;

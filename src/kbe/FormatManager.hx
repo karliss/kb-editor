@@ -21,6 +21,8 @@ class FormatManager {
 			new QMKLayoutMacroExporter(true),
 			new QMKKeymapJsonTemplate.QMKKeymapJsonTemplateExporter(true),
 			new QMKInfoJson.QMKInfoJsonExporter(),
+			new KBLEFormat.KBLEExporter(),
+			new kbe.formats.ViaJson.ViaExporter(),
 			new TestExporter()
 		];
 	}

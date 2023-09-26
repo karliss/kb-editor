@@ -206,7 +206,7 @@ class WiringPage extends HBox implements EditorPage {
 		for (key in keyboard.keys) {
 			var button = getKeyMatrixButton(key);
 			if (button != null) {
-				button.backgroundColor = null;
+				button.backgroundColor = 0xe0fde0;
 			}
 		}
 		for (key in badKeys) {

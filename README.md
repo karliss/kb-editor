@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/karliss/kb-editor.svg?branch=master)](https://travis-ci.com/karliss/kb-editor)
+![example workflow](https://github.com/karliss/kb-editor/actions/workflows/testing.yaml/badge.svg)
 
 # kb-editor
 Tool for editing layouts of custom keyboards. Try it [here](https://karliss.github.io/kb-editor/preview). 

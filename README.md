@@ -5,8 +5,8 @@ Tool for editing layouts of custom keyboards. Try it [here](https://karliss.gith
 
 It is intended for keeping track of mapping between physical layout, logical layout, wiring matrix and scanning matrix and generating configuration files from this information.
 
-[image physical layout edit](docs/images/readmed_p.png)
-[image wiring edit](docs/images/readmed_w.png)
+![image physical layout edit](docs/images/readmed_p.png)
+![image wiring edit](docs/images/readme_w.png)
 
 ## Project status
 

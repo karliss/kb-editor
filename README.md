@@ -5,18 +5,24 @@ Tool for editing layouts of custom keyboards. Try it [here](https://karliss.gith
 
 It is intended for keeping track of mapping between physical layout, logical layout, wiring matrix and scanning matrix and generating configuration files from this information.
 
+[image physical layout edit](docs/images/readmed_p.png)
+[image wiring edit](docs/images/readmed_w.png)
 
 ## Project status
 
-Early development - most features unusable.
+Early development - not exactly end user robust, but has enough functionality to be useful for my personal use
 
 * Physical layout definition - mostly working
 * Logical layout mapping - done
 * Wiring and scan matrix - done
 * Importers - mostly working
-* Exporters - missing
+* Exporters - helps dealing with most tedious parts related to keys, rest of the config my need manual editing
+   - QMK info.json matrix pins, layout (positions and matrix)
+   - KLE - basic position, size, label (no advanced styling features)
+   - QMK layout macro -> pretty prints taking into account key width. Somewhat redundant due to QMK data driven configuration.
+   - QMK keymap.json template -> some fancy formating, for manual editing. No wey to define the content of keymap. 
+   - VIA json -> VIA specific values need to be filled in manually after exporting
 * Key mapping configuration - missing, low priority due to plenty of existing tools doing that
-
 
 ## Comparison with other tools
 

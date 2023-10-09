@@ -3,6 +3,7 @@
 
 -lib haxeui-core
 -lib haxeui-hxwidgets
+#-lib hxcpp-debug-server
 --debug
 #--macro nullSafety("kbe", Loose)
 common.hxml

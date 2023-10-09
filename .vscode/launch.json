@@ -68,6 +68,12 @@
 			"args": [
 				"html5.hxml",
 			]
+		},
+		{
+			"name": "HXCPP",
+			"type": "hxcpp",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/cpp/Main/EditorApp-debug"
 		}
 	]
 }

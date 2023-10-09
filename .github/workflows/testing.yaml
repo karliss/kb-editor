@@ -26,3 +26,9 @@ jobs:
         run: |
           haxe -version
           haxe travis.hxml
+      - name: build_runable
+        run: haxe html5.hxml
+      - uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        with:
+          name: html5
+          path: buld/html5

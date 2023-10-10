@@ -1,7 +1,7 @@
 ![example workflow](https://github.com/karliss/kb-editor/actions/workflows/testing.yaml/badge.svg)
 
 # kb-editor
-Tool for editing layouts of custom keyboards. Try it [here](https://karliss.github.io/kb-editor/preview). 
+Tool for editing layouts of custom keyboards. Try it [here](https://karliss.github.io/kb-editor/preview) (might be slightly outdated) or get the latest build from [CI here](https://github.com/karliss/kb-editor/actions/workflows/testing.yaml)
 
 It is intended for keeping track of mapping between physical layout, logical layout, wiring matrix and scanning matrix and generating configuration files from this information.
 
@@ -23,6 +23,15 @@ Early development - not exactly end user robust, but has enough functionality to
    - QMK keymap.json template -> some fancy formating, for manual editing. No wey to define the content of keymap. 
    - VIA json -> VIA specific values need to be filled in manually after exporting
 * Key mapping configuration - missing, low priority due to plenty of existing tools doing that
+
+## Build instructions
+
+* Install and setup  [haxe](https://haxe.org/)  compiler. Should be also available from the official repositories of many Linux distributions
+* Install dependencies using `haxelib install html5.hxml`
+* Run the build `haxe html5.hxml`
+* output should be in `build/html5/` folder
+
+Build proces for other targets like OpenFL or wxWidgets is a bit more complicated.
 
 ## Comparison with other tools
 
